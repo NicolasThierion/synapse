@@ -1,26 +1,35 @@
 {
-  "name": "synapse",
-  "version": "0.0.0",
+  "name": "@ack/synapse",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build --prod",
-    "test": "ng test",
+    "start": "ng serve --preserve-symlinks",
+    "test": "ng test --preserve-symlinks --sourcemap=false",
+    "coverage": "ng test --watch=false --code-coverage",
     "lint": "ng lint",
+    "build": "./node_modules/.bin/ngc -p src/tsconfig.app.json && cp -R src/main/package.json dist/package.json",
+    "build:watch": "./node_modules/nodemon/bin/nodemon.js -i dist -w src -e ts,json,html,scss --exec \"npm run build\"",
+    "package": "npm run clean && npm run build",
     "e2e": "ng e2e"
   },
   "private": true,
-  "dependencies": {
-    "@angular/animations": "^5.0.0",
+  "description": "Easy to use http client based on es6 annotations, inspired by the 'Retrofit' library",
+  "keywords": [
+    "http",
+    "rest",
+    "annotations",
+    "es6",
+    "retrofit"
+  ],
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.10",
     "@angular/common": "^5.0.0",
     "@angular/compiler": "^5.0.0",
     "@angular/core": "^5.0.0",
-    "@angular/forms": "^5.0.0",
     "@angular/http": "^5.0.0",
     "@angular/platform-browser": "^5.0.0",
     "@angular/platform-browser-dynamic": "^5.0.0",
-    "@angular/router": "^5.0.0",
     "core-js": "^2.4.1",
     "rxjs": "^5.5.2",
     "zone.js": "^0.8.14"
@@ -33,6 +42,7 @@
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "~6.0.60",
     "codelyzer": "^4.0.1",
+    "@angular/router": "^5.0.0",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",
@@ -44,6 +54,17 @@
     "protractor": "~5.1.2",
     "ts-node": "~3.2.0",
     "tslint": "~5.7.0",
-    "typescript": "~2.4.2"
+    "typescript": "~2.4.2",
+    "reflect-metadata": "^0.1.10",
+    "@angular/common": "^5.0.0",
+    "@angular/compiler": "^5.0.0",
+    "@angular/core": "^5.0.0",
+    "@angular/http": "^5.0.0",
+    "@angular/platform-browser": "^5.0.0",
+    "@angular/platform-browser-dynamic": "^5.0.0",
+    "core-js": "^2.4.1",
+    "rxjs": "^5.5.2",
+    "zone.js": "^0.8.14",
+    "@types/lodash": "^4.14.87"
   }
 }
