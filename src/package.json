@@ -1,0 +1,19 @@
+{
+  "name": "@ack/synapse",
+  "version": "0.0.1-dev",
+  "license": "MIT",
+  "private": true,
+  "description": "@ack/synapse for usage with 'npm link' only",
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.10",
+    "@angular/common": "^5.0.0",
+    "@angular/compiler": "^5.0.0",
+    "@angular/core": "^5.0.0",
+    "@angular/http": "^5.0.0",
+    "@angular/platform-browser": "^5.0.0",
+    "@angular/platform-browser-dynamic": "^5.0.0",
+    "core-js": "^2.4.1",
+    "rxjs": "^5.5.2",
+    "zone.js": "^0.8.14"
+  }
+}

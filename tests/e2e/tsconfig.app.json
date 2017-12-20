@@ -8,6 +8,12 @@
   },
   "exclude": [
     "test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "../../node_modules/@ack/synapse/**/*.spec.ts"
+
+  ],
+  "include": [
+    "../../node_modules/@ack/synapse",
+    "."
   ]
 }

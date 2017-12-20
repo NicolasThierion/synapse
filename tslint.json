@@ -58,7 +58,7 @@
     "no-debugger": true,
     "no-duplicate-super": true,
     "no-empty": false,
-    "no-empty-interface": true,
+    "no-empty-interface": false,
     "no-eval": true,
     "no-inferrable-types": [
       true,
@@ -121,13 +121,13 @@
     "directive-selector": [
       true,
       "attribute",
-      "app",
+      "ack",
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      "app",
+      "ack",
       "kebab-case"
     ],
     "no-output-on-prefix": true,

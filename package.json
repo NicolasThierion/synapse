@@ -22,8 +22,10 @@
     "es6",
     "retrofit"
   ],
+  "dependencies": {
+    "reflect-metadata": "^0.1.10"
+  },
   "peerDependencies": {
-    "reflect-metadata": "^0.1.10",
     "@angular/common": "^5.0.0",
     "@angular/compiler": "^5.0.0",
     "@angular/core": "^5.0.0",
