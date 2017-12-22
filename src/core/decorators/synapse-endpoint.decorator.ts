@@ -1,11 +1,10 @@
-import { RestApiConfig } from './rest-api.decorator';
+import { SynapseApiConfig } from './synapse-api.decorator';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs/Observable';
 import { SynapseConf } from '../synapse-conf';
 import { assert } from '../../utils/assert';
-import { RestApiReflect } from './rest-api.reflect';
-import RestApiAnnotatedClass = RestApiReflect.RestApiClass;
-import DecoratedArgs = RestApiReflect.DecoratedArgs;
+import { SynapseApiReflect } from './synapse-api.reflect';
+import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
 
 class CallArgs {
   pathParams?: string[];
@@ -56,8 +55,8 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | 
     }
 
     descriptor.value = function(...args: any[]): Observable<Object> {
-      const conf = RestApiReflect.getConf(target);
-      const decoratedArgs = RestApiReflect.getDecoratedArgs(target, propertyKey);
+      const conf = SynapseApiReflect.getConf(target);
+      const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
       const {pathParams, queryParams, headers, body}: CallArgs = _parseArgs(args, decoratedArgs);
 
       return _doRequest(method, conf, pathParams, queryParams, headers, body);
@@ -66,7 +65,7 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | 
 }
 
 function _doRequest(method: HttpMethod,
-                    conf: RestApiConfig & SynapseConf,
+                    conf: SynapseApiConfig & SynapseConf,
                     pathParams?: string[],
                     queryParams?: Object,
                     headers?: Object,
@@ -97,7 +96,7 @@ function _doRequest(method: HttpMethod,
   }
 }
 
-function _makeUrl(conf: RestApiConfig & SynapseConf, pathParams?: string[]): string {
+function _makeUrl(conf: SynapseApiConfig & SynapseConf, pathParams?: string[]): string {
   // TODO sanitize.
   // TODO check path parameters
   // TODO populate path parameters

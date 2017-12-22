@@ -8,6 +8,6 @@ import { UsersApi } from './users.api';
   providers: [UsersApi],
   declarations: []
 })
-// A sample app that make use of rest-client for test purpose
+// A sample app that make use of synapse-client for test purpose
 export class UsersModule {
 }

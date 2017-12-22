@@ -23,7 +23,7 @@ import { UsersModule } from '../users/users.module';
   providers: [],
   bootstrap: [AppComponent]
 })
-// A sample app that make use of rest-client for test purpose
+// A sample app that make use of synapse-api for test purpose
 export class AppModule {
 
 

@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { SynapseConf } from './synapse-conf';
 import '../utils/rxjs-import';
+import { assert } from '../utils/assert';
 
 class StateError extends Error {
   constructor(s: string) {
@@ -15,6 +16,7 @@ export class Synapse {
 
   public static init(conf: SynapseConf): void {
     if (this._conf) {
+      assert(false);
       throw new StateError('Synapse already initialized');
     }
     this._conf = conf;

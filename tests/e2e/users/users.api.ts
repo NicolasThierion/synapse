@@ -1,9 +1,9 @@
 import { Observable } from 'rxjs/Observable';
 import { User } from './user.model';
 import { Injectable } from '@angular/core';
-import { Body, GET, Headers, PathParam, PATCH, POST, PUT, QueryParams, RestApi, Synapse} from '@ack/synapse';
+import { Body, GET, Headers, PathParam, PATCH, POST, PUT, QueryParams, SynapseApi, Synapse} from '@ack/synapse';
 
-@RestApi({
+@SynapseApi({
   baseUrl: 'https://jsonplaceholder.typicode.com/',
   path: 'users'
 })

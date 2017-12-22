@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UsersApi } from './users/users.api';
+import { UsersApi } from '../users/users.api';
 
 @Component({
   selector: 'ack-root',

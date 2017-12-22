@@ -1,11 +1,11 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { GET, Headers, PathParam, QueryParams, RestApi, Synapse} from '@ack/synapse';
+import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../../index';
 
 /**
- * A fake dummy example of @RestApi showing test-cases of @Get annotation.
+ * A fake dummy example of @SynapseApi showing test-cases of @Get annotation.
  */
-@RestApi()
+@SynapseApi()
 @Injectable()
 export class GetApi {
 
@@ -49,21 +49,21 @@ export class GetApi {
 
 export namespace GetApi {
 
-  @RestApi({
+  @SynapseApi({
     baseUrl: WithBaseUrl.BASEURL
   })
   export class WithBaseUrl extends GetApi {
     static readonly BASEURL = 'https://some-api-with-custom-base-url';
   }
 
-  @RestApi({
+  @SynapseApi({
     path: 'users'
   })
   export class WithPath extends GetApi {
     static readonly PATH = 'with-path';
   }
 
-  @RestApi({
+  @SynapseApi({
     baseUrl: WithBaseUrl.BASEURL,
     path: 'users'
   })

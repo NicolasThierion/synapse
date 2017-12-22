@@ -1,23 +1,23 @@
-import { RestApiReflect } from './rest-api.reflect';
+import { SynapseApiReflect } from './synapse-api.reflect';
 
 export interface PathParameterName {
   param: string | number;
 }
 
 export function PathParam(): ParameterDecorator {
-  return _parameterDecorator(RestApiReflect.addPathParamArg);
+  return _parameterDecorator(SynapseApiReflect.addPathParamArg);
 }
 
 export function QueryParams(): ParameterDecorator {
-  return _parameterDecorator(RestApiReflect.addQueryParamsArg);
+  return _parameterDecorator(SynapseApiReflect.addQueryParamsArg);
 }
 
 export function Headers(): ParameterDecorator {
-  return _parameterDecorator(RestApiReflect.addHeadersArg);
+  return _parameterDecorator(SynapseApiReflect.addHeadersArg);
 }
 
 export function Body(): ParameterDecorator {
-  return _parameterDecorator(RestApiReflect.addBodyArg);
+  return _parameterDecorator(SynapseApiReflect.addBodyArg);
 }
 
 function _parameterDecorator(fn: Function): ParameterDecorator {

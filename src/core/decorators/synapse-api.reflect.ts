@@ -1,12 +1,12 @@
 import 'reflect-metadata';
-import { RestApiConfig } from './rest-api.decorator';
+import { SynapseApiConfig } from './synapse-api.decorator';
 import { SynapseConf } from '../synapse-conf';
 import { assert } from '../../utils/assert';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
-const CONF_KEY = 'RestApiConf';
+const CONF_KEY = 'SynapseApiConf';
 
-export namespace RestApiReflect {
+export namespace SynapseApiReflect {
 
   export class DecoratedArgs {
     public readonly path: number[] = [];
@@ -15,14 +15,14 @@ export namespace RestApiReflect {
     public readonly body: number[] = [];
   }
 
-  export interface RestApiClass {}
+  export interface SynapseApiClass {}
 
-  export function init(clazz: RestApiClass, conf: RestApiConfig & SynapseConf): void {
+  export function init(clazz: SynapseApiClass, conf: SynapseApiConfig & SynapseConf): void {
     assert(clazz);
     Reflect.defineMetadata(CONF_KEY, conf, clazz);
   }
 
-  export function getConf(clazz: RestApiClass): RestApiConfig & SynapseConf {
+  export function getConf(clazz: SynapseApiClass): SynapseApiConfig & SynapseConf {
     assert(clazz);
     return Reflect.getOwnMetadata(CONF_KEY, clazz);
   }

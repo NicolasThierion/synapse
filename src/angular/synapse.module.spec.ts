@@ -8,11 +8,7 @@ import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { Synapse } from '../core/core';
 import { HttpBackendAdapter } from '../core/http-backend.interface';
 import { Observable } from 'rxjs/Observable';
-
-const BASE_URL = 'http://some-base-url';
-const HEADERS = {
-  'X-custom-header': 'custom-header-value'
-};
+import { TestingModule } from './utils/testing.module';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
   get(url: string, params?: any, headers?: any): Observable<Object> {
@@ -41,14 +37,12 @@ describe('SynapseModule.forRoot method', () => {
   describe('when called without setting up BrowserModule', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
-        imports: [SynapseModule.forRoot({
-          baseUrl: BASE_URL
-        })],
+        imports: [SynapseModule.forRoot(TestingModule.SYNAPSE_CONF)],
         providers: []
       });
     }));
 
-    it('should throw an error with usefull error msg', async(() => {
+    it('should throw an error with useful error msg', async(() => {
       let thrownError: Error = null;
 
       try {
@@ -69,22 +63,30 @@ describe('SynapseModule.forRoot method', () => {
 
 
   describe('with proper HttpClientModule setup', () => {
-    let httpMock: HttpTestingController;
     afterEach(() => {
-      httpMock.verify();
       Synapse.teardown();
+    });
+
+    it('should call Synapse.init with proper parameters', () => {
+      TestBed.configureTestingModule({
+        imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot(TestingModule.SYNAPSE_CONF)],
+      });
+      spyOn(Synapse, 'init').and.callThrough();
+      inject([SynapseModule], _.noop)();
+      expect(Synapse.init).toHaveBeenCalled();
     });
 
     describe('when called with no httpBackend parameter', () => {
       beforeEach(async(() => {
         TestBed.configureTestingModule({
           imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot({
-            baseUrl: BASE_URL,
-            headers: HEADERS
+            baseUrl: TestingModule.BASE_URL,
+            headers: TestingModule.HEADERS
           })],
           providers: []
         });
-        httpMock = TestBed.get(HttpTestingController);
+        // force eager construction of SynapseModule
+        inject([SynapseModule], _.noop)();
       }));
 
       it('should provide the same Synapse config as Synapse.getConfig() through "AngularSynapseConf"', () => {
@@ -99,11 +101,11 @@ describe('SynapseModule.forRoot method', () => {
 
 
       it('should set up the provided headers', () => {
-        expect(Synapse.getConfig().headers).toEqual(HEADERS);
+        expect(Synapse.getConfig().headers).toEqual(TestingModule.HEADERS);
       });
 
       it('should set up the provided baseUrl', () => {
-        expect(Synapse.getConfig().baseUrl).toEqual(BASE_URL);
+        expect(Synapse.getConfig().baseUrl).toEqual(TestingModule.BASE_URL);
       });
     });
 
@@ -111,12 +113,13 @@ describe('SynapseModule.forRoot method', () => {
       beforeEach(async(() => {
         TestBed.configureTestingModule({
           imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot({
-            baseUrl: BASE_URL,
+            baseUrl: TestingModule.BASE_URL,
             httpBackend: new CustomAngularHttpBackendAdapter()
           })],
           providers: []
         });
-        httpMock = TestBed.get(HttpTestingController);
+        // force eager construction of SynapseModule
+        inject([SynapseModule], _.noop)();
       }));
 
 
