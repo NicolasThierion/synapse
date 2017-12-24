@@ -2,6 +2,9 @@ import 'reflect-metadata';
 import { SynapseApiConfig } from './synapse-api.decorator';
 import { SynapseConf } from '../synapse-conf';
 import { assert } from '../../utils/assert';
+import * as _ from 'lodash';
+import { StateError } from '../../utils/state-error';
+import { Synapse } from '../core';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
 const CONF_KEY = 'SynapseApiConf';
@@ -17,14 +20,31 @@ export namespace SynapseApiReflect {
 
   export interface SynapseApiClass {}
 
-  export function init(clazz: SynapseApiClass, conf: SynapseApiConfig & SynapseConf): void {
-    assert(clazz);
-    Reflect.defineMetadata(CONF_KEY, conf, clazz);
+  export function init(classPrototype: SynapseApiClass, conf: SynapseApiConfig): void {
+    assert(classPrototype);
+    // inherits config from parent annotation
+    conf = _inheritConf(classPrototype, _.cloneDeep(conf));
+
+    // retrieve global config
+    const globalConf = Synapse.getConfig();
+
+    // patch it with local @SynapseApi config.
+    const conf_: SynapseApiConfig & SynapseConf = _.cloneDeep(_.defaultsDeep(conf as SynapseApiConfig, globalConf));
+    Object.freeze(conf_);
+    assert(!Reflect.getOwnMetadata(CONF_KEY, classPrototype) ||
+      _.isEqual(conf_, Reflect.getOwnMetadata(CONF_KEY, classPrototype) ));
+    Reflect.defineMetadata(CONF_KEY, conf_, classPrototype);
   }
 
-  export function getConf(clazz: SynapseApiClass): SynapseApiConfig & SynapseConf {
-    assert(clazz);
-    return Reflect.getOwnMetadata(CONF_KEY, clazz);
+  export function getConf(classPrototype: SynapseApiClass): SynapseApiConfig & SynapseConf {
+    assert(classPrototype);
+    const res = Reflect.getOwnMetadata(CONF_KEY, classPrototype);
+    if (!res) {
+      throw new StateError(`no configuration found for class ${classPrototype}.
+      Are you sure that this type is properly decorated with "@SynapseApi" ?`);
+    }
+
+    return _.cloneDeep(res);
   }
 
   export const addPathParamArg: ParameterDecorator = (target: Object, key: string | symbol, parameterIndex: number) => {
@@ -57,4 +77,17 @@ export namespace SynapseApiReflect {
 
     return args;
   }
+}
+
+function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
+                      conf: SynapseApiConfig): SynapseApiConfig {
+  const parentCtor  = Object.getPrototypeOf(classPrototype).constructor;
+
+  // if parent constructor is not 'Object'
+  if (parentCtor.name !== 'Object') {
+    const parentConf = Reflect.getOwnMetadata(CONF_KEY, parentCtor.prototype);
+    conf = _.defaultsDeep(conf, parentConf);
+  }
+
+  return conf;
 }

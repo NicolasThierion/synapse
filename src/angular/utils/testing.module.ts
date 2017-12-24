@@ -3,15 +3,37 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { AngularSynapseConf, SynapseModule } from '../synapse.module';
 import { initAssert } from '../../utils/assert';
+import { AngularHttpBackendAdapter } from '../angular-http-backend-adapter';
+import { HttpBackendAdapter } from '../../core/http-backend.interface';
 
-export const BASE_URL = 'https://some-base-url';
-const HEADERS = {
-  'X-custom-header': 'custom-header-value'
-};
-export const SYNAPSE_CONF: AngularSynapseConf = {
-  baseUrl : BASE_URL,
-  headers: HEADERS
-};
+class CustomBackendAdapter extends AngularHttpBackendAdapter {
+}
+
+export class Global {
+  static readonly BASE_URL = 'https://some-base-url';
+  static readonly HEADERS = {
+    'X-global-header': 'some-global-value'
+  };
+
+  static readonly CONF: AngularSynapseConf = {
+    baseUrl: Global.BASE_URL,
+    headers: Global.HEADERS
+  };
+}
+
+export class Custom {
+  static readonly BASE_URL = 'https://some-custom-base-url';
+  static readonly HEADERS = {
+    'X-custom-header': 'some-custom-value'
+  };
+  static BACKEND_ADAPTER: HttpBackendAdapter = new CustomBackendAdapter(null);
+
+  static readonly CONF: AngularSynapseConf = {
+    baseUrl: Custom.BASE_URL,
+    headers: Custom.HEADERS,
+    httpBackend: Custom.BACKEND_ADAPTER
+  };
+}
 
 /**
  * Import this module to set up test environment for testing Synapse project
@@ -26,15 +48,14 @@ export const SYNAPSE_CONF: AngularSynapseConf = {
   ]
 })
 export class TestingModule {
-  static readonly SYNAPSE_CONF = SYNAPSE_CONF;
-  static readonly BASE_URL = BASE_URL;
-  static readonly HEADERS = HEADERS;
+  static readonly Global = Global;
+  static readonly Custom = Custom;
 
   constructor() {
     initAssert(true);
   }
 
-  static forRoot(conf: AngularSynapseConf = SYNAPSE_CONF): ModuleWithProviders {
+  static forRoot(conf: AngularSynapseConf = Global.CONF): ModuleWithProviders {
     return {
       ngModule: TestingModule,
       providers: [

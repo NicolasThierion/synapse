@@ -37,7 +37,7 @@ describe('SynapseModule.forRoot method', () => {
   describe('when called without setting up BrowserModule', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
-        imports: [SynapseModule.forRoot(TestingModule.SYNAPSE_CONF)],
+        imports: [SynapseModule.forRoot(TestingModule.Global.CONF)],
         providers: []
       });
     }));
@@ -69,7 +69,7 @@ describe('SynapseModule.forRoot method', () => {
 
     it('should call Synapse.init with proper parameters', () => {
       TestBed.configureTestingModule({
-        imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot(TestingModule.SYNAPSE_CONF)],
+        imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot(TestingModule.Global.CONF)],
       });
       spyOn(Synapse, 'init').and.callThrough();
       inject([SynapseModule], _.noop)();
@@ -80,8 +80,8 @@ describe('SynapseModule.forRoot method', () => {
       beforeEach(async(() => {
         TestBed.configureTestingModule({
           imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot({
-            baseUrl: TestingModule.BASE_URL,
-            headers: TestingModule.HEADERS
+            baseUrl: TestingModule.Global.BASE_URL,
+            headers: TestingModule.Global.HEADERS
           })],
           providers: []
         });
@@ -101,11 +101,11 @@ describe('SynapseModule.forRoot method', () => {
 
 
       it('should set up the provided headers', () => {
-        expect(Synapse.getConfig().headers).toEqual(TestingModule.HEADERS);
+        expect(Synapse.getConfig().headers).toEqual(TestingModule.Global.HEADERS);
       });
 
       it('should set up the provided baseUrl', () => {
-        expect(Synapse.getConfig().baseUrl).toEqual(TestingModule.BASE_URL);
+        expect(Synapse.getConfig().baseUrl).toEqual(TestingModule.Global.BASE_URL);
       });
     });
 
@@ -113,7 +113,7 @@ describe('SynapseModule.forRoot method', () => {
       beforeEach(async(() => {
         TestBed.configureTestingModule({
           imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot({
-            baseUrl: TestingModule.BASE_URL,
+            baseUrl: TestingModule.Global.BASE_URL,
             httpBackend: new CustomAngularHttpBackendAdapter()
           })],
           providers: []

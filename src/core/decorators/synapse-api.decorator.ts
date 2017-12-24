@@ -1,9 +1,6 @@
 import * as _ from 'lodash';
 import { HttpBackendAdapter } from '../http-backend.interface';
-import { Synapse } from '../core';
-import { SynapseConf } from '../synapse-conf';
 import { SynapseApiReflect } from './synapse-api.reflect';
-import SynapseApiAnnotatedClass = SynapseApiReflect.SynapseApiClass;
 
 export interface SynapseApiConfig {
   path?: string;
@@ -15,28 +12,31 @@ export interface SynapseApiConfig {
 }
 
 export function SynapseApi(conf: string | SynapseApiConfig = ''): ClassDecorator {
+  conf = _.cloneDeep(conf);
+
   return (ctor: any) => {
 
     // decorate constructor to add config within reflect metadata
-    const newCtor = function(...args: any[]): SynapseApiAnnotatedClass {
+    let newCtor = function(...args: any[]): SynapseApiReflect.SynapseApiClass {
 
-      // retrieve global config
-      const globalConf = Synapse.getConfig();
+      // call decoree constructor
+      const res = ctor.apply(this, args);
 
-      // patch ot with local @SynapseApi config.
-      const conf_: SynapseApiConfig & SynapseConf = _.isString(conf) ?
-        _.defaultsDeep({path: conf as string}, globalConf)
-        :  _.defaultsDeep(conf as SynapseApiConfig, globalConf);
+      // store conf within metadata.
+      // !!! It is important to call constructor before, to register config of any parent class decorated with @SynapseApi
+      SynapseApiReflect.init(ctor.prototype, _.isString(conf) ? {path: conf as string} : conf as SynapseApiConfig);
 
-      // store conf within metadata
-      SynapseApiReflect.init(ctor.prototype, conf_);
-
-      // call the decoree
-      return new ctor(args);
+      return res;
     };
 
+    newCtor = renameFn(newCtor, ctor.prototype.constructor.name);
     newCtor.prototype = ctor.prototype;
 
     return newCtor as any;
   };
+
+  function renameFn(fn, name) {
+    return new Function('fn', `return function ${name}() {\n return fn.apply(this, arguments);\n}`)(fn);
+   }
 }
+
