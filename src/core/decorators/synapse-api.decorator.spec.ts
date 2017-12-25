@@ -1,6 +1,6 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { SynapseApi } from './synapse-api.decorator';
-import { Custom, Global, TestingModule } from '../../angular/utils/testing.module';
+import { Custom, Global, TestingModule } from '../../tests/testing.module';
 import { SynapseApiReflect } from './synapse-api.reflect';
 
 import { Synapse } from '../core';
@@ -8,8 +8,9 @@ import { AngularHttpBackendAdapter } from '../../angular/angular-http-backend-ad
 
 import * as _ from 'lodash';
 
-const API_PATH = 'some-api-path';
-const EXTENDED_API_PATH = 'some-extended-api-path';
+const API_PATH = 'some-api-path/';
+const EXTENDED_API_PATH = '/some-extended-api-path';
+const API_PATH_THAT_NEEDS_ENCODING = 'éç^€%!§:?+';
 
 @SynapseApi()
 class Api {
@@ -50,6 +51,11 @@ class InheritedApi extends ParentApi {
 
 }
 
+@SynapseApi(API_PATH_THAT_NEEDS_ENCODING)
+class ApiThatNeedsEncoding {
+
+}
+
 describe('@SynapseApi annotation', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -74,6 +80,12 @@ describe('@SynapseApi annotation', () => {
     expect([conf.baseUrl, conf.headers, conf.path])
       .toEqual([Global.CONF.baseUrl, Global.CONF.headers, '']);
     expect(conf.httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
+  });
+
+  it('should encode path', () => {
+    const api = new ApiThatNeedsEncoding();
+    const path = SynapseApiReflect.getConf(api.constructor.prototype).path;
+    expect(path).toEqual(encodeURI(API_PATH_THAT_NEEDS_ENCODING));
   });
 
   describe('with provided path', () => {
@@ -129,16 +141,19 @@ describe('@SynapseApi annotation', () => {
       expect(api ).toEqual(jasmine.any(InheritedApi));
     });
 
-    it('should inherit configuration from parent classe', () => {
+    it('should inherit configuration from parent classes', () => {
       const api = new InheritedApi();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      const expected = _.defaults({path: EXTENDED_API_PATH}, CustomConf);
+      const expected = _.cloneDeep(CustomConf);
+      delete conf.path;  // don't compare paths. They should be appended and are subject to the next test.
+      delete expected.path;
+      expect(conf).toEqual(_.merge(expected, {headers: _.merge(expected.headers, conf.headers)}) as any);
+    });
 
-      // don't conpare headers as they are merged with globals
-      delete expected.headers;
-      delete conf.headers;
-
-      expect(conf).toEqual(expected);
+    it('should appends its path parent classes paths', () => {
+      const api = new InheritedApi();
+      const conf = SynapseApiReflect.getConf(api.constructor.prototype);
+      expect(conf.path).toEqual(`${CustomConf.path}/${EXTENDED_API_PATH}`.replace(/\/+/, '/'));
     });
   });
 });

@@ -8,7 +8,8 @@ import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { Synapse } from '../core/core';
 import { HttpBackendAdapter } from '../core/http-backend.interface';
 import { Observable } from 'rxjs/Observable';
-import { TestingModule } from './utils/testing.module';
+import { TestingModule } from '../tests/testing.module';
+import { SynapseApiReflect } from '../core/decorators/synapse-api.reflect';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
   get(url: string, params?: any, headers?: any): Observable<Object> {
@@ -89,7 +90,7 @@ describe('SynapseModule.forRoot method', () => {
         inject([SynapseModule], _.noop)();
       }));
 
-      it('should provide the same Synapse config as Synapse.getConfig() through "AngularSynapseConf"', () => {
+      it('should provide the same "AngularSynapseConf" as Synapse.getConfig()', () => {
         inject([AngularSynapseConf], (conf: AngularSynapseConf) => {
           expect(Synapse.getConfig()).toBe(conf as any);
         })();
@@ -127,5 +128,25 @@ describe('SynapseModule.forRoot method', () => {
         expect(Synapse.getConfig().httpBackend instanceof CustomAngularHttpBackendAdapter).toBe(true);
       }));
     });
+
+    describe('with baseUrl that needs encoding', () => {
+      const BASEURL_THAT_NEEDS_ENCODING = 'https://$é€.#à@[^';
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot({
+            baseUrl: BASEURL_THAT_NEEDS_ENCODING,
+            httpBackend: new CustomAngularHttpBackendAdapter()
+          })],
+          providers: []
+        });
+        // force eager construction of SynapseModule
+        inject([SynapseModule], _.noop)();
+      });
+
+
+      it('should encode baseUrl', () => {
+        expect(Synapse.getConfig().baseUrl).toEqual(encodeURI(BASEURL_THAT_NEEDS_ENCODING));
+      });
+    })
   });
 });

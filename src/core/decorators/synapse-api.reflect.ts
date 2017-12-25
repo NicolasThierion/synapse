@@ -30,6 +30,8 @@ export namespace SynapseApiReflect {
 
     // patch it with local @SynapseApi config.
     const conf_: SynapseApiConfig & SynapseConf = _.cloneDeep(_.defaultsDeep(conf as SynapseApiConfig, globalConf));
+    conf_.path = encodeURI(conf_.path);
+
     Object.freeze(conf_);
     assert(!Reflect.getOwnMetadata(CONF_KEY, classPrototype) ||
       _.isEqual(conf_, Reflect.getOwnMetadata(CONF_KEY, classPrototype) ));
@@ -86,8 +88,18 @@ function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
   // if parent constructor is not 'Object'
   if (parentCtor.name !== 'Object') {
     const parentConf = Reflect.getOwnMetadata(CONF_KEY, parentCtor.prototype);
-    conf = _.defaultsDeep(conf, parentConf);
+    conf = _.defaultsDeep({path: `${_sanitizePath(parentConf.path)}/${_sanitizePath(conf.path)}`}, conf, parentConf);
   }
 
   return conf;
+}
+
+function _sanitizePath(path: string): string {
+  if (path.endsWith('/')) {
+    path = path.substring(0, path.length - 1);
+  }
+  if (path.startsWith('/')) {
+    path = path.substring(1);
+  }
+  return path;
 }

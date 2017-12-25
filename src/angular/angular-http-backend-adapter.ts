@@ -2,6 +2,9 @@ import { HttpBackendAdapter } from '../core/http-backend.interface';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
+/**
+ * An angular implementation of {@link HttpBackendAdapter} using {@link HttpClient} as a backend.
+ */
 export class AngularHttpBackendAdapter implements HttpBackendAdapter {
   private _http: HttpClient;
 

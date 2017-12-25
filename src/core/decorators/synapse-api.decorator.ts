@@ -11,6 +11,16 @@ export interface SynapseApiConfig {
   // TODO support for handler
 }
 
+/**
+ * Use this decorator on your web API class.
+ *
+ * You can specify an optional resource path to this API, or a complete {@link SynapseApiConfig},
+ * that will applies to this class and all of its sub classes.
+ *
+ * @param {string | SynapseApiConfig} conf
+ * @returns {ClassDecorator}
+ * @constructor
+ */
 export function SynapseApi(conf: string | SynapseApiConfig = ''): ClassDecorator {
   conf = _.cloneDeep(conf);
 

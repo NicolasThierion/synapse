@@ -1,14 +1,17 @@
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { AngularSynapseConf, SynapseModule } from '../synapse.module';
-import { initAssert } from '../../utils/assert';
-import { AngularHttpBackendAdapter } from '../angular-http-backend-adapter';
-import { HttpBackendAdapter } from '../../core/http-backend.interface';
+import { AngularSynapseConf, SynapseModule } from '../angular/synapse.module';
+import { initAssert } from '../utils/assert';
+import { AngularHttpBackendAdapter } from '../angular/angular-http-backend-adapter';
+import { HttpBackendAdapter } from '../core/http-backend.interface';
 
 class CustomBackendAdapter extends AngularHttpBackendAdapter {
 }
 
+/**
+ * Global Synapse config used within tests
+ */
 export class Global {
   static readonly BASE_URL = 'https://some-base-url';
   static readonly HEADERS = {
@@ -21,6 +24,9 @@ export class Global {
   };
 }
 
+/**
+ * Custom Synapse config used within tests
+ */
 export class Custom {
   static readonly BASE_URL = 'https://some-custom-base-url';
   static readonly HEADERS = {
@@ -36,7 +42,7 @@ export class Custom {
 }
 
 /**
- * Import this module to set up test environment for testing Synapse project
+ * Import this module to set up test environment for testing the Synapse project
  */
 @NgModule({
   imports: [
