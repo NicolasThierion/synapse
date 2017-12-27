@@ -56,7 +56,6 @@ describe('@GET annotation', () => {
 
     it(`should not call any other method of HttpBackendAdapter`, () => {
 
-
       new GetApi().get();
       OTHERS.forEach(m => {
         expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
@@ -66,6 +65,10 @@ describe('@GET annotation', () => {
     it(`should call get method with proper global configuration`, () => {
       new GetApi().get();
       expect(CONF.httpBackend.get).toHaveBeenCalledWith(Global.BASE_URL, {}, Global.HEADERS);
+    });
+
+    it('with a @Body should throw an error', () => {
+      expect(() => new BadApi().getWithBody(new Date())).toThrowError('cannot specify @Body with method annotated with @Get');
     });
   });
 

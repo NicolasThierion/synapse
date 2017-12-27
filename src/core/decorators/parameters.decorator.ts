@@ -1,12 +1,10 @@
 import { SynapseApiReflect } from './synapse-api.reflect';
 
-export interface PathParameterName {
-  param: string | number;
-}
-
 // TODO support pathParam mapping
 /**
  * Use this decorator on a parameter to specify that it should be considered as a path parameter.
+ * The mapped parameter should be either a string, a number or a boolean. Any other type will throw an error.
+ *
  * @returns {ParameterDecorator}
  * @constructor
  */

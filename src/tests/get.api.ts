@@ -11,6 +11,7 @@ export class GetApi {
 
   static URL = '/some-url';
   static PARAMETERIZED_URL = '/some-url/:pathParam1/:pathParam2';
+  static QUERYPARAMS_URL = '?queryParamPresets=true';
 
   constructor() {}
 
@@ -43,6 +44,11 @@ export class GetApi {
 
   @GET()
   getWithQueryParams(@QueryParams() parameter: any): Observable<any> {
+    return Synapse.OBSERVABLE;
+  }
+
+  @GET('?queryParamPresets=true')
+  getWithMoreQueryParams(@QueryParams() parameter: any): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 }

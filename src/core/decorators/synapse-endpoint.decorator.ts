@@ -84,6 +84,7 @@ function _doRequest(method: HttpMethod,
 
   switch (method) {
     case HttpMethod.GET:
+
       if (body) {
         throw new TypeError('cannot specify @Body with method annotated with @Get');
       }
@@ -121,12 +122,12 @@ function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
   );
   res.headers = _.defaultsDeep({}, decoratedArgs.headers.map(i => args[i]));
   res.pathParams = decoratedArgs.path.map(i => args[i]);
-  res.body = decoratedArgs.body.length ? _.cloneDeep(decoratedArgs.body[0]) : null;
+  res.body = decoratedArgs.body.length ? _.cloneDeep(args[decoratedArgs.body[0]]) : null;
 
   return res;
 }
 
-function _replacePathParams(path: string, pathParams: (string | number)[] = []): string {
+function _replacePathParams(path: string, pathParams: (string | number | boolean)[] = []): string {
   let i = 0;
   const PATH_PARAMS_REGEX = /:[A-Za-z\d]+/;
   pathParams.forEach(p => {
