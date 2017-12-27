@@ -5,6 +5,7 @@ import { SynapseConf } from '../synapse-conf';
 import { assert } from '../../utils/assert';
 import { SynapseApiReflect } from './synapse-api.reflect';
 import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
+import { joinPath } from '../../utils/utils';
 
 class CallArgs {
   pathParams?: string[];
@@ -14,7 +15,7 @@ class CallArgs {
 }
 
 enum HttpMethod {
-  GET = 'GET', POST = 'POST', PUT = 'PUT', DELETE = 'DELETE', OPTION = 'OPTION', PATCH = 'PATCH'
+  GET = 'GET', POST = 'POST', PUT = 'PUT', DELETE = 'DELETE', PATCH = 'PATCH'
 }
 
 export interface EndpointParameters {
@@ -53,12 +54,19 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | 
     if (!_.isFunction(original)) {
       throw new TypeError(`@${method} should annotate methods only`);
     }
-
     descriptor.value = function(...args: any[]): Observable<Object> {
+
+      // do not rely on target.
+      // Target is proto of the class. If we call this method from a child class,
+      // we rather want to get proto of this child class.
+      target = this.__proto__;
+
       const conf = SynapseApiReflect.getConf(target);
       const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
-      const {pathParams, queryParams, headers, body}: CallArgs = _parseArgs(args, decoratedArgs);
+      const cargs: CallArgs = _parseArgs(args, decoratedArgs);
+      _mergeConfig(cargs, params_, conf);
 
+      const {pathParams, queryParams, headers, body} = cargs;
       return _doRequest(method, conf, pathParams, queryParams, headers, body);
     };
   };
@@ -100,7 +108,7 @@ function _makeUrl(conf: SynapseApiConfig & SynapseConf, pathParams?: string[]): 
   // TODO sanitize.
   // TODO check path parameters
   // TODO populate path parameters
-  return _replacePathParams(`${conf.baseUrl}${conf.path}`, pathParams);
+  return joinPath(conf.baseUrl, _replacePathParams(conf.path, pathParams));
 }
 
 function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
@@ -120,18 +128,25 @@ function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
 
 function _replacePathParams(path: string, pathParams: (string | number)[] = []): string {
   let i = 0;
+  const PATH_PARAMS_REGEX = /:[A-Za-z\d]+/;
   pathParams.forEach(p => {
-    path = path.replace(`:[A-Za-z]`, `${p}`);
+    // if no more pathParams to replace
+    if (!path.match(PATH_PARAMS_REGEX)) {
+      throw new Error(`Too many @PathParam provided for url "${path}". (got ${pathParams.length}, but expected ${i}). Cannot bind value ${p} to any path parameter`);
+    }
+
+    path = path.replace(PATH_PARAMS_REGEX, `${p}`);
     if (_.isUndefined(p)) {
       throw new TypeError(`${path} : value for path parameter #${i} is undefined`);
     }
     i++;
   });
 
-  const result = path.match(/:[A-Za-z]+/g);
+  // if still some pathParams to replace
+  const result = path.match(PATH_PARAMS_REGEX);
 
   if (result) {
-    throw new Error(`path param (${result[0]}) not provided for url (${path}`);
+    throw new Error(`path param "${result[0]}" not provided for url "${path}"`);
   }
 
   return path;
@@ -142,4 +157,9 @@ function asEndpointParameters(params: EndpointParameters  | string = ''): Endpoi
   return {
     url
   };
+}
+
+function _mergeConfig(args: CallArgs, params: EndpointParameters, conf: SynapseApiConfig & SynapseConf) {
+  args.headers = _.defaultsDeep(args.headers, conf.headers);
+  conf.path = joinPath(params.url, conf.path);
 }

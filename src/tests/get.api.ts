@@ -10,7 +10,7 @@ import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../';
 export class GetApi {
 
   static URL = '/some-url';
-  static PARAMETERIZED_URL = '/some-url/:pathParam';
+  static PARAMETERIZED_URL = '/some-url/:pathParam1/:pathParam2';
 
   constructor() {}
 
@@ -32,7 +32,7 @@ export class GetApi {
   }
 
   @GET(GetApi.PARAMETERIZED_URL)
-  getWithParameterizedUrl(@PathParam() parameter: string): Observable<any> {
+  getWithParameterizedUrl(@PathParam() first: string, @PathParam() second: string): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 
@@ -53,22 +53,22 @@ export namespace GetApi {
     baseUrl: WithBaseUrl.BASEURL
   })
   export class WithBaseUrl extends GetApi {
-    static readonly BASEURL = 'https://some-api-with-custom-base-url';
+    static readonly BASEURL = 'https://some-api-with-custom-base-url:80';
   }
 
   @SynapseApi({
-    path: 'users'
+    path: WithPath.PATH
   })
   export class WithPath extends GetApi {
     static readonly PATH = 'with-path';
   }
 
   @SynapseApi({
-    baseUrl: WithBaseUrl.BASEURL,
-    path: 'users'
+    baseUrl: WithBaseUrlAndPath.BASEURL,
+    path: WithBaseUrlAndPath.PATH
   })
   export class WithBaseUrlAndPath extends GetApi {
-    static readonly BASEURL = 'https://some-api-with-custom-base-url';
+    static readonly BASEURL = 'https://some-api-with-custom-base-url:80';
     static readonly PATH = 'with-path';
   }
 }

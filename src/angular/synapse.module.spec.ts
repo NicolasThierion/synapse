@@ -90,11 +90,10 @@ describe('SynapseModule.forRoot method', () => {
         inject([SynapseModule], _.noop)();
       }));
 
-      it('should provide the same "AngularSynapseConf" as Synapse.getConfig()', () => {
+      it('should provide the same "AngularSynapseConf" as Synapse.getConfig()',
         inject([AngularSynapseConf], (conf: AngularSynapseConf) => {
           expect(Synapse.getConfig()).toBe(conf as any);
-        })();
-      });
+        }));
 
       it('should wire up HttpBackendAdapter with angular http backend', () => {
         expect(Synapse.getConfig().httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
@@ -147,6 +146,6 @@ describe('SynapseModule.forRoot method', () => {
       it('should encode baseUrl', () => {
         expect(Synapse.getConfig().baseUrl).toEqual(encodeURI(BASEURL_THAT_NEEDS_ENCODING));
       });
-    })
+    });
   });
 });

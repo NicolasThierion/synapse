@@ -5,6 +5,7 @@ import { assert } from '../../utils/assert';
 import * as _ from 'lodash';
 import { StateError } from '../../utils/state-error';
 import { Synapse } from '../core';
+import { joinPath, removeTrailingSlash } from '../../utils/utils';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
 const CONF_KEY = 'SynapseApiConf';
@@ -30,11 +31,11 @@ export namespace SynapseApiReflect {
 
     // patch it with local @SynapseApi config.
     const conf_: SynapseApiConfig & SynapseConf = _.cloneDeep(_.defaultsDeep(conf as SynapseApiConfig, globalConf));
-    conf_.path = encodeURI(conf_.path);
 
     Object.freeze(conf_);
-    assert(!Reflect.getOwnMetadata(CONF_KEY, classPrototype) ||
-      _.isEqual(conf_, Reflect.getOwnMetadata(CONF_KEY, classPrototype) ));
+
+    // assert(!Reflect.getOwnMetadata(CONF_KEY, classPrototype) ||
+    //   _.isEqual(conf_, Reflect.getOwnMetadata(CONF_KEY, classPrototype) ));
     Reflect.defineMetadata(CONF_KEY, conf_, classPrototype);
   }
 
@@ -42,7 +43,7 @@ export namespace SynapseApiReflect {
     assert(classPrototype);
     const res = Reflect.getOwnMetadata(CONF_KEY, classPrototype);
     if (!res) {
-      throw new StateError(`no configuration found for class ${classPrototype}.
+      throw new StateError(`no configuration found for class ${classPrototype.constructor.name}.
       Are you sure that this type is properly decorated with "@SynapseApi" ?`);
     }
 
@@ -50,7 +51,11 @@ export namespace SynapseApiReflect {
   }
 
   export const addPathParamArg: ParameterDecorator = (target: Object, key: string | symbol, parameterIndex: number) => {
-    getDecoratedArgs(target, key).path.push(parameterIndex as any);
+    const decoratedArgs = getDecoratedArgs(target, key);
+    decoratedArgs.path.push(parameterIndex as number);
+
+    // decorators seems to process argument not always in natural order.
+    decoratedArgs.path.sort();
   };
 
   export const addQueryParamsArg: ParameterDecorator = (target: Object, key: string | symbol, parameterIndex: number) => {
@@ -87,19 +92,11 @@ function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
 
   // if parent constructor is not 'Object'
   if (parentCtor.name !== 'Object') {
+
     const parentConf = Reflect.getOwnMetadata(CONF_KEY, parentCtor.prototype);
-    conf = _.defaultsDeep({path: `${_sanitizePath(parentConf.path)}/${_sanitizePath(conf.path)}`}, conf, parentConf);
+    const path = (conf.path && conf.path !== '') ? conf.path : parentConf.path;
+    conf = _.defaultsDeep({path}, conf, parentConf);
   }
 
   return conf;
-}
-
-function _sanitizePath(path: string): string {
-  if (path.endsWith('/')) {
-    path = path.substring(0, path.length - 1);
-  }
-  if (path.startsWith('/')) {
-    path = path.substring(1);
-  }
-  return path;
 }

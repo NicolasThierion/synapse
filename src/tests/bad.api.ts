@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { GET, SynapseApi, Synapse} from '../index';
+import { GET, SynapseApi, Synapse, PathParam } from '../index';
 import { Body } from '../core/decorators/parameters.decorator';
 import { POST } from '../core/decorators/synapse-endpoint.decorator';
 
@@ -21,14 +21,35 @@ export class BadApi {
     return Synapse.OBSERVABLE;
   }
 
+  @GET('/some/:missingPathParam')
+  getWithMissingPathParameter(): Observable<any> {
+    return Synapse.OBSERVABLE;
+  }
+
+  @GET('/:only1')
+  getWithTooMuchPathParams(@PathParam() firstParam: string, @PathParam() secondParam: string): Observable<any> {
+    return Synapse.OBSERVABLE;
+  }
+
+  @GET('/:needsStringOrNumber')
+  getWithObjectPathParam(@PathParam() param: Object = new Date()): Observable<any> {
+    return Synapse.OBSERVABLE;
+  }
+
+  @GET('/:param1/:param1')
+  getWithTwiceTheSamePathParam(@PathParam() param1: 'a', @PathParam() param2: 'b'): Observable<any> {
+    return Synapse.OBSERVABLE;
+  }
+
   @POST()
   @GET()
   multipleAnnotations(): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 
-  @POST()
-  postMultipleBody(@Body() body1, @Body() body2): Observable<any> {
-    return Synapse.OBSERVABLE;
-  }
+  // won't even compile
+  // @POST()
+  // postMultipleBody(@Body() body1, @Body() body2): Observable<any> {
+  //   return Synapse.OBSERVABLE;
+  // }
 }

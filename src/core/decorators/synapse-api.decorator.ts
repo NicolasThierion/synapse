@@ -42,6 +42,9 @@ export function SynapseApi(conf: string | SynapseApiConfig = ''): ClassDecorator
     newCtor = renameFn(newCtor, ctor.prototype.constructor.name);
     newCtor.prototype = ctor.prototype;
 
+    // copy static values
+    Object.keys(ctor).forEach(k => newCtor[k] = ctor[k]);
+
     return newCtor as any;
   };
 
