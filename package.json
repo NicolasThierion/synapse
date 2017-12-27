@@ -20,7 +20,8 @@
     "rest",
     "annotations",
     "es6",
-    "retrofit"
+    "retrofit",
+    "angular"
   ],
   "dependencies": {
     "reflect-metadata": "^0.1.10"

@@ -7,11 +7,15 @@ import { Synapse } from '../core';
 import { AngularHttpBackendAdapter } from '../../angular/angular-http-backend-adapter';
 
 import * as _ from 'lodash';
-import { GET } from './synapse-endpoint.decorator';
+import { DELETE, GET, PATCH, POST, PUT } from './synapse-endpoint.decorator';
 import { AngularSynapseConf } from '../../angular/synapse.module';
 import { GetApi } from '../../tests/get.api';
 import { BadApi } from '../../tests/bad.api';
 import { joinPath } from '../../utils/utils';
+import { PostApi } from '../../tests/post.api';
+import { PutApi } from '../../tests/put.api';
+import { PatchApi } from '../../tests/patch.api';
+import { DeleteApi } from '../../tests/delete.api';
 
 describe('@GET annotation', () => {
   let CONF: AngularSynapseConf;
@@ -172,6 +176,209 @@ describe('@GET annotation', () => {
   });
 });
 
-function _toQueryString(obj: any): string {
-  return   Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
-}
+describe('@POST annotation', () => {
+  let CONF: AngularSynapseConf;
+  const OTHERS: any[] = ['get', 'put', 'patch', 'delete'];
+  beforeEach(() => {
+
+    // setup modules
+    TestBed.configureTestingModule({
+      imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
+    });
+    // force eager construction of SynapseModule
+    inject([TestingModule], _.noop)();
+    inject([AngularSynapseConf], (conf) => {
+      CONF = conf;
+    })();
+
+    // setup spies
+    spyOn(CONF.httpBackend, 'post').and.callThrough();
+
+    OTHERS.forEach(m => {
+      spyOn(CONF.httpBackend, m).and.callThrough();
+    });
+  });
+
+  afterEach(() => {
+    Synapse.teardown();
+    OTHERS.forEach(m => {
+      expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should exists', () => {
+    expect(POST).toBeDefined();
+    expect(POST).toEqual(jasmine.any(Function));
+  });
+
+  describe('when called', () => {
+    it(`should call registered HttpBackendAdapter's post method`, () => {
+      new PostApi().post();
+      expect(CONF.httpBackend.post).toHaveBeenCalled();
+    });
+
+    it(`should not call any other method of HttpBackendAdapter`, () => {
+
+      new PostApi().post();
+      OTHERS.forEach(m => {
+        expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
+      });
+    });
+
+    it('with a @Body should call HttpBackendAdapter with proper body', () => {
+      const body = new Date();
+      new PostApi().postWithBody(body);
+      expect(CONF.httpBackend.post).toHaveBeenCalledWith(jasmine.any(String), body, jasmine.any(Object), jasmine.any(Object));
+    });
+  });
+});
+
+describe('@PUT annotation', () => {
+  let CONF: AngularSynapseConf;
+  const OTHERS: any[] = ['get', 'post', 'patch', 'delete'];
+  beforeEach(() => {
+
+    // setup modules
+    TestBed.configureTestingModule({
+      imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
+    });
+    // force eager construction of SynapseModule
+    inject([TestingModule], _.noop)();
+    inject([AngularSynapseConf], (conf) => {
+      CONF = conf;
+    })();
+
+    // setup spies
+    spyOn(CONF.httpBackend, 'put').and.callThrough();
+
+    OTHERS.forEach(m => {
+      spyOn(CONF.httpBackend, m).and.callThrough();
+    });
+  });
+
+  afterEach(() => {
+    Synapse.teardown();
+    OTHERS.forEach(m => {
+      expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should exists', () => {
+    expect(PUT).toBeDefined();
+    expect(PUT).toEqual(jasmine.any(Function));
+  });
+
+  describe('when called', () => {
+    it(`should call registered HttpBackendAdapter's put method`, () => {
+      new PutApi().put();
+      expect(CONF.httpBackend.put).toHaveBeenCalled();
+    });
+
+    it(`should not call any other method of HttpBackendAdapter`, () => {
+      new PutApi().put();
+      OTHERS.forEach(m => {
+        expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
+      });
+    });
+  });
+});
+
+describe('@PATCH annotation', () => {
+  let CONF: AngularSynapseConf;
+  const OTHERS: any[] = ['get', 'post', 'put', 'delete'];
+  beforeEach(() => {
+
+    // setup modules
+    TestBed.configureTestingModule({
+      imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
+    });
+    // force eager construction of SynapseModule
+    inject([TestingModule], _.noop)();
+    inject([AngularSynapseConf], (conf) => {
+      CONF = conf;
+    })();
+
+    // setup spies
+    spyOn(CONF.httpBackend, 'patch').and.callThrough();
+
+    OTHERS.forEach(m => {
+      spyOn(CONF.httpBackend, m).and.callThrough();
+    });
+  });
+
+  afterEach(() => {
+    Synapse.teardown();
+    OTHERS.forEach(m => {
+      expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should exists', () => {
+    expect(PATCH).toBeDefined();
+    expect(PATCH).toEqual(jasmine.any(Function));
+  });
+
+  describe('when called', () => {
+    it(`should call registered HttpBackendAdapter's put method`, () => {
+      new PatchApi().patch();
+      expect(CONF.httpBackend.patch).toHaveBeenCalled();
+    });
+
+    it(`should not call any other method of HttpBackendAdapter`, () => {
+      new PatchApi().patch();
+      OTHERS.forEach(m => {
+        expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
+      });
+    });
+  });
+});
+
+describe('@DELETE annotation', () => {
+  let CONF: AngularSynapseConf;
+  const OTHERS: any[] = ['get', 'post', 'put', 'patch'];
+  beforeEach(() => {
+
+    // setup modules
+    TestBed.configureTestingModule({
+      imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
+    });
+    // force eager construction of SynapseModule
+    inject([TestingModule], _.noop)();
+    inject([AngularSynapseConf], (conf) => {
+      CONF = conf;
+    })();
+
+    // setup spies
+    spyOn(CONF.httpBackend, 'delete').and.callThrough();
+
+    OTHERS.forEach(m => {
+      spyOn(CONF.httpBackend, m).and.callThrough();
+    });
+  });
+
+  afterEach(() => {
+    Synapse.teardown();
+    OTHERS.forEach(m => {
+      expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should exists', () => {
+    expect(DELETE).toBeDefined();
+    expect(DELETE).toEqual(jasmine.any(Function));
+  });
+
+  describe('when called', () => {
+    it(`should call registered HttpBackendAdapter's put method`, () => {
+      new DeleteApi().delete();
+      expect(CONF.httpBackend.delete).toHaveBeenCalled();
+    });
+
+    it(`should not call any other method of HttpBackendAdapter`, () => {
+      new DeleteApi().delete();
+      OTHERS.forEach(m => {
+        expect(CONF.httpBackend[m]).not.toHaveBeenCalled();
+      });
+    });
+  });
+});

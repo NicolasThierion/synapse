@@ -10,5 +10,10 @@
       "jasminewd2",
       "node"
     ]
-  }
+  },
+  "include": [
+    "**/*.spec.ts",
+    "../src",
+    "../node_modules/@ack/synapse"
+  ]
 }

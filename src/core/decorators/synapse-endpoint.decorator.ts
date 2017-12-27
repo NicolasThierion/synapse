@@ -4,8 +4,8 @@ import { Observable } from 'rxjs/Observable';
 import { SynapseConf } from '../synapse-conf';
 import { assert } from '../../utils/assert';
 import { SynapseApiReflect } from './synapse-api.reflect';
-import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
 import { joinPath } from '../../utils/utils';
+import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
 
 class CallArgs {
   pathParams?: string[];
@@ -28,6 +28,7 @@ export function GET(params: EndpointParameters | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.GET, params);
 }
 
+// TODO let choice between 'form-data', 'x-www-form-urlencoded', 'raw' or 'binary'
 export function POST(params: EndpointParameters | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.POST, params);
 }

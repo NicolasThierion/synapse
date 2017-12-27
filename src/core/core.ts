@@ -20,7 +20,6 @@ export class Synapse {
       throw new StateError('Synapse already initialized');
     }
     this._conf = conf;
-    this._conf.baseUrl = encodeURI(this._conf.baseUrl);
   }
 
   public static getConfig(): SynapseConf {

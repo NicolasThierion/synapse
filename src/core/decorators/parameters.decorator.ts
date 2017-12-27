@@ -34,7 +34,6 @@ export function Headers(): ParameterDecorator {
   return _parameterDecorator(SynapseApiReflect.addHeadersArg);
 }
 
-// TODO let choice between 'form-data', 'x-www-form-urlencoded', 'raw' or 'binary'
 /**
  * Use this decorator on a parameter to specify that it should be considered as a body. Can be used once at most per method.
  * @returns {ParameterDecorator}
