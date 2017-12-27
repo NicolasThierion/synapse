@@ -70,13 +70,73 @@ describe('@GET annotation', () => {
     it('with a @Body should throw an error', () => {
       expect(() => new BadApi().getWithBody(new Date())).toThrowError('cannot specify @Body with method annotated with @Get');
     });
+
+    describe('with @Headers', function () {
+      const HEADERS = {
+        'x-some-custom-header-parameter': 'x-some-custom-header-parameter-value'
+      };
+
+      it('should merge headers with global headers', () => {
+        new GetApi().getWithHeaders(HEADERS);
+        expect(CONF.httpBackend.get).toHaveBeenCalledWith(Global.BASE_URL, {}, _.defaults(HEADERS, Global.HEADERS));
+      });
+
+      it('should merge headers with @SynapseApi headers', () => {
+        new GetApi.WithHeaders().getWithHeaders(HEADERS);
+        expect(CONF.httpBackend.get).toHaveBeenCalledWith(Global.BASE_URL,
+          {},
+          _.defaults(HEADERS, Global.HEADERS, GetApi.WithHeaders.HEADERS));
+      });
+    });
+
+    describe('with @QueryParams', function () {
+      const QUERY_PARAMS = {
+        qp1: 'qp1Value',
+        qp2: true,
+        qp3: 1
+      };
+
+      const QUERY_PARAMS2 = {
+        qp21: 'qp21Value',
+        qp2: true,
+        qp23: 1,
+        qp3: undefined
+      };
+
+      const MERGED_QUERY_PARAMS = {
+        qp1: 'qp1Value',
+        qp2: [true, true],
+        qp3: 1,
+        qp21: 'qp21Value',
+        qp23: 1
+      };
+
+      it('should pass queryParams to the adapter', () => {
+        new GetApi().getWithQueryParams(QUERY_PARAMS, QUERY_PARAMS2);
+        new URLSearchParams().toString();
+        expect(CONF.httpBackend.get).toHaveBeenCalledWith(Global.BASE_URL, MERGED_QUERY_PARAMS, jasmine.any(Object));
+      });
+
+      it('should add query params to any existing query params defined within path', () => {
+        new GetApi().getWithMoreQueryParams(QUERY_PARAMS);
+        new URLSearchParams().toString();
+        expect(CONF.httpBackend.get)
+          .toHaveBeenCalledWith(Global.BASE_URL,
+          _.merge(QUERY_PARAMS,
+            {queryParamPresets: 'true'}),
+          jasmine.any(Object));
+      });
+    });
+
   });
 
   describe('when decorated with a path', () => {
     describe(`that doesn't require pathParams`, () => {
-      it('should append the provided path to baseUrl', () => {
+      it('should append the provided path to the global baseUrl', () => {
         new GetApi.WithPath().get();
-        expect(CONF.httpBackend.get).toHaveBeenCalledWith(joinPath(Global.BASE_URL, GetApi.WithPath.PATH), {}, Global.HEADERS);
+        expect(CONF.httpBackend.get).toHaveBeenCalledWith(joinPath(Global.BASE_URL, GetApi.WithPath.PATH),
+          jasmine.any(Object),
+          jasmine.any(Object));
       });
 
       it('should throw an error if @PathParams specified', () => {
@@ -91,12 +151,27 @@ describe('@GET annotation', () => {
           .toThrowError(/param ":missingPathParam" not provided/);
       });
 
-      it('should append the provided path to baseUrl, replacing pathParams', () => {
+      it('should append the provided path to the global baseUrl, replacing pathParams', () => {
         new GetApi().getWithParameterizedUrl('a', 'b');
         expect(CONF.httpBackend.get)
-          .toHaveBeenCalledWith(joinPath(Global.BASE_URL, 'some-url/a/b'), {}, Global.HEADERS);
+          .toHaveBeenCalledWith(joinPath(Global.BASE_URL, 'some-url/a/b'),
+            jasmine.any(Object),
+            jasmine.any(Object));
       });
+    });
+  });
+
+  describe('when decorated with a path and baseUrl', () => {
+    it('should append the provided path to the provided baseUrl', () => {
+      new GetApi.WithBaseUrlAndPath().get();
+      expect(CONF.httpBackend.get)
+        .toHaveBeenCalledWith(joinPath(GetApi.WithBaseUrlAndPath.BASEURL, GetApi.WithBaseUrlAndPath.PATH),
+          jasmine.any(Object),
+          jasmine.any(Object));
     });
   });
 });
 
+function _toQueryString(obj: any): string {
+  return   Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
+}

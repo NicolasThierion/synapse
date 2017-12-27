@@ -51,23 +51,44 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | 
     const original = descriptor.value;
     const params_ = asEndpointParameters(params);
 
+    const qId = params_.url.indexOf('?');
+    let parsedQueryParams = {};
+    if (qId >= 0) {
+      const queryString = params_.url.substring(qId + 1);
+      params_.url = params_.url.substring(0, qId);
+
+      parsedQueryParams = JSON.parse(`{"${decodeURI(queryString)
+        .replace(/"/g, '\\"')
+        .replace(/&/g, '","')
+        .replace(/=/g, '":"')}"}`);
+    }
+
     if (!_.isFunction(original)) {
       throw new TypeError(`@${method} should annotate methods only`);
     }
     descriptor.value = function(...args: any[]): Observable<Object> {
 
-      // do not rely on target.
-      // Target is proto of the class. If we call this method from a child class,
+      // do not only rely on target.
+      // Target is proto of the annotated class of this method. If we call this method from a child class,
       // we rather want to get proto of this child class.
-      target = this.__proto__;
+      let conf = SynapseApiReflect.getConf(this.__proto__);
+      if (SynapseApiReflect.hasConf(target) && target !== this.__proto__) {
+        // but also get config from parent class if any
+        conf = _.defaultsDeep(conf, SynapseApiReflect.getConf(target));
+      }
 
-      const conf = SynapseApiReflect.getConf(target);
       const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
       const cargs: CallArgs = _parseArgs(args, decoratedArgs);
       _mergeConfig(cargs, params_, conf);
 
       const {pathParams, queryParams, headers, body} = cargs;
-      return _doRequest(method, conf, pathParams, queryParams, headers, body);
+
+      return _doRequest(method,
+        conf,
+        pathParams,
+        _mergeQueryParams([parsedQueryParams, queryParams]),
+        headers,
+        body);
     };
   };
 }
@@ -112,15 +133,34 @@ function _makeUrl(conf: SynapseApiConfig & SynapseConf, pathParams?: string[]): 
   return joinPath(conf.baseUrl, _replacePathParams(conf.path, pathParams));
 }
 
+function _mergeQueryParams(queryParams: Object[]) {
+  return _.mergeWith({}, ...queryParams.filter(a => !_.isUndefined(a)),
+    (objValue: any, srcValue: any, key: string, object: any, source: any, stack: any) => {
+      if (_.isUndefined(objValue)) {
+        object[key] = srcValue;
+      } else {
+        if (!_.isUndefined(srcValue)) {
+          const o = [].concat(objValue);
+          o.push(srcValue);
+          object[key] = o;
+        }
+      }
+
+      return object[key];
+    });
+}
+
 function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
   assert(decoratedArgs.body.length <= 1);
 
   const res = new CallArgs();
-  res.queryParams = _.defaultsDeep({}, decoratedArgs.query
+  res.queryParams = _mergeQueryParams(
+    decoratedArgs.query
+      .map(i => args[i]));
+
+  res.headers = decoratedArgs.headers
     .map(i => args[i])
-    .filter(a => !_.isUndefined(a))
-  );
-  res.headers = _.defaultsDeep({}, decoratedArgs.headers.map(i => args[i]));
+    .reduce((previousValue, currentValue) => _.defaultsDeep(previousValue, currentValue), {});
   res.pathParams = decoratedArgs.path.map(i => args[i]);
   res.body = decoratedArgs.body.length ? _.cloneDeep(args[decoratedArgs.body[0]]) : null;
 
@@ -133,7 +173,8 @@ function _replacePathParams(path: string, pathParams: (string | number | boolean
   pathParams.forEach(p => {
     // if no more pathParams to replace
     if (!path.match(PATH_PARAMS_REGEX)) {
-      throw new Error(`Too many @PathParam provided for url "${path}". (got ${pathParams.length}, but expected ${i}). Cannot bind value ${p} to any path parameter`);
+      throw new Error(`Too many @PathParam provided for url "${path}".
+      (got ${pathParams.length}, but expected ${i}). Cannot bind value ${p} to any path parameter`);
     }
 
     path = path.replace(PATH_PARAMS_REGEX, `${p}`);

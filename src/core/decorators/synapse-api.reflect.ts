@@ -41,13 +41,17 @@ export namespace SynapseApiReflect {
 
   export function getConf(classPrototype: SynapseApiClass): SynapseApiConfig & SynapseConf {
     assert(classPrototype);
-    const res = Reflect.getOwnMetadata(CONF_KEY, classPrototype);
-    if (!res) {
+    if (!hasConf(classPrototype)) {
       throw new StateError(`no configuration found for class ${classPrototype.constructor.name}.
       Are you sure that this type is properly decorated with "@SynapseApi" ?`);
     }
 
-    return _.cloneDeep(res);
+    return _.cloneDeep(Reflect.getOwnMetadata(CONF_KEY, classPrototype));
+  }
+
+  export function hasConf(classPrototype: SynapseApiClass): boolean {
+    assert(classPrototype);
+    return !!Reflect.getOwnMetadata(CONF_KEY, classPrototype);
   }
 
   export const addPathParamArg: ParameterDecorator = (target: Object, key: string | symbol, parameterIndex: number) => {

@@ -38,16 +38,16 @@ export class GetApi {
   }
 
   @GET()
-  getWithHeaders(@Headers() parameter: string): Observable<any> {
+  getWithHeaders(@Headers() headers: Object): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 
   @GET()
-  getWithQueryParams(@QueryParams() parameter: any): Observable<any> {
+  getWithQueryParams(@QueryParams() parameters1: any, @QueryParams() parameters2: any): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 
-  @GET('?queryParamPresets=true')
+  @GET(GetApi.QUERYPARAMS_URL)
   getWithMoreQueryParams(@QueryParams() parameter: any): Observable<any> {
     return Synapse.OBSERVABLE;
   }
@@ -67,6 +67,15 @@ export namespace GetApi {
   })
   export class WithPath extends GetApi {
     static readonly PATH = 'with-path';
+  }
+
+  @SynapseApi({
+    headers: WithHeaders.HEADERS
+  })
+  export class WithHeaders extends GetApi {
+    static readonly HEADERS = {
+      'x-with-headers': 'x-with-headers-value'
+    };
   }
 
   @SynapseApi({

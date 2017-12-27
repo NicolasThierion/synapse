@@ -12,6 +12,7 @@ export function PathParam(): ParameterDecorator {
   return _parameterDecorator(SynapseApiReflect.addPathParamArg);
 }
 
+// TODO support queryParam mapping
 /**
  * Use this decorator on a parameter to specify that it should be considered as a query parameter.
  * @returns {ParameterDecorator}
@@ -33,6 +34,7 @@ export function Headers(): ParameterDecorator {
   return _parameterDecorator(SynapseApiReflect.addHeadersArg);
 }
 
+// TODO let choice between 'form-data', 'x-www-form-urlencoded', 'raw' or 'binary'
 /**
  * Use this decorator on a parameter to specify that it should be considered as a body. Can be used once at most per method.
  * @returns {ParameterDecorator}
@@ -46,6 +48,7 @@ function _parameterDecorator(fn: Function): ParameterDecorator {
   return function HttpParamDecorator(target: Object,
                                      propertyKey: string | symbol,
                                      index: number): void {
+
     fn(target, propertyKey, index);
   };
 }
