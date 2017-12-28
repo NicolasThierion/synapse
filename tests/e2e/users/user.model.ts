@@ -2,20 +2,23 @@ import { Address } from './address.model';
 
 export class User {
   id: number;
-  name: string;
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   address: Address;
   phone: string;
 
   constructor(id: number,
-              name: string,
+              firstName: string,
+              lastName: string,
               username: string,
               email?: string,
               address?: Address,
               phone?: string) {
     this.id = id;
-    this.name = name;
+    this.firstName = firstName;
+    this.lastName = lastName;
     this.username = username;
     this.email = email;
     this.address = address;
@@ -24,7 +27,7 @@ export class User {
 
   static of(user: any): User {
     const u = user as User;
-    const mandatoryAttributes = ['id', 'name', 'username'];
+    const mandatoryAttributes = ['id', 'firstName', 'lastName', 'username'];
 
     for (const attr of mandatoryAttributes) {
       if (typeof user[attr] === 'undefined') {
@@ -34,7 +37,8 @@ export class User {
 
     return new User(
       u.id,
-      u.name,
+      u.firstName,
+      u.lastName,
       u.username,
       u.email,
       u.address,
