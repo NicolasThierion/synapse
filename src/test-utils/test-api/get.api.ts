@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../';
+import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../../';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @Get annotation. For test purpose.
@@ -9,8 +9,8 @@ import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../';
 @Injectable()
 export class GetApi {
 
-  static URL = '/some-url';
-  static PARAMETERIZED_URL = '/some-url/:pathParam1/:pathParam2';
+  static URL = '/some-path';
+  static PARAMETERIZED_URL = '/some-path/:pathParam1/:pathParam2';
   static QUERYPARAMS_URL = '?queryParamPresets=true';
 
   constructor() {}
@@ -26,7 +26,7 @@ export class GetApi {
   }
 
   @GET({
-    url: GetApi.URL
+    path: GetApi.URL
   })
   getWithEndpointParameterUrl(): Observable<any> {
     return Synapse.OBSERVABLE;
@@ -43,7 +43,7 @@ export class GetApi {
   }
 
   @GET()
-  getWithQueryParams(@QueryParams() parameters1: any, @QueryParams() parameters2: any): Observable<any> {
+  getWithQueryParams(@QueryParams() parameters1: any, @QueryParams() parameters2?: any): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 
@@ -59,7 +59,7 @@ export namespace GetApi {
     baseUrl: WithBaseUrl.BASEURL
   })
   export class WithBaseUrl extends GetApi {
-    static readonly BASEURL = 'https://some-api-with-custom-base-url:80';
+    static readonly BASEURL = 'https://some-api-with-custom-base-path:80';
   }
 
   @SynapseApi({
@@ -83,7 +83,7 @@ export namespace GetApi {
     path: WithBaseUrlAndPath.PATH
   })
   export class WithBaseUrlAndPath extends GetApi {
-    static readonly BASEURL = 'https://some-api-with-custom-base-url:80';
+    static readonly BASEURL = 'https://some-api-with-custom-base-path:80';
     static readonly PATH = 'with-path';
   }
 }

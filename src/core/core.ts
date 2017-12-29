@@ -34,4 +34,20 @@ export class Synapse {
   }
 }
 
+export enum ContentType {
+  FORM_DATA = 'form-data',
+  X_WWW_URL_ENCODED = 'application/x-www-form-urlencoded',
+  PLAIN_TEST = 'text/plain',
+  JSON = 'application/json',
+  JAVASCRIPT = 'application/javascript'
+}
+
+export enum HttpMethod {
+  GET = 'GET', POST = 'POST', PUT = 'PUT', DELETE = 'DELETE', PATCH = 'PATCH'
+}
+
+export type HttpRequestHandler = (request: Request) => void;
+export type HttpResponseHandler = (response: Response) => void;
+
 export * from './decorators/decorators';
+

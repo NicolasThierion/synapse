@@ -1,14 +1,15 @@
 import * as _ from 'lodash';
 import { HttpBackendAdapter } from '../http-backend.interface';
 import { SynapseApiReflect } from './synapse-api.reflect';
+import { HttpRequestHandler, HttpResponseHandler } from '../core';
 
 export interface SynapseApiConfig {
   path?: string;
   baseUrl?: string;
   httpBackend?: HttpBackendAdapter;
   headers?: Object;
-  // TODO support for mappers
-  // TODO support for handler
+  requestHandlers?: HttpRequestHandler[];
+  responseHandlers?: HttpResponseHandler[];
 }
 
 /**

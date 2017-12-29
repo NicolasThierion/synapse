@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { PATCH, SynapseApi, Synapse, Body } from '../';
+import { PATCH, SynapseApi, Synapse, Body } from '../../';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @PATCH annotation. For test purpose.
@@ -9,7 +9,7 @@ import { PATCH, SynapseApi, Synapse, Body } from '../';
 @Injectable()
 export class PatchApi {
 
-  static URL = '/some-url';
+  static URL = '/some-path';
 
   constructor() {}
 

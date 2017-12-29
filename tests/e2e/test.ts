@@ -30,3 +30,4 @@ const context = require.context('../../src', true, /\.spec\.ts$/);
 context.keys().map(context);
 // Finally, start Karma to run the tests.
 __karma__.start();
+

@@ -1,6 +1,7 @@
 import { HttpBackendAdapter } from '../core/http-backend.interface';
-import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
+import { HttpResponse } from '@angular/common/http/src/response';
 
 /**
  * An angular implementation of {@link HttpBackendAdapter} using {@link HttpClient} as a backend.
@@ -12,44 +13,81 @@ export class AngularHttpBackendAdapter implements HttpBackendAdapter {
     this._http = http;
   }
 
-  get(url: string, params?: any, headers?: any): Observable<Object> {
-    return this._http.get(url, _makeOptions(params, headers));
+  async get(request: Request): Promise<Response> {
+    const body = await request.blob();
+    if (body && body.size) {
+      throw new Error('get method should not have body');
+    }
+
+    return _toResponsePromise(this._http.get(request.url, _makeOptions(request)));
   }
 
-  post(url: string, body?: any, params?: any, headers?: any): Observable<Object> {
-    return this._http.post(url, body, _makeOptions(params, headers));
+  async post(request: Request): Promise<Response> {
+    const body = await request.blob();
+
+    return _toResponsePromise(this._http.post(request.url, body, _makeOptions(request)));
   }
 
-  put(url: string, body?: any, params?: any, headers?: any): Observable<Object> {
-    return this._http.put(url, body, _makeOptions(params, headers));
+  async put(request: Request): Promise<Response> {
+    const body = await request.blob();
+
+    return _toResponsePromise(this._http.put(request.url, body, _makeOptions(request)));
   }
 
-  patch(url: string, body?: any, params?: any, headers?: any): Observable<Object> {
-    return this._http.patch(url, body, _makeOptions(params, headers));
+  async patch(request: Request): Promise<Response> {
+    const body = await request.blob();
+
+    return _toResponsePromise(this._http.patch(request.url, body, _makeOptions(request)));
   }
 
-  delete(url: string, params?: any, headers?: any): Observable<Object> {
-    return this._http.delete(url, _makeOptions(params, headers));
-  }
+  async delete(request: Request): Promise<Response> {
+    const body = await request.blob();
+    if (body && body.size) {
+      throw new Error('get method should not have body');
+    }
 
+    return _toResponsePromise(this._http.delete(request.url, _makeOptions(request)));
+  }
 }
 
 interface AngularHttpOptions {
-  headers?: HttpHeaders;
-  observe?: 'body';
-  params?: HttpParams;
+  headers?: HttpHeaders | {[header: string]: string | string[]};
+  observe: 'response';
+  params?: HttpParams  | {
+    [param: string]: string | string[];
+  };
   reportProgress?: boolean;
   responseType?: 'json';
   withCredentials?: boolean;
 }
 
-function _makeOptions(params: any, headers: any): AngularHttpOptions {
+function _makeOptions(request: Request): AngularHttpOptions {
+  const headers = [...(request.headers as any).keys()].reduce((h, key) => {
+    h[key] = request.headers.get(key) as string;
+
+    return h;
+  }, {});
+
   return {
-    headers: headers as HttpHeaders,
-    observe: 'body',
-    params: params as HttpParams,
+    headers: new HttpHeaders(headers),
+    observe: 'response',
     reportProgress: false,
     responseType: 'json',
     withCredentials: false,
   };
+}
+
+function _toResponsePromise(observable: Observable<HttpResponse<Object>>): Promise<Response> {
+  return observable.map((r: HttpResponse<Object>) => {
+    return new Response(r.body, {
+      headers: new Headers(r.headers.keys()
+        .reduce((headers: {[k: string]: string[]}, key: string) => {
+          headers[key] = r.headers.getAll(key);
+
+          return headers;
+        }, {})),
+      status: r.status,
+      statusText: r.statusText
+    });
+  }).toPromise();
 }

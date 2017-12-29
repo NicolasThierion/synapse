@@ -13,7 +13,7 @@ class CustomBackendAdapter extends AngularHttpBackendAdapter {
  * Global Synapse config used within tests
  */
 export class Global {
-  static readonly BASE_URL = 'https://some-base-url:80';
+  static readonly BASE_URL = 'https://some-base-path:80';
   static readonly HEADERS = {
     'X-global-header': 'some-global-value'
   };
@@ -28,7 +28,7 @@ export class Global {
  * Custom Synapse config used within tests
  */
 export class Custom {
-  static readonly BASE_URL = 'https://some-custom-base-url:80';
+  static readonly BASE_URL = 'https://some-custom-base-path:80';
   static readonly HEADERS = {
     'X-custom-header': 'some-custom-value'
   };

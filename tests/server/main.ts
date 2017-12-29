@@ -1,5 +1,5 @@
 // server.js
-import { data } from './db-data';
+import { data } from '../../src/test-utils/user-api/users.mock';
 
 const jsonServer = require('json-server');
 const server = jsonServer.create();

@@ -1,4 +1,7 @@
 import { SynapseApiReflect } from './synapse-api.reflect';
+import { MapperType } from '../mapper.type';
+import { ContentType } from '../core';
+import * as _ from 'lodash';
 
 // TODO support pathParam mapping
 /**
@@ -9,7 +12,7 @@ import { SynapseApiReflect } from './synapse-api.reflect';
  * @constructor
  */
 export function PathParam(): ParameterDecorator {
-  return _parameterDecorator(SynapseApiReflect.addPathParamArg);
+  return SynapseApiReflect.addPathParamArg();
 }
 
 // TODO support queryParam mapping
@@ -19,7 +22,7 @@ export function PathParam(): ParameterDecorator {
  * @constructor
  */
 export function QueryParams(): ParameterDecorator {
-  return _parameterDecorator(SynapseApiReflect.addQueryParamsArg);
+  return SynapseApiReflect.addQueryParamsArg();
 }
 
 // TODO add support for merge=true.
@@ -31,7 +34,7 @@ export function QueryParams(): ParameterDecorator {
  * @constructor
  */
 export function Headers(): ParameterDecorator {
-  return _parameterDecorator(SynapseApiReflect.addHeadersArg);
+  return SynapseApiReflect.addHeadersArg();
 }
 
 /**
@@ -39,15 +42,19 @@ export function Headers(): ParameterDecorator {
  * @returns {ParameterDecorator}
  * @constructor
  */
-export function Body(): ParameterDecorator {
-  return _parameterDecorator(SynapseApiReflect.addBodyArg);
+// TODO support for mappers
+// TODO let choice between 'form-data', 'x-www-form-urlencoded', 'raw' or 'binary'
+export function Body(params: BodyParams | ContentType = ContentType.FORM_DATA): ParameterDecorator {
+  const params_: BodyParams = _.defaults(_.isString(params) ? {
+    contentType: params as ContentType
+  } : params as BodyParams, {
+    contentType: ContentType.FORM_DATA
+  });
+
+  return SynapseApiReflect.addBodyArg(params_);
 }
 
-function _parameterDecorator(fn: Function): ParameterDecorator {
-  return function HttpParamDecorator(target: Object,
-                                     propertyKey: string | symbol,
-                                     index: number): void {
-
-    fn(target, propertyKey, index);
-  };
+export interface BodyParams {
+  contentType?: ContentType;
+  mapper?: MapperType<Object, any>;
 }

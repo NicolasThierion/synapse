@@ -14,35 +14,35 @@ export class UsersApi {
   }
 
   @GET({
-    url: '/'
+    path: '/'
   })
   getPage(params?: URLSearchParams): Observable<User> {
     return Synapse.OBSERVABLE;
   }
 
   @GET({
-    url: '/:id'
+    path: '/:id'
   })
   getOne(@PathParam() id: number, @QueryParams()  params?: any): Observable<User> {
     return Synapse.OBSERVABLE;
   }
 
   @POST({
-    url: '/'
+    path: '/'
   })
   postOne(@Body() user: User, @Headers() headers?: any): Observable<User> {
     return Synapse.OBSERVABLE;
   }
 
   @PUT({
-    url: '/'
+    path: '/'
   })
   putOne(@Body() user: User, @Headers() headers?: any): Observable<User> {
     return Synapse.OBSERVABLE;
   }
 
   @PATCH({
-    url: '/'
+    path: '/'
   })
   patchOne(@Body() user: User, @Headers() headers?: any): Observable<User> {
     return Synapse.OBSERVABLE;

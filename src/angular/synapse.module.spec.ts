@@ -8,26 +8,26 @@ import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { Synapse } from '../core/core';
 import { HttpBackendAdapter } from '../core/http-backend.interface';
 import { Observable } from 'rxjs/Observable';
-import { TestingModule } from '../tests/testing.module';
+import { TestingModule } from '../test-utils/testing.module';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
-  get(url: string, params?: any, headers?: any): Observable<Object> {
+  get(request: Request): Promise<Response> {
     throw new Error('Method not implemented.');
   }
 
-  post(url: string, body?: any, params?: any, headers?: any): Observable<Object> {
+  post(request: Request): Promise<Response> {
     throw new Error('Method not implemented.');
   }
 
-  put(url: string, body?: any, params?: any, headers?: any): Observable<Object> {
+  put(request: Request): Promise<Response> {
     throw new Error('Method not implemented.');
   }
 
-  patch(url: string, body?: any, params?: any, headers?: any): Observable<Object> {
+  patch(request: Request): Promise<Response> {
     throw new Error('Method not implemented.');
   }
 
-  delete(url: string, params?: any, headers?: any): Observable<Object> {
+  delete(request: Request): Promise<Response> {
     throw new Error('Method not implemented.');
   }
 }

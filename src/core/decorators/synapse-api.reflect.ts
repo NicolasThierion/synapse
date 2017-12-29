@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { StateError } from '../../utils/state-error';
 import { Synapse } from '../core';
 import { joinPath, removeTrailingSlash } from '../../utils/utils';
+import { BodyParams } from './parameters.decorator';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
 const CONF_KEY = 'SynapseApiConf';
@@ -16,7 +17,10 @@ export namespace SynapseApiReflect {
     public readonly path: number[] = [];
     public readonly query: number[] = [];
     public readonly headers: number[] = [];
-    public readonly body: number[] = [];
+    public body: {
+      index: number,
+      params: BodyParams
+    };
   }
 
   export interface SynapseApiClass {}
@@ -31,11 +35,9 @@ export namespace SynapseApiReflect {
 
     // patch it with local @SynapseApi config.
     const conf_: SynapseApiConfig & SynapseConf = _.cloneDeep(_.defaultsDeep(conf as SynapseApiConfig, globalConf));
-
     Object.freeze(conf_);
 
-    // assert(!Reflect.getOwnMetadata(CONF_KEY, classPrototype) ||
-    //   _.isEqual(conf_, Reflect.getOwnMetadata(CONF_KEY, classPrototype) ));
+    // save conf for this class.
     Reflect.defineMetadata(CONF_KEY, conf_, classPrototype);
   }
 
@@ -54,30 +56,41 @@ export namespace SynapseApiReflect {
     return !!Reflect.getOwnMetadata(CONF_KEY, classPrototype);
   }
 
-  export const addPathParamArg: ParameterDecorator = (target: Object, key: string | symbol, parameterIndex: number) => {
-    const decoratedArgs = getDecoratedArgs(target, key);
-    decoratedArgs.path.push(parameterIndex as number);
+  export function addPathParamArg(): ParameterDecorator {
+    return (target: Object, key: string | symbol, parameterIndex: number) => {
+      const decoratedArgs = getDecoratedArgs(target, key);
+      decoratedArgs.path.push(parameterIndex as number);
 
-    // decorators seems to process argument not always in natural order.
-    decoratedArgs.path.sort();
-  };
+      // decorators seems to process argument not always in natural order.
+      decoratedArgs.path.sort();
+    };
+  }
 
-  export const addQueryParamsArg: ParameterDecorator = (target: Object, key: string | symbol, parameterIndex: number) => {
-    getDecoratedArgs(target, key).query.push(parameterIndex);
-  };
+  export function addQueryParamsArg(): ParameterDecorator {
+    return (target: Object, key: string | symbol, parameterIndex: number) => {
+      getDecoratedArgs(target, key).query.push(parameterIndex);
+    };
+  }
 
-  export const addHeadersArg: ParameterDecorator = (target: Object, key: string | symbol, parameterIndex: number) => {
-    getDecoratedArgs(target, key).headers.push(parameterIndex);
-  };
+  export function addHeadersArg(): ParameterDecorator {
+    return (target: Object, key: string | symbol, parameterIndex: number) => {
+      getDecoratedArgs(target, key).headers.push(parameterIndex);
+    };
+  }
 
-  export const addBodyArg: ParameterDecorator = (target: Object, key: string | symbol, parameterIndex: number) => {
-    const args = getDecoratedArgs(target, key);
-    if (args.body.length === 1) {
-      throw new TypeError('Can specify only one @Body parameter per method.');
-    }
+  export function addBodyArg(params: BodyParams): ParameterDecorator {
+    return (target: Object, key: string | symbol, parameterIndex: number) => {
+      const args = getDecoratedArgs(target, key);
+      if (args.body) {
+        throw new TypeError('Can specify only one @Body parameter per method.');
+      }
 
-    getDecoratedArgs(target, key).body.push(parameterIndex);
-  };
+      getDecoratedArgs(target, key).body = {
+        index: parameterIndex,
+        params
+      };
+    };
+  }
 
   export function getDecoratedArgs(target: Object, key: string | symbol): DecoratedArgs {
     let args: DecoratedArgs = Reflect.getOwnMetadata(DECORATED_PARAMETERS_KEY, target, key);
@@ -87,6 +100,11 @@ export namespace SynapseApiReflect {
     }
 
     return args;
+  }
+
+  export function addHandler(): void {
+    // TODO
+    throw new Error('not implemented');
   }
 }
 

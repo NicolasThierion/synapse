@@ -100,9 +100,11 @@ export class UsersApi {
   }
 }
 ```
-As you can see above, no boilerplate code is needed to issue http request to the server.
+As you can see above, no boilerplate code is needed. 
+To issue http request to the server, just naturally call your api like a regular javascript function: 
 
 > ![info](.README/info.png) Method bodies should be empty. If a method has a body, it will be ignored at runtime.
+> ![info](.README/info.png) All Synapse method returns an observable.
 
 
 ## How to contribute
