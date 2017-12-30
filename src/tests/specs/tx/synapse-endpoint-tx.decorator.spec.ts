@@ -27,7 +27,7 @@ describe('', () => {
         imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
       });
 
-      Spies.HttpBackend.setup();
+      Spies.HttpBackend.setupFakeSpies();
     });
 
     it('should exists', () => {
@@ -85,7 +85,7 @@ describe('', () => {
       TestBed.configureTestingModule({
         imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
       });
-      Spies.HttpBackend.setup();
+      Spies.HttpBackend.setupFakeSpies();
     });
 
     it('should exists', () => {
@@ -109,7 +109,7 @@ describe('', () => {
         imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
       });
 
-      Spies.HttpBackend.setup();
+      Spies.HttpBackend.setupFakeSpies();
     });
 
     it('should exists', () => {
@@ -132,7 +132,7 @@ describe('', () => {
       TestBed.configureTestingModule({
         imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
       });
-      Spies.HttpBackend.setup();
+      Spies.HttpBackend.setupFakeSpies();
     });
 
     it('should exists', () => {
@@ -155,7 +155,7 @@ describe('', () => {
       TestBed.configureTestingModule({
         imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
       });
-      Spies.HttpBackend.setup();
+      Spies.HttpBackend.setupFakeSpies();
     });
 
     it('should exists', () => {

@@ -8,7 +8,8 @@ import { UserMapper } from './user.mapper';
 const userMapper = new UserMapper();
 
 @SynapseApi({
-  httpBackend: new MockUserBackendAdapter()
+  httpBackend: new MockUserBackendAdapter(),
+  path: 'users'
 })
 @Injectable()
 export class UsersApi {

@@ -36,7 +36,7 @@ export class Synapse {
 
 export enum ContentType {
   FORM_DATA = 'form-data',
-  X_WWW_URL_ENCODED = 'application/x-www-form-urlencoded',
+  X_WWW_URL_ENCODED = 'application/x-www-form-urlencoded;charset=UTF-8',
   PLAIN_TEST = 'text/plain',
   JSON = 'application/json',
   JAVASCRIPT = 'application/javascript'

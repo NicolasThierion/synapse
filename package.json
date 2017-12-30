@@ -26,6 +26,7 @@
     "angular"
   ],
   "dependencies": {
+    "qs": "^6.5.1",
     "reflect-metadata": "^0.1.10"
   },
   "peerDependencies": {
@@ -55,6 +56,7 @@
     "@types/jasminewd2": "~2.0.2",
     "@types/lodash": "^4.14.91",
     "@types/node": "~6.0.60",
+    "@types/qs": "^6.5.1",
     "codelyzer": "^4.0.1",
     "concurrently": "^3.5.1",
     "core-js": "^2.4.1",

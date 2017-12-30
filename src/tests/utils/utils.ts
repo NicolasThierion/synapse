@@ -15,7 +15,7 @@ export class Spies {
 export namespace Spies {
   export class HttpBackend {
     static spies: HttpSpies = {};
-    static setup(): void {
+    static setupFakeSpies(): void {
       inject([TestingModule], _.noop)();
       inject([AngularSynapseConf], (conf) => {
         // setup sp/ies

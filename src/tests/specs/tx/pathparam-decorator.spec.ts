@@ -18,7 +18,7 @@ describe(`@PathParam decorator`, () => {
       imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
     });
 
-    Spies.HttpBackend.setup();
+    Spies.HttpBackend.setupFakeSpies();
   });
 
   afterEach(() => {

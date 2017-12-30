@@ -1,4 +1,5 @@
 import { QueryParametersType } from '../';
+import * as qs from 'qs';
 
 export function removeTrailingSlash(path: string): string {
   if (path.endsWith('/')) {
@@ -17,12 +18,12 @@ export function joinPath(...path: string[]): string {
     .join('/');
 }
 
-export function toQueryString(queryParameters: QueryParametersType): string {
-  const searchParams = new URLSearchParams();
+export function toQueryString(queryParameters: QueryParametersType | Object): string {
+ return qs.stringify(queryParameters);
+}
 
-  Object.keys(queryParameters)
-    .forEach(key => [].concat(queryParameters[key]).forEach(qp => searchParams.append(key, qp)));
-  return searchParams.toString();
+export function fromQueryString(queryString: string): Object {
+  return qs.parse(queryString);
 }
 
 export function joinQueryParams(url: string, queryParams: QueryParametersType): string {

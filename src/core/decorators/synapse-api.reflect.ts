@@ -44,6 +44,7 @@ export namespace SynapseApiReflect {
   export function getConf(classPrototype: SynapseApiClass): SynapseApiConfig & SynapseConf {
     assert(classPrototype);
     if (!hasConf(classPrototype)) {
+      debugger
       throw new StateError(`no configuration found for class ${classPrototype.constructor.name}.
       Are you sure that this type is properly decorated with "@SynapseApi" ?`);
     }

@@ -23,7 +23,7 @@ export class UsersApi {
   @GET({
     path: '/:id'
   })
-  getOne(@PathParam() id: number, @QueryParams()  params?: any): Observable<User> {
+  getOne(@PathParam() id: number, @QueryParams() params?: any): Observable<User> {
     return Synapse.OBSERVABLE;
   }
 

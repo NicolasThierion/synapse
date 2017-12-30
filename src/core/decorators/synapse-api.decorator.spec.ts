@@ -11,8 +11,13 @@ import * as _ from 'lodash';
 const API_PATH = 'some-api-path/';
 const EXTENDED_API_PATH = '/some-extended-api-path';
 
-@SynapseApi()
+@SynapseApi
 class Api {
+  constructor(a: any) {}
+}
+
+@SynapseApi()
+class ApiWithNoArg {
 
 }
 
@@ -85,11 +90,21 @@ describe('@SynapseApi annotation', () => {
   });
 
   it('should get conf from global Synapse conf', () => {
-    const api = new Api();
+    const api = new Api('arg');
     const conf = SynapseApiReflect.getConf(api.constructor.prototype);
     expect([conf.baseUrl, conf.headers, conf.path])
       .toEqual([Global.CONF.baseUrl, Global.CONF.headers, '']);
     expect(conf.httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
+  });
+
+  describe('with no arg', () => {
+    it('should get conf from global Synapse conf', () => {
+      const api = new ApiWithNoArg();
+      const conf = SynapseApiReflect.getConf(api.constructor.prototype);
+      expect([conf.baseUrl, conf.headers, conf.path])
+        .toEqual([Global.CONF.baseUrl, Global.CONF.headers, '']);
+      expect(conf.httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
+    });
   });
 
   it ('should call through class constructor', () => {

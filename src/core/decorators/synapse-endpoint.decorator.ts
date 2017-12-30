@@ -1,14 +1,14 @@
 import { SynapseApiConfig } from './synapse-api.decorator';
-import * as _ from 'lodash';
 import { Observable } from 'rxjs/Observable';
 import { assert } from '../../utils/assert';
 import { SynapseApiReflect } from './synapse-api.reflect';
-import { joinPath, joinQueryParams } from '../../utils/utils';
+import { joinPath, joinQueryParams, toQueryString } from '../../utils/utils';
 import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
 import { MapperType } from '../mapper.type';
 import { HttpRequestHandler, HttpMethod, HttpResponseHandler, ContentType } from '../core';
 import { HttpBackendAdapter } from '../http-backend.interface';
-import { BodyParams } from './parameters.decorator';
+import { SynapseError } from '../../utils/synapse-error';
+import * as _ from 'lodash';
 
 export interface EndpointParameters {
   // TODO support for mappers
@@ -87,10 +87,6 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | 
     if (!_.isFunction(original)) {
       throw new TypeError(`@${method} should annotate methods only`);
     }
-
-    console.log(target);
-    console.log(descriptor);
-    console.log(propertyKey);
 
     // infer desired return type, and make a converter for it (Promise / Observable)
     const returnTypeConverter = _returnTypeConverter(descriptor, propertyKey);
@@ -178,18 +174,35 @@ function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
     .map(i => args[i])
     .reduce((previousValue, currentValue) => _.defaultsDeep(previousValue, currentValue), {});
   res.pathParams = decoratedArgs.path.map(i => args[i]);
-  res.body = decoratedArgs.body ? _wrapBody(args[decoratedArgs.body.index], decoratedArgs.body.params) : null;
+
+  if (decoratedArgs.body) {
+    const contentType = decoratedArgs.body.params.contentType;
+    res.body = _wrapBody(args[decoratedArgs.body.index], contentType, res);
+  } else {
+    res.body = null;
+  }
 
   return res;
 }
 
-function _wrapBody(body: any, params: BodyParams): any {
+function _wrapBody(body: any, contentType: ContentType, callArgs: CallArgs): any {
   // TODO support other formats
-  switch (params.contentType) {
-    case ContentType.FORM_DATA:
+  const getContentType = () => callArgs.headers['Content-Type'];
+  const setContentType = (ct) => callArgs.headers['Content-Type'] = ct;
+
+  if (getContentType() && contentType !== getContentType()) {
+    throw new SynapseError(`Tried to send a @Body with Content-Type="${contentType}", but "Content-Type" header has already been set to "${getContentType()}"`);
+  }
+
+  switch (contentType) {
+    case ContentType.JSON:
+      setContentType(contentType);
+
       return JSON.stringify(body);
+    case ContentType.X_WWW_URL_ENCODED:
+      return new URLSearchParams(toQueryString(body));
     default:
-      throw new Error(`unsupported ContentType: ${params.contentType}`);
+      throw new Error(`unsupported ContentType: ${contentType}`);
   }
 }
 

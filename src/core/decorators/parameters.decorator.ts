@@ -44,11 +44,11 @@ export function Headers(): ParameterDecorator {
  */
 // TODO support for mappers
 // TODO let choice between 'form-data', 'x-www-form-urlencoded', 'raw' or 'binary'
-export function Body(params: BodyParams | ContentType = ContentType.FORM_DATA): ParameterDecorator {
+export function Body(params: BodyParams | ContentType = ContentType.JSON): ParameterDecorator {
   const params_: BodyParams = _.defaults(_.isString(params) ? {
     contentType: params as ContentType
   } : params as BodyParams, {
-    contentType: ContentType.FORM_DATA
+    contentType: ContentType.JSON
   });
 
   return SynapseApiReflect.addBodyArg(params_);
