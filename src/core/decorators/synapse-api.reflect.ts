@@ -5,8 +5,8 @@ import { assert } from '../../utils/assert';
 import * as _ from 'lodash';
 import { StateError } from '../../utils/state-error';
 import { Synapse } from '../core';
-import { joinPath, removeTrailingSlash } from '../../utils/utils';
 import { BodyParams } from './parameters.decorator';
+import { SynapseError } from '../../utils/synapse-error';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
 const CONF_KEY = 'SynapseApiConf';
@@ -58,6 +58,7 @@ export namespace SynapseApiReflect {
 
   export function addPathParamArg(): ParameterDecorator {
     return (target: Object, key: string | symbol, parameterIndex: number) => {
+      _assertDecorateParameter('@PathParams', key, parameterIndex);
       const decoratedArgs = getDecoratedArgs(target, key);
       decoratedArgs.path.push(parameterIndex as number);
 
@@ -68,12 +69,14 @@ export namespace SynapseApiReflect {
 
   export function addQueryParamsArg(): ParameterDecorator {
     return (target: Object, key: string | symbol, parameterIndex: number) => {
+      _assertDecorateParameter('@QueryParams', key, parameterIndex);
       getDecoratedArgs(target, key).query.push(parameterIndex);
     };
   }
 
   export function addHeadersArg(): ParameterDecorator {
     return (target: Object, key: string | symbol, parameterIndex: number) => {
+      _assertDecorateParameter('@Headers', key, parameterIndex);
       getDecoratedArgs(target, key).headers.push(parameterIndex);
     };
   }
@@ -121,4 +124,10 @@ function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
   }
 
   return conf;
+}
+
+function _assertDecorateParameter(decorator: string, key: string | symbol, parameterIndex: number) {
+  if (!_.isNumber(parameterIndex)) {
+    throw new SynapseError(`${decorator} should decorate parameters only. (Found @Header on function ${key}})`);
+  }
 }

@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { PATCH, SynapseApi, Synapse, Body } from '../../';
+import { PATCH, SynapseApi, Synapse, Body } from '../../../';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @PATCH annotation. For test purpose.

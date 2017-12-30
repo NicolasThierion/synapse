@@ -1,6 +1,6 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { SynapseApi, SynapseApiConfig } from './synapse-api.decorator';
-import { Custom, Global, TestingModule } from '../../test-utils/testing.module';
+import { Custom, Global, TestingModule } from '../../tests/testing.module';
 import { SynapseApiReflect } from './synapse-api.reflect';
 
 import { Synapse } from '../core';

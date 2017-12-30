@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../../';
+import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../../../';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @Get annotation. For test purpose.

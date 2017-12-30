@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { POST, SynapseApi, Synapse, Body } from '../../';
+import { POST, SynapseApi, Synapse, Body } from '../../../';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @POST annotation. For test purpose.

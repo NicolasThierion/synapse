@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { GET, SynapseApi, Synapse, PathParam, QueryParams, Headers } from '../../index';
-import { Body } from '../../core/decorators/parameters.decorator';
-import { POST } from '../../core/decorators/synapse-endpoint.decorator';
+import { GET, SynapseApi, Synapse, PathParam, QueryParams, Headers } from '../../../index';
+import { Body } from '../../../core/decorators/parameters.decorator';
+import { POST } from '../../../core/decorators/synapse-endpoint.decorator';
 
 /**
  * An example of badly used SynapseApi. For testing purpose only.
