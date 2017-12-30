@@ -2,7 +2,7 @@ import { TestingModule } from '../../testing.module';
 import { TestBed } from '@angular/core/testing';
 import { Spies } from '../../utils/utils';
 import { GetApi } from '../../utils/test-api/get.api';
-import * as _ from 'lodash';
+import { fromPairs } from 'lodash';
 import { QueryParams, Synapse } from '../../../';
 
 
@@ -58,8 +58,8 @@ describe(`@QueryParams decorator`, () => {
     const qs1 = r1.url.split('?')[1];
     const qs2 = r2.url.split('?')[1];
 
-    expect(_.fromPairs([...(new URLSearchParams(qs1) as any).entries()]))
-      .toEqual(_.fromPairs([...(new URLSearchParams(qs2) as any).entries()]));
+    expect(fromPairs([...(new URLSearchParams(qs1) as any).entries()]))
+      .toEqual(fromPairs([...(new URLSearchParams(qs2) as any).entries()]));
   });
 
   it('should add query params to any existing query params defined within path', () => {
@@ -76,8 +76,8 @@ describe(`@QueryParams decorator`, () => {
     const qs1 = r1.url.split('?')[1];
     const qs2 = r2.url.split('?')[1];
 
-    expect(_.fromPairs([...(new URLSearchParams(qs1) as any).entries()]))
-      .toEqual(_.fromPairs([...(new URLSearchParams(qs2) as any).entries()]));
+    expect(fromPairs([...(new URLSearchParams(qs1) as any).entries()]))
+      .toEqual(fromPairs([...(new URLSearchParams(qs2) as any).entries()]));
   });
 });
 

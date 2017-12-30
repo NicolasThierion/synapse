@@ -8,7 +8,13 @@ import { MapperType } from '../mapper.type';
 import { HttpRequestHandler, HttpMethod, HttpResponseHandler, ContentType } from '../core';
 import { HttpBackendAdapter } from '../http-backend.interface';
 import { SynapseError } from '../../utils/synapse-error';
-import * as _ from 'lodash';
+import {
+  isFunction, isString,
+  defaultsDeep,
+  isUndefined,
+  mergeWith,
+  cloneDeep,
+} from 'lodash';
 
 export interface EndpointParameters {
   // TODO support for mappers
@@ -84,7 +90,7 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | 
         .replace(/=/g, '":"')}"}`);
     }
 
-    if (!_.isFunction(original)) {
+    if (!isFunction(original)) {
       throw new TypeError(`@${method} should annotate methods only`);
     }
 
@@ -98,7 +104,7 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | 
       let conf = SynapseApiReflect.getConf(this.__proto__);
       if (SynapseApiReflect.hasConf(target) && target !== this.__proto__) {
         // but also get config from parent class if any
-        conf = _.defaultsDeep(conf, SynapseApiReflect.getConf(target));
+        conf = defaultsDeep(conf, SynapseApiReflect.getConf(target));
       }
 
       const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
@@ -140,20 +146,20 @@ function _makeUrl(baseUrl: string, path: string, pathParams: PathParamsType[], q
   // TODO sanitize.
   // TODO check path parameters
   // TODO populate path parameters
-  assert(!_.isUndefined(queryParams));
-  assert(!_.isUndefined(pathParams));
-  assert(!_.isUndefined(baseUrl));
-  assert(!_.isUndefined(path));
+  assert(!isUndefined(queryParams));
+  assert(!isUndefined(pathParams));
+  assert(!isUndefined(baseUrl));
+  assert(!isUndefined(path));
   return joinQueryParams(joinPath(baseUrl, _replacePathParams(path, pathParams)), queryParams);
 }
 
 function _mergeQueryParams(queryParams: Object[]) {
-  return _.mergeWith({}, ...queryParams.filter(a => !_.isUndefined(a)),
-    (objValue: any, srcValue: any, key: string, object: any, source: any, stack: any) => {
-      if (_.isUndefined(objValue)) {
+  return mergeWith({}, ...queryParams.filter(a => !isUndefined(a)),
+    (objValue: any, srcValue: any, key: string, object: any /*, source: any, stack: any */) => {
+      if (isUndefined(objValue)) {
         object[key] = srcValue;
       } else {
-        if (!_.isUndefined(srcValue)) {
+        if (!isUndefined(srcValue)) {
           const o = [].concat(objValue);
           o.push(srcValue);
           object[key] = o;
@@ -172,7 +178,7 @@ function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
 
   res.headers = decoratedArgs.headers
     .map(i => args[i])
-    .reduce((previousValue, currentValue) => _.defaultsDeep(previousValue, currentValue), {});
+    .reduce((previousValue, currentValue) => defaultsDeep(previousValue, currentValue), {});
   res.pathParams = decoratedArgs.path.map(i => args[i]);
 
   if (decoratedArgs.body) {
@@ -217,7 +223,7 @@ function _replacePathParams(path: string, pathParams: (string | number | boolean
     }
 
     path = path.replace(PATH_PARAMS_REGEX, `${p}`);
-    if (_.isUndefined(p)) {
+    if (isUndefined(p)) {
       throw new TypeError(`${path} : value for path parameter #${i} is undefined`);
     }
     i++;
@@ -235,12 +241,12 @@ function _replacePathParams(path: string, pathParams: (string | number | boolean
 
 function _asEndpointParameters(params: EndpointParameters | string = ''): EndpointParameters {
   let params_: EndpointParameters;
-  if (_.isString(params)) {
+  if (isString(params)) {
     params_ = {
       path: params as string
     };
   } else {
-    params_ = _.cloneDeep(params) as EndpointParameters;
+    params_ = cloneDeep(params) as EndpointParameters;
   }
 
   params_.path = params_.path || '';
@@ -259,7 +265,7 @@ function _createRequest(method: HttpMethod,
 
   return new Request(_makeUrl(conf.baseUrl, joinPath(conf.path, params.path), args.pathParams, args.queryParams), {
     body: args.body,
-    headers: _.defaultsDeep(args.headers, conf.headers),
+    headers: defaultsDeep(args.headers, conf.headers),
     method: method as string
   });
 }
@@ -284,7 +290,7 @@ function _applyRequestHandlers(r: RequestParameters): RequestParameters {
 
 function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
                               propertyKey: string | symbol): (promise: Promise<Response>) => EndpointReturnType {
-  assert(_.isFunction(descriptor.value));
+  assert(isFunction(descriptor.value));
   let res: any = null;
   try {
     res = (descriptor.value as Function).apply(null);
@@ -294,7 +300,7 @@ function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
 
   if (!res || res instanceof Observable) {
     return (p: Promise<Response>) => Observable.fromPromise(p);
-  } else if (_.isFunction((res as any).then)) {
+  } else if (isFunction((res as any).then)) {
     return (p) => p;
   } else {
     const type = (res as any).__proto__ ? (res as any).__proto__.constructor.name : typeof  res;

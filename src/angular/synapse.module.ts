@@ -4,7 +4,6 @@ import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { HttpClient } from '@angular/common/http';
 import { HttpBackendAdapter } from '../core/http-backend.interface';
 import { throwIfAlreadyLoaded } from './utils/module-import-guard';
-import * as _ from 'lodash';
 import { SynapseConf } from '../core/synapse-conf';
 
 /**

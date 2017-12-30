@@ -1,12 +1,17 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { SynapseApi, SynapseApiConfig } from './synapse-api.decorator';
+import { SynapseApi } from './synapse-api.decorator';
 import { Custom, Global, TestingModule } from '../../tests/testing.module';
 import { SynapseApiReflect } from './synapse-api.reflect';
 
 import { Synapse } from '../core';
 import { AngularHttpBackendAdapter } from '../../angular/angular-http-backend-adapter';
 
-import * as _ from 'lodash';
+import {
+  merge,
+  noop,
+  defaults,
+  cloneDeep,
+} from 'lodash';
 
 const API_PATH = 'some-api-path/';
 const EXTENDED_API_PATH = '/some-extended-api-path';
@@ -26,7 +31,7 @@ class ApiWithPath {
 
 }
 
-const CustomConf = _.merge(TestingModule.Custom.CONF, {
+const CustomConf = merge(TestingModule.Custom.CONF, {
   path: API_PATH
 });
 
@@ -35,7 +40,7 @@ class ApiWithCompleteConf {
 
 }
 
-const CustomPartialConf = _.merge({
+const CustomPartialConf = merge({
   path: API_PATH,
   headers: Custom.HEADERS
 });
@@ -77,7 +82,7 @@ describe('@SynapseApi annotation', () => {
       imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
     });
     // force eager construction of SynapseModule
-    inject([TestingModule], _.noop)();
+    inject([TestingModule], noop)();
   });
 
   afterEach(() => {
@@ -144,13 +149,13 @@ describe('@SynapseApi annotation', () => {
     it('should merge headers with those from global conf', () => {
       const api = new ApiWithCompleteConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      expect(conf.headers).toEqual(_.defaults({}, Custom.HEADERS, Global.HEADERS));
+      expect(conf.headers).toEqual(defaults({}, Custom.HEADERS, Global.HEADERS));
     });
 
     it('should merge config with global conf', () => {
       const api = new ApiWithPartialConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      const expected = _.defaults({}, CustomPartialConf, Global.CONF);
+      const expected = defaults({}, CustomPartialConf, Global.CONF);
       delete expected.headers;
       delete expected.httpBackend;
       delete conf.headers;
@@ -160,8 +165,8 @@ describe('@SynapseApi annotation', () => {
     });
 
     it('should leave global conf untouched', () => {
-      const conf = SynapseApiReflect.getConf(new ApiWithCompleteConf().constructor.prototype);
-
+      let a = new ApiWithCompleteConf();
+      a = a;
       for (const k of Object.keys(Global.CONF)) {
         expect(Global.CONF[k]).not.toEqual(Custom.CONF[k]);
       }
@@ -177,8 +182,8 @@ describe('@SynapseApi annotation', () => {
     it('should inherit configuration from parent classes', () => {
       const api = new InheritedApi();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      const expected = _.cloneDeep(CustomConf);
-      expect(conf).toEqual(_.merge(expected, {headers: _.merge(expected.headers, conf.headers)}) as any);
+      const expected = cloneDeep(CustomConf);
+      expect(conf).toEqual(merge(expected, {headers: merge(expected.headers, conf.headers)}) as any);
     });
 
     it('should inherits path from parent class if not path specified', () => {

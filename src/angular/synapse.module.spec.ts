@@ -3,11 +3,10 @@ import { AngularSynapseConf, SynapseModule } from './synapse.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
 
-import * as _ from 'lodash';
+import { noop } from 'lodash';
 import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { Synapse } from '../core/core';
 import { HttpBackendAdapter } from '../core/http-backend.interface';
-import { Observable } from 'rxjs/Observable';
 import { TestingModule } from '../tests/testing.module';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
@@ -46,7 +45,7 @@ describe('SynapseModule.forRoot method', () => {
       let thrownError: Error = null;
 
       try {
-        inject([SynapseModule], _.noop)();
+        inject([SynapseModule], noop)();
       } catch (e) {
         thrownError = e;
       }
@@ -72,7 +71,7 @@ describe('SynapseModule.forRoot method', () => {
         imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot(TestingModule.Global.CONF)],
       });
       spyOn(Synapse, 'init').and.callThrough();
-      inject([SynapseModule], _.noop)();
+      inject([SynapseModule], noop)();
       expect(Synapse.init).toHaveBeenCalled();
     });
 
@@ -86,7 +85,7 @@ describe('SynapseModule.forRoot method', () => {
           providers: []
         });
         // force eager construction of SynapseModule
-        inject([SynapseModule], _.noop)();
+        inject([SynapseModule], noop)();
       }));
 
       it('should provide the same "AngularSynapseConf" as Synapse.getConfig()',
@@ -118,7 +117,7 @@ describe('SynapseModule.forRoot method', () => {
           providers: []
         });
         // force eager construction of SynapseModule
-        inject([SynapseModule], _.noop)();
+        inject([SynapseModule], noop)();
       }));
 
 

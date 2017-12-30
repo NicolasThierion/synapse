@@ -1,7 +1,6 @@
 import { HttpBackendAdapter } from '../../../core/http-backend.interface';
 import { data } from './users.mock';
-import { Observable } from 'rxjs/Observable';
-import * as _ from 'lodash';
+import { cloneDeep } from 'lodash';
 
 class HttpResponnseOk extends Response {
   constructor(body?: any) {
@@ -68,7 +67,7 @@ function _validateUser(user: any) {
     'city',
     'zipcode'
   ];
-  const u = _.cloneDeep(user);
+  const u = cloneDeep(user);
   mandatory.forEach(p => {
     if (!delete u[p]) {
       throw new Error(`missing property: ${p}`);

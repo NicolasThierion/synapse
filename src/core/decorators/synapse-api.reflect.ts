@@ -2,7 +2,11 @@ import 'reflect-metadata';
 import { SynapseApiConfig } from './synapse-api.decorator';
 import { SynapseConf } from '../synapse-conf';
 import { assert } from '../../utils/assert';
-import * as _ from 'lodash';
+import {
+  cloneDeep,
+  defaultsDeep,
+  isNumber
+} from 'lodash';
 import { StateError } from '../../utils/state-error';
 import { Synapse } from '../core';
 import { BodyParams } from './parameters.decorator';
@@ -28,13 +32,13 @@ export namespace SynapseApiReflect {
   export function init(classPrototype: SynapseApiClass, conf: SynapseApiConfig): void {
     assert(classPrototype);
     // inherits config from parent annotation
-    conf = _inheritConf(classPrototype, _.cloneDeep(conf));
+    conf = _inheritConf(classPrototype, cloneDeep(conf));
 
     // retrieve global config
     const globalConf = Synapse.getConfig();
 
     // patch it with local @SynapseApi config.
-    const conf_: SynapseApiConfig & SynapseConf = _.cloneDeep(_.defaultsDeep(conf as SynapseApiConfig, globalConf));
+    const conf_: SynapseApiConfig & SynapseConf = cloneDeep(defaultsDeep(conf as SynapseApiConfig, globalConf));
     Object.freeze(conf_);
 
     // save conf for this class.
@@ -44,12 +48,11 @@ export namespace SynapseApiReflect {
   export function getConf(classPrototype: SynapseApiClass): SynapseApiConfig & SynapseConf {
     assert(classPrototype);
     if (!hasConf(classPrototype)) {
-      debugger
       throw new StateError(`no configuration found for class ${classPrototype.constructor.name}.
       Are you sure that this type is properly decorated with "@SynapseApi" ?`);
     }
 
-    return _.cloneDeep(Reflect.getOwnMetadata(CONF_KEY, classPrototype));
+    return cloneDeep(Reflect.getOwnMetadata(CONF_KEY, classPrototype));
   }
 
   export function hasConf(classPrototype: SynapseApiClass): boolean {
@@ -121,14 +124,14 @@ function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
 
     const parentConf = Reflect.getOwnMetadata(CONF_KEY, parentCtor.prototype);
     const path = (conf.path && conf.path !== '') ? conf.path : parentConf.path;
-    conf = _.defaultsDeep({path}, conf, parentConf);
+    conf = defaultsDeep({path}, conf, parentConf);
   }
 
   return conf;
 }
 
 function _assertDecorateParameter(decorator: string, key: string | symbol, parameterIndex: number) {
-  if (!_.isNumber(parameterIndex)) {
+  if (!isNumber(parameterIndex)) {
     throw new SynapseError(`${decorator} should decorate parameters only. (Found @Header on function ${key}})`);
   }
 }

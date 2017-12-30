@@ -2,8 +2,7 @@ import { Global, TestingModule } from '../../testing.module';
 import { TestBed } from '@angular/core/testing';
 import { Spies } from '../../utils/utils';
 import { GetApi } from '../../utils/test-api/get.api';
-import * as _ from 'lodash';
-import { Body, QueryParams, Synapse } from '../../../';
+import { Synapse } from '../../../';
 import { BadApi } from '../../utils/test-api/bad.api';
 import { joinPath } from '../../../utils/utils';
 

@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { GET, SynapseApi, Synapse, PathParam, QueryParams, Headers } from '../../../index';
-import { Body } from '../../../core/decorators/parameters.decorator';
-import { POST } from '../../../core/decorators/synapse-endpoint.decorator';
+import { GET, SynapseApi, Synapse, PathParam, QueryParams, Headers } from '../../../';
+import { Body } from '../../../';
+import { POST } from '../../../';
 
 /**
  * An example of badly used SynapseApi. For testing purpose only.
@@ -48,7 +48,7 @@ export class BadApi {
   }
 
   @GET()
-  getWithBadQueryParam(@QueryParams() param: boolean = false, param2: Object = {obj: new Date()}): Observable<any> {
+  getWithBadQueryParam(@QueryParams() param: boolean = false, @QueryParams() param2: Object = {obj: new Date()}): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 

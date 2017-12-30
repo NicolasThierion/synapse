@@ -45,17 +45,4 @@ export class User {
       u.phone
     );
   }
-
-  static serialize(user: User): any {
-    return user;
-  }
-
-  static deserialize(user: any): User {
-    const u = user as User;
-    if (u.address) {
-      u.address = Address.deserialize(u.address);
-    }
-
-    return User.of(u);
-  }
 }

@@ -1,7 +1,7 @@
 import { SynapseApiReflect } from './synapse-api.reflect';
 import { MapperType } from '../mapper.type';
 import { ContentType } from '../core';
-import * as _ from 'lodash';
+import { defaults, isString } from 'lodash';
 
 // TODO support pathParam mapping
 /**
@@ -45,7 +45,7 @@ export function Headers(): ParameterDecorator {
 // TODO support for mappers
 // TODO let choice between 'form-data', 'x-www-form-urlencoded', 'raw' or 'binary'
 export function Body(params: BodyParams | ContentType = ContentType.JSON): ParameterDecorator {
-  const params_: BodyParams = _.defaults(_.isString(params) ? {
+  const params_: BodyParams = defaults(isString(params) ? {
     contentType: params as ContentType
   } : params as BodyParams, {
     contentType: ContentType.JSON

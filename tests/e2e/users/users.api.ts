@@ -16,7 +16,7 @@ export class UsersApi {
   @GET({
     path: '/'
   })
-  getPage(params?: URLSearchParams): Observable<User> {
+  getPage(@QueryParams() params?: any): Observable<User> {
     return Synapse.OBSERVABLE;
   }
 

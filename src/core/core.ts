@@ -10,9 +10,9 @@ class StateError extends Error {
 }
 
 export class Synapse {
-  private static _conf: SynapseConf;
   public static readonly OBSERVABLE = Observable.throw(
     'should only use SynapseConf.OBSERVABLE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
+  private static _conf: SynapseConf;
 
   public static init(conf: SynapseConf): void {
     if (this._conf) {
@@ -37,7 +37,7 @@ export class Synapse {
 export enum ContentType {
   FORM_DATA = 'form-data',
   X_WWW_URL_ENCODED = 'application/x-www-form-urlencoded;charset=UTF-8',
-  PLAIN_TEST = 'text/plain',
+  PLAIN_TEXT = 'text/plain',
   JSON = 'application/json',
   JAVASCRIPT = 'application/javascript'
 }

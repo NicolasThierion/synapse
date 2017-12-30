@@ -13,7 +13,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this._users.getOne(1).subscribe((res) => {
-      debugger
       console.log(res);
     });
   }

@@ -1,13 +1,10 @@
 import { TestingModule } from '../../testing.module';
 import { TestBed } from '@angular/core/testing';
 import { Spies } from '../../utils/utils';
-import { GetApi } from '../../utils/test-api/get.api';
-import * as _ from 'lodash';
-import { Body, ContentType, QueryParams, Synapse, SynapseApi } from '../../../';
+import { Body, ContentType, Synapse, SynapseApi } from '../../../';
 import { BadApi } from '../../utils/test-api/bad.api';
-import { PostApi } from '../../utils/test-api/post.api';
 import { Observable } from 'rxjs/Observable';
-import { POST } from '../../../index';
+import { POST } from '../../../';
 import { fromQueryString } from '../../../utils/utils';
 
 @SynapseApi
@@ -99,7 +96,7 @@ describe(`@Body decorator`, () => {
     });
 
     describe('when ContentType.X_WWW_URL_ENCODED', () => {
-      fit ('should pass the body as UrlEncoded', () => {
+      it('should pass the body as UrlEncoded', () => {
         const body = {
           someKey: 'someValue',
           someObject: {

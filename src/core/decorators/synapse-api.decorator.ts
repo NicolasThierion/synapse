@@ -1,7 +1,11 @@
 import { HttpBackendAdapter } from '../http-backend.interface';
 import { SynapseApiReflect } from './synapse-api.reflect';
 import { HttpRequestHandler, HttpResponseHandler } from '../core';
-import * as _ from 'lodash';
+import {
+  isFunction,
+  isString,
+  cloneDeep
+} from 'lodash';
 
 
 export interface SynapseApiConfig {
@@ -25,10 +29,10 @@ export interface SynapseApiConfig {
  */
 export function SynapseApi(confOrCtor: string | SynapseApiConfig | Function = '' ): ClassDecorator | any {
   // if called SynapseApi(...???...)
-  if (!_.isFunction(confOrCtor)) {
+  if (!isFunction(confOrCtor)) {
     return (ctor: any) => {
       if (!ctor) { throw new Error('assertion error'); }
-      confOrCtor = _.isString(confOrCtor) ? {path: confOrCtor as string} : _.cloneDeep(confOrCtor) as SynapseApiConfig;
+      confOrCtor = isString(confOrCtor) ? {path: confOrCtor as string} : cloneDeep(confOrCtor) as SynapseApiConfig;
       return _makeNewCtor(ctor, confOrCtor);
     };
   } else {

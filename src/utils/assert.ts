@@ -28,7 +28,7 @@ function _makeAssertFn(enableAsserts: boolean): IAssertFn {
       }
     };
   } else {
-    return (condition: any, message?: string) => {
+    return () => {
       // noop
     };
   }

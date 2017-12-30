@@ -1,10 +1,10 @@
-import { Headers as SHeaders, SynapseApi } from '../../../';
+import { Headers as SHeaders } from '../../../';
 import { Global, TestingModule } from '../../testing.module';
 import { TestBed } from '@angular/core/testing';
 import { Spies } from '../../utils/utils';
 import { GetApi } from '../../utils/test-api/get.api';
-import * as _ from 'lodash';
-import { Synapse } from '../../../index';
+import { defaults } from 'lodash';
+import { Synapse } from '../../../';
 
 // @SynapseApi()
 // class C {
@@ -44,13 +44,13 @@ describe(`@Headers decorator`, () => {
   it('should merge headers with global headers', () => {
     new GetApi().getWithHeaders(HEADERS);
     const r = spies.get.calls.mostRecent().args[0] as Request;
-    expect(r.headers).toEqual(new Headers(_.defaults(HEADERS, Global.HEADERS)));
+    expect(r.headers).toEqual(new Headers(defaults(HEADERS, Global.HEADERS)));
   });
 
   it('should merge headers with @SynapseApi headers', () => {
     new GetApi.WithHeaders().getWithHeaders(HEADERS);
     const r = spies.get.calls.mostRecent().args[0] as Request;
-    expect(r.headers).toEqual(new Headers(_.defaults(HEADERS, Global.HEADERS, GetApi.WithHeaders.HEADERS)));
+    expect(r.headers).toEqual(new Headers(defaults(HEADERS, Global.HEADERS, GetApi.WithHeaders.HEADERS)));
   });
 });
 
