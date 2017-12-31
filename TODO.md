@@ -1,3 +1,4 @@
-- Write the README.md
+- Update README.md
 - support for mappers
 - support for promises
+- write CHANGELOG.md

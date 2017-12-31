@@ -169,27 +169,13 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointConf | string
 
 function _doRequest(http: HttpBackendAdapter, requestParams: RequestParameters): Promise<Response> {
   _applyRequestHandlers(requestParams);
-  const r = requestParams.request;
-  let res: Promise<Response>;
-  switch (r.method) {
-    case HttpMethod.GET:
-      res = http.get(r);
-      break;
-    case HttpMethod.POST:
-      res = http.post(r);
-      break;
-    case HttpMethod.PUT:
-      res = http.put(r);
-      break;
-    case HttpMethod.DELETE:
-      res = http.delete(r);
-      break;
-    case HttpMethod.PATCH:
-      res = http.patch(r);
-      break;
-    default:
-      throw new TypeError(`unexpected method : ${r.method}`);
+  const m = `${HttpMethod.GET}`.toLocaleLowerCase();
+  if (!isFunction(http[m])) {
+    throw new TypeError(`unexpected method : ${r.method}`);
   }
+
+  const r = requestParams.request;
+  const res: Promise<Response> = http[m](r);
 
   if (!res) {
     throw new SynapseError(`HttpBackendAdapter ${http.constructor.name} did not returned any value after calling method ${r.method}.

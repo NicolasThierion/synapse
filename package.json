@@ -26,8 +26,11 @@
     "angular"
   ],
   "dependencies": {
+    "install": "^0.10.2",
+    "npm": "^5.6.0",
     "qs": "^6.5.1",
-    "reflect-metadata": "^0.1.10"
+    "reflect-metadata": "^0.1.10",
+    "whatwg-url": "^6.4.0"
   },
   "peerDependencies": {
     "@angular/common": "^5.0.0",
