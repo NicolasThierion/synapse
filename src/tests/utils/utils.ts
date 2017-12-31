@@ -20,7 +20,7 @@ export namespace Spies {
       inject([AngularSynapseConf], (conf) => {
         // setup sp/ies
         [ 'get', 'post', 'put', 'patch', 'delete'].forEach((s: keyof HttpBackendAdapter) => {
-          HttpBackend.spies[s] = spyOn(conf.httpBackend, s).and.callFake(noop);
+          HttpBackend.spies[s] = spyOn(conf.httpBackend, s).and.callFake(() => Promise.resolve('from fake spied httpBackend'));
         });
       })();
     }

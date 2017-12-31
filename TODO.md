@@ -1,4 +1,3 @@
 - Write the README.md
 - support for mappers
 - support for promises
-- replace lodash * imports to named imports

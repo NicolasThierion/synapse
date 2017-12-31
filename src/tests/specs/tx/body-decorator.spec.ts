@@ -11,6 +11,8 @@ import { fromQueryString } from '../../../utils/utils';
 class BodyApi {
 
   static customBodyMapper = function(obj: any): any {
+    obj.throughMapper = true;
+
     return obj;
   };
 
@@ -32,6 +34,14 @@ class BodyApi {
 
 describe(`@Body decorator`, () => {
   const spies = Spies.HttpBackend.spies;
+  const body = {
+    someKey: 'someValue',
+    someObject: {
+      someOjectKey: 'someObjectValue'
+    },
+    someArray: ['someArrayValue'],
+    'someWeirdKey$"é#?!§': 'someWeirdValueç\\/+{'
+  };
 
   beforeEach(() => {
 
@@ -60,23 +70,20 @@ describe(`@Body decorator`, () => {
 
   describe('when used with a method appart from @GET', () => {
     it('should call HttpBackendAdapter with proper body', (done) => {
-      const body = new Date();
       new BodyApi().postWithBody(body);
       expect(spies.post).toHaveBeenCalled();
 
       const r1 = spies.post.calls.mostRecent().args[0] as Request;
 
       return r1.clone().json().then(b => {
-        expect(new Date(b)).toEqual(body);
+        expect(b).toEqual(body);
         done();
       }).catch(fail);
     });
   });
 
-  describe('property "contentType"', () => {
-
+  describe('=> property "contentType"', () => {
     it('should default to "ContentType.JSON"', () => {
-      const body = new Date();
       new BodyApi().postWithBody(body);
       expect(spies.post).toHaveBeenCalled();
       const r1 = spies.post.calls.mostRecent().args[0] as Request;
@@ -86,7 +93,6 @@ describe(`@Body decorator`, () => {
     });
 
     it('should be passed to httpBackendAdapter', () => {
-      const body = new Date();
       new BodyApi().postWithUrlEncodedBody(body);
 
       const r1 = spies.post.calls.mostRecent().args[0] as Request;
@@ -97,14 +103,6 @@ describe(`@Body decorator`, () => {
 
     describe('when ContentType.X_WWW_URL_ENCODED', () => {
       it('should pass the body as UrlEncoded', () => {
-        const body = {
-          someKey: 'someValue',
-          someObject: {
-            someOjectKey: 'someObjectValue'
-          },
-          someArray: ['someArrayValue'],
-          'someWeirdKey$"é#?!§': 'someWeirdValueç\\/+{'
-        };
         new BodyApi().postWithUrlEncodedBody(body);
 
         const r1 = spies.post.calls.mostRecent().args[0] as Request;
@@ -115,6 +113,17 @@ describe(`@Body decorator`, () => {
 
         }).catch(fail);
       });
+    });
+  });
+
+  describe('=> property "mapper"', () => {
+    it('should set a serializer function that is called when body is submitted', () => {
+      new BodyApi().postWithMappedBody(body);
+
+      // /!\ Cannot set spy, because monkey patches on static methods are lost when decorating the class.
+      // spyOn(BodyApi, 'customBodyMapper').and.callThrough();
+
+      expect((body as any).throughMapper).toBeTruthy();
     });
   });
 });

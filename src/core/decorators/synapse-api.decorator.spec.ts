@@ -22,7 +22,7 @@ class Api {
 }
 
 @SynapseApi()
-class ApiWithNoArg {
+class ApiWithNoConfig {
 
 }
 
@@ -104,7 +104,7 @@ describe('@SynapseApi annotation', () => {
 
   describe('with no arg', () => {
     it('should get conf from global Synapse conf', () => {
-      const api = new ApiWithNoArg();
+      const api = new ApiWithNoConfig();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
       expect([conf.baseUrl, conf.headers, conf.path])
         .toEqual([Global.CONF.baseUrl, Global.CONF.headers, '']);

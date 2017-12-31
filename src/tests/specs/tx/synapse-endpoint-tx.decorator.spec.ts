@@ -10,6 +10,7 @@ import { PutApi } from '../../utils/test-api/put.api';
 import { PatchApi } from '../../utils/test-api/patch.api';
 import { DeleteApi } from '../../utils/test-api/delete.api';
 import { Spies } from '../../utils/utils';
+import { Observable } from 'rxjs/Observable';
 
 describe('', () => {
 
@@ -48,32 +49,47 @@ describe('', () => {
         expect(removeTrailingSlash(r.url)).toEqual(removeTrailingSlash(Global.BASE_URL));
         expect(r.headers).toEqual(new Headers(Global.HEADERS));
       });
-    });
 
-    describe('when decorated with a path', () => {
-      it('should append the provided path to the global baseUrl', () => {
-        new GetApi.WithPath().get();
-        expect(spies.get).toHaveBeenCalled();
+      describe('with an annotated path', () => {
+        it('should append the provided path to the global baseUrl', () => {
+          new GetApi.WithPath().get();
+          expect(spies.get).toHaveBeenCalled();
 
-        const r = spies.get.calls.mostRecent().args[0] as Request;
-        expect(r.url).toEqual(joinPath(Global.BASE_URL, GetApi.WithPath.PATH));
+          const r = spies.get.calls.mostRecent().args[0] as Request;
+          expect(r.url).toEqual(joinPath(Global.BASE_URL, GetApi.WithPath.PATH));
+        });
+
+        describe('that requires pathParams', () => {
+          it('should throw an error if @PathParams not specified', () => {
+            expect(() => new BadApi().getWithMissingPathParameter())
+              .toThrowError(/param ":missingPathParam" not provided/);
+          });
+        });
       });
 
-      describe('that requires pathParams', () => {
-        it('should throw an error if @PathParams not specified', () => {
-          expect(() => new BadApi().getWithMissingPathParameter())
-            .toThrowError(/param ":missingPathParam" not provided/);
+      describe('with an annotated path and baseUrl', () => {
+        it('should append the provided path to the provided baseUrl', () => {
+          new GetApi.WithBaseUrlAndPath().get();
+          expect(spies.get).toHaveBeenCalled();
+
+          const r = spies.get.calls.mostRecent().args[0] as Request;
+          expect(r.url).toEqual(joinPath(GetApi.WithBaseUrlAndPath.BASEURL, GetApi.WithBaseUrlAndPath.PATH));
         });
       });
     });
 
-    describe('when decorated with a path and baseUrl', () => {
-      it('should append the provided path to the provided baseUrl', () => {
-        new GetApi.WithBaseUrlAndPath().get();
-        expect(spies.get).toHaveBeenCalled();
+    describe('after called', () => {
+      describe('on a method that returns a promise', () => {
+        it('should return a promise', () => {
+          const ret = new GetApi().getThatReturnsAPromise();
+          expect(ret).toEqual(jasmine.any(Promise));
+        });
+      });
 
-        const r = spies.get.calls.mostRecent().args[0] as Request;
-        expect(r.url).toEqual(joinPath(GetApi.WithBaseUrlAndPath.BASEURL, GetApi.WithBaseUrlAndPath.PATH));
+      describe('on a method that returns an observable', () => {
+        it('should return an observable', () => {
+          expect(new GetApi().get()).toEqual(jasmine.any(Observable));
+        });
       });
     });
   });

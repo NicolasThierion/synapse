@@ -10,13 +10,16 @@ import { HttpBackendAdapter } from '../http-backend.interface';
 import { SynapseError } from '../../utils/synapse-error';
 import {
   isFunction, isString,
-  defaultsDeep,
+  defaultsDeep, noop,
   isUndefined,
   mergeWith,
   cloneDeep,
 } from 'lodash';
 
-export interface EndpointParameters {
+/**
+ * Use this conf for @GET, @POST, ...
+ */
+export interface EndpointConf {
   // TODO support for mappers
   // TODO support for handler
   path?: string;
@@ -25,6 +28,76 @@ export interface EndpointParameters {
   responseHandlers?: HttpResponseHandler[];
 }
 
+/**
+ * Parameters decorated with @Headers are considered to be of this type.
+ */
+export interface HeadersType {
+  [k: string]: string | string[];
+}
+
+/**
+ * Parameters decorated with @PathParam are considered to be of this type.
+ */
+export type PathParamsType = string | number | boolean;
+
+/**
+ * Parameters decorated with @QueryParams are considered to be of this type.
+ */
+export type QueryParametersType = Object;
+
+/**
+ * GET method decorator.
+ *
+ * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @returns {MethodDecorator} the GET decorator
+ */
+export function GET(conf: EndpointConf | string = ''): MethodDecorator {
+  return _httpRequestDecorator(HttpMethod.GET, conf);
+}
+
+/**
+ * POST method decorator.
+ *
+ * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @returns {MethodDecorator} the POST decorator
+ */
+export function POST(conf: EndpointConf | string = ''): MethodDecorator {
+  return _httpRequestDecorator(HttpMethod.POST, conf);
+}
+
+/**
+ * PUT method decorator.
+ *
+ * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @returns {MethodDecorator} the PUT decorator
+ */
+export function PUT(conf: EndpointConf | string = ''): MethodDecorator {
+  return _httpRequestDecorator(HttpMethod.PUT, conf);
+}
+
+/**
+ * PATCH method decorator.
+ *
+ * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @returns {MethodDecorator} the PATCH decorator
+ */
+export function PATCH(conf: EndpointConf | string = ''): MethodDecorator {
+  return _httpRequestDecorator(HttpMethod.PATCH, conf);
+}
+
+/**
+ * DELETE method decorator.
+ *
+ * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @returns {MethodDecorator} the DELETE decorator
+ */
+export function DELETE(conf: EndpointConf | string = ''): MethodDecorator {
+  return _httpRequestDecorator(HttpMethod.DELETE, conf);
+}
+
+/**
+ * Parameters available at runtime to create the Request object.
+ */
 interface RequestParameters {
   request: Request;
   requestHandlers: HttpRequestHandler[];
@@ -33,6 +106,9 @@ interface RequestParameters {
 
 type EndpointReturnType = Promise<Response> | Observable<Response>;
 
+/**
+ * Argument bundle that feed a method @GET, @POST, resolved at runtime.
+ */
 class CallArgs {
   pathParams?: string[];
   queryParams?: QueryParametersType;
@@ -40,38 +116,7 @@ class CallArgs {
   body?: any;
 }
 
-export interface QueryParametersType {
-  [k: string]: string | string[];
-}
-
-export interface HeadersType {
-  [k: string]: string | string[];
-}
-
-export type PathParamsType = string | number | boolean;
-
-
-export function GET(params: EndpointParameters | string = ''): MethodDecorator {
-  return _httpRequestDecorator(HttpMethod.GET, params);
-}
-
-export function POST(params: EndpointParameters | string = ''): MethodDecorator {
-  return _httpRequestDecorator(HttpMethod.POST, params);
-}
-
-export function PUT(params: EndpointParameters | string = ''): MethodDecorator {
-  return _httpRequestDecorator(HttpMethod.PUT, params);
-}
-
-export function PATCH(params: EndpointParameters | string = ''): MethodDecorator {
-  return _httpRequestDecorator(HttpMethod.PATCH, params);
-}
-
-export function DELETE(params: EndpointParameters | string = ''): MethodDecorator {
-  return _httpRequestDecorator(HttpMethod.DELETE, params);
-}
-
-function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | string): MethodDecorator {
+function _httpRequestDecorator(method: HttpMethod, params: EndpointConf | string): MethodDecorator {
   return function HttpMethodDecorator(target: Object,
                                       propertyKey: string | symbol,
                                       descriptor: TypedPropertyDescriptor<any>): void {
@@ -125,27 +170,39 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointParameters | 
 function _doRequest(http: HttpBackendAdapter, requestParams: RequestParameters): Promise<Response> {
   _applyRequestHandlers(requestParams);
   const r = requestParams.request;
-
+  let res: Promise<Response>;
   switch (r.method) {
     case HttpMethod.GET:
-      return http.get(r);
+      res = http.get(r);
+      break;
     case HttpMethod.POST:
-      return http.post(r);
+      res = http.post(r);
+      break;
     case HttpMethod.PUT:
-      return http.put(r);
+      res = http.put(r);
+      break;
     case HttpMethod.DELETE:
-      return http.delete(r);
+      res = http.delete(r);
+      break;
     case HttpMethod.PATCH:
-      return http.patch(r);
+      res = http.patch(r);
+      break;
     default:
       throw new TypeError(`unexpected method : ${r.method}`);
   }
+
+  if (!res) {
+    throw new SynapseError(`HttpBackendAdapter ${http.constructor.name} did not returned any value after calling method ${r.method}.
+     That's an error. If you use your own HttpBackendAdapter implementation, please ensure it always returns a promise.`);
+  } else if (!res.then) {
+    throw new SynapseError(`HttpBackendAdapter ${http.constructor.name} did not returned a promise after calling method ${r.method}.
+     (Got ${res}). If you use your own HttpBackendAdapter implementation, please ensure it always returns a promise.`);
+  }
+
+  return res;
 }
 
 function _makeUrl(baseUrl: string, path: string, pathParams: PathParamsType[], queryParams: QueryParametersType): string {
-  // TODO sanitize.
-  // TODO check path parameters
-  // TODO populate path parameters
   assert(!isUndefined(queryParams));
   assert(!isUndefined(pathParams));
   assert(!isUndefined(baseUrl));
@@ -153,7 +210,7 @@ function _makeUrl(baseUrl: string, path: string, pathParams: PathParamsType[], q
   return joinQueryParams(joinPath(baseUrl, _replacePathParams(path, pathParams)), queryParams);
 }
 
-function _mergeQueryParams(queryParams: Object[]) {
+function _mergeQueryParams(queryParams: QueryParametersType[]) {
   return mergeWith({}, ...queryParams.filter(a => !isUndefined(a)),
     (objValue: any, srcValue: any, key: string, object: any /*, source: any, stack: any */) => {
       if (isUndefined(objValue)) {
@@ -181,17 +238,37 @@ function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
     .reduce((previousValue, currentValue) => defaultsDeep(previousValue, currentValue), {});
   res.pathParams = decoratedArgs.path.map(i => args[i]);
 
+  // if invoke a body
   if (decoratedArgs.body) {
-    const contentType = decoratedArgs.body.params.contentType;
-    res.body = _wrapBody(args[decoratedArgs.body.index], contentType, res);
+    // get body runtime value
+    res.body = args[decoratedArgs.body.index];
+    // if body comes with its mapper
+    const mapper = decoratedArgs.body.params.mapper as MapperType<any, any>;
+    if (mapper) {
+      if (!isFunction(mapper)) {
+        throw new TypeError(`mapper should be a function. Got ${mapper}`);
+      }
+      res.body = mapper(res.body);
+      if (isUndefined(res.body)) {
+        console.warn(`Mapper returned value undefined`);
+      }
+    }
+
+    if (!isUndefined(res.body)) {
+      // get any present Content-Type
+      const contentType = decoratedArgs.body.params.contentType;
+
+      // converts body value according to this content type.
+      res.body = _wrapBody(contentType, res);
+    }
   } else {
-    res.body = null;
+    res.body = undefined;
   }
 
   return res;
 }
 
-function _wrapBody(body: any, contentType: ContentType, callArgs: CallArgs): any {
+function _wrapBody(contentType: ContentType, callArgs: CallArgs): any {
   // TODO support other formats
   const getContentType = () => callArgs.headers['Content-Type'];
   const setContentType = (ct) => callArgs.headers['Content-Type'] = ct;
@@ -204,9 +281,9 @@ function _wrapBody(body: any, contentType: ContentType, callArgs: CallArgs): any
     case ContentType.JSON:
       setContentType(contentType);
 
-      return JSON.stringify(body);
+      return JSON.stringify(callArgs.body);
     case ContentType.X_WWW_URL_ENCODED:
-      return new URLSearchParams(toQueryString(body));
+      return new URLSearchParams(toQueryString(callArgs.body));
     default:
       throw new Error(`unsupported ContentType: ${contentType}`);
   }
@@ -239,14 +316,14 @@ function _replacePathParams(path: string, pathParams: (string | number | boolean
   return path;
 }
 
-function _asEndpointParameters(params: EndpointParameters | string = ''): EndpointParameters {
-  let params_: EndpointParameters;
+function _asEndpointParameters(params: EndpointConf | string = ''): EndpointConf {
+  let params_: EndpointConf;
   if (isString(params)) {
     params_ = {
       path: params as string
     };
   } else {
-    params_ = cloneDeep(params) as EndpointParameters;
+    params_ = cloneDeep(params) as EndpointConf;
   }
 
   params_.path = params_.path || '';
@@ -257,7 +334,7 @@ function _asEndpointParameters(params: EndpointParameters | string = ''): Endpoi
 
 function _createRequest(method: HttpMethod,
                         args: CallArgs,
-                        params: EndpointParameters,
+                        params: EndpointConf,
                         conf: SynapseApiConfig): Request {
   if (method === HttpMethod.GET && args.body) {
     throw new TypeError('cannot specify @Body with method annotated with @Get');
@@ -270,7 +347,7 @@ function _createRequest(method: HttpMethod,
   });
 }
 
-function _makeRequestParameters(request: Request, conf: SynapseApiConfig, params: EndpointParameters): RequestParameters {
+function _makeRequestParameters(request: Request, conf: SynapseApiConfig, params: EndpointConf): RequestParameters {
   return {
     request,
     requestHandlers: [].concat(conf.requestHandlers || []).concat(params.requestHandlers || []),
@@ -301,6 +378,9 @@ function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
   if (!res || res instanceof Observable) {
     return (p: Promise<Response>) => Observable.fromPromise(p);
   } else if (isFunction((res as any).then)) {
+    if (res.catch) {
+      (res as Promise<any>).catch(noop);  // 'handle' the Synapse.PROMISE error to mute chrome warning
+    }
     return (p) => p;
   } else {
     const type = (res as any).__proto__ ? (res as any).__proto__.constructor.name : typeof  res;

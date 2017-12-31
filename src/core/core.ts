@@ -12,6 +12,10 @@ class StateError extends Error {
 export class Synapse {
   public static readonly OBSERVABLE = Observable.throw(
     'should only use SynapseConf.OBSERVABLE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
+
+  public static readonly PROMISE = Promise.reject(
+    'should only use SynapseConf.PROMISE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
+
   private static _conf: SynapseConf;
 
   public static init(conf: SynapseConf): void {

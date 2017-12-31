@@ -51,6 +51,11 @@ export class GetApi {
   getWithMoreQueryParams(@QueryParams() parameter: any): Observable<any> {
     return Synapse.OBSERVABLE;
   }
+
+  @GET()
+  getThatReturnsAPromise(): Promise<any> {
+    return Synapse.PROMISE;
+  }
 }
 
 export namespace GetApi {
