@@ -1,9 +1,9 @@
-import { TestingModule } from '../../testing.module';
+import { TestingModule } from '../testing.module';
 import { TestBed } from '@angular/core/testing';
-import { Spies } from '../../utils/utils';
-import { GetApi } from '../../utils/test-api/get.api';
+import { Spies } from '../utils/utils';
+import { GetApi } from '../utils/test-api/get.api';
 import { fromPairs } from 'lodash';
-import { QueryParams, Synapse } from '../../../';
+import { QueryParams, Synapse } from '../../';
 
 
 describe(`@QueryParams decorator`, () => {
@@ -48,9 +48,9 @@ describe(`@QueryParams decorator`, () => {
     qp23: 1
   };
 
-  it('should pass queryParams to the adapter', () => {
-    new GetApi().getWithQueryParams(QUERY_PARAMS, QUERY_PARAMS2);
-    new GetApi().getWithQueryParams(MERGED_QUERY_PARAMS);
+  it('should pass queryParams to the adapter', async () => {
+    await new GetApi().getWithQueryParams(QUERY_PARAMS, QUERY_PARAMS2);
+    await new GetApi().getWithQueryParams(MERGED_QUERY_PARAMS);
     expect(spies.get).toHaveBeenCalled();
     const r1 = spies.get.calls.all()[0].args[0] as Request;
     const r2 = spies.get.calls.all()[1].args[0] as Request;
@@ -62,9 +62,9 @@ describe(`@QueryParams decorator`, () => {
       .toEqual(fromPairs([...(new URLSearchParams(qs2) as any).entries()]));
   });
 
-  it('should add query params to any existing query params defined within path', () => {
-    new GetApi().getWithMoreQueryParams(QUERY_PARAMS);
-    new GetApi().getWithQueryParams(QUERY_PARAMS, {queryParamPresets: 'true'});
+  it('should add query params to any existing query params defined within path', async () => {
+    await new GetApi().getWithMoreQueryParams(QUERY_PARAMS);
+    await new GetApi().getWithQueryParams(QUERY_PARAMS, {queryParamPresets: 'true'});
 
     new URLSearchParams().toString();
     expect(spies.get).toHaveBeenCalled();

@@ -10,10 +10,10 @@ export class UserMapper {
       username: json.username,
       email: json.email,
       address: Address.of({
-        street: json.address.street,
-        suite: json.address.suite,
-        city: json.address.city,
-        zipcode: json.address.zipcode
+        street: json.street,
+        suite: json.suite,
+        city: json.city,
+        zipcode: json.zipcode
       }),
       phone: json.phone
     });

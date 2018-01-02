@@ -2,3 +2,5 @@
 - support for mappers
 - support for promises
 - write CHANGELOG.md
+- support for fetching images
+- provide a default implementation based on fetch;

@@ -1,16 +1,16 @@
 import 'reflect-metadata';
-import { SynapseApiConfig } from './synapse-api.decorator';
+import { SynapseApiConf } from './synapse-api.decorator';
 import { SynapseConf } from '../synapse-conf';
 import { assert } from '../../utils/assert';
 import {
   cloneDeep,
-  defaultsDeep,
   isNumber
 } from 'lodash';
 import { StateError } from '../../utils/state-error';
 import { Synapse } from '../core';
 import { BodyParams } from './parameters.decorator';
 import { SynapseError } from '../../utils/synapse-error';
+import { mergeConfigs } from '../../utils/utils';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
 const CONF_KEY = 'SynapseApiConf';
@@ -29,7 +29,7 @@ export namespace SynapseApiReflect {
 
   export interface SynapseApiClass {}
 
-  export function init(classPrototype: SynapseApiClass, conf: SynapseApiConfig): void {
+  export function init(classPrototype: SynapseApiClass, conf: SynapseApiConf): void {
     assert(classPrototype);
     // inherits config from parent annotation
     conf = _inheritConf(classPrototype, cloneDeep(conf));
@@ -38,14 +38,14 @@ export namespace SynapseApiReflect {
     const globalConf = Synapse.getConfig();
 
     // patch it with local @SynapseApi config.
-    const conf_: SynapseApiConfig & SynapseConf = cloneDeep(defaultsDeep(conf as SynapseApiConfig, globalConf));
+    const conf_: SynapseConf | SynapseApiConf = mergeConfigs({}, conf as SynapseApiConf, globalConf);
     Object.freeze(conf_);
 
     // save conf for this class.
     Reflect.defineMetadata(CONF_KEY, conf_, classPrototype);
   }
 
-  export function getConf(classPrototype: SynapseApiClass): SynapseApiConfig & SynapseConf {
+  export function getConf(classPrototype: SynapseApiClass): SynapseApiConf & SynapseConf {
     assert(classPrototype);
     if (!hasConf(classPrototype)) {
       throw new StateError(`no configuration found for class ${classPrototype.constructor.name}.
@@ -116,7 +116,7 @@ export namespace SynapseApiReflect {
 }
 
 function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
-                      conf: SynapseApiConfig): SynapseApiConfig {
+                      conf: SynapseApiConf): SynapseApiConf {
   const parentCtor  = Object.getPrototypeOf(classPrototype).constructor;
 
   // if parent constructor is not 'Object'
@@ -124,7 +124,7 @@ function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
 
     const parentConf = Reflect.getOwnMetadata(CONF_KEY, parentCtor.prototype);
     const path = (conf.path && conf.path !== '') ? conf.path : parentConf.path;
-    conf = defaultsDeep({path}, conf, parentConf);
+    conf = mergeConfigs({path}, conf, parentConf);
   }
 
   return conf;

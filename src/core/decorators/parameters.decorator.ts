@@ -1,7 +1,7 @@
 import { SynapseApiReflect } from './synapse-api.reflect';
 import { MapperType } from '../mapper.type';
-import { ContentType } from '../core';
-import { defaults, isString } from 'lodash';
+import { assign, defaults, isString } from 'lodash';
+import { ContentTypeConstants, HeaderConstants } from '../constants';
 
 // TODO support pathParam mapping
 /**
@@ -26,6 +26,7 @@ export function QueryParams(): ParameterDecorator {
 }
 
 // TODO add support for merge=true.
+
 /**
  * Use this decorator on a parameter to specify that it should be considered as a header.
  * The given headers will be merged with any specified global header.
@@ -33,9 +34,9 @@ export function QueryParams(): ParameterDecorator {
  * @returns {ParameterDecorator}
  * @constructor
  */
-export function Headers(): ParameterDecorator {
+export const Headers = assign( (): ParameterDecorator  => {
   return SynapseApiReflect.addHeadersArg();
-}
+}, HeaderConstants);
 
 /**
  * Use this decorator on a parameter to specify that it should be considered as a body. Can be used once at most per method.
@@ -44,17 +45,19 @@ export function Headers(): ParameterDecorator {
  */
 // TODO support for mappers
 // TODO let choice between 'form-data', 'x-www-form-urlencoded', 'raw' or 'binary'
-export function Body(params: BodyParams | ContentType = ContentType.JSON): ParameterDecorator {
+export const Body = assign((params: BodyParams | ContentTypeConstants = ContentTypeConstants.JSON): ParameterDecorator => {
   const params_: BodyParams = defaults(isString(params) ? {
-    contentType: params as ContentType
+    contentType: params as ContentTypeConstants
   } : params as BodyParams, {
-    contentType: ContentType.JSON
+    contentType: ContentTypeConstants.JSON
   });
 
   return SynapseApiReflect.addBodyArg(params_);
-}
+}, {
+  ContentType: ContentTypeConstants
+});
 
 export interface BodyParams {
-  contentType?: ContentType;
+  contentType?: ContentTypeConstants;
   mapper?: MapperType<Object, any>;
 }

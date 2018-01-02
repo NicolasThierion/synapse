@@ -9,9 +9,12 @@ import { AngularHttpBackendAdapter } from '../../angular/angular-http-backend-ad
 import {
   merge,
   noop,
-  defaults,
   cloneDeep,
 } from 'lodash';
+import { SynapseConf } from '../synapse-conf';
+import { mergeConfigs } from '../../utils/utils';
+import { ContentTypeConstants } from '../constants';
+import { ContentTypeTextApi, NoContentTypeApi } from '../../tests/utils/test-api/content-type.api';
 
 const API_PATH = 'some-api-path/';
 const EXTENDED_API_PATH = '/some-extended-api-path';
@@ -98,7 +101,7 @@ describe('@SynapseApi annotation', () => {
     const api = new Api('arg');
     const conf = SynapseApiReflect.getConf(api.constructor.prototype);
     expect([conf.baseUrl, conf.headers, conf.path])
-      .toEqual([Global.CONF.baseUrl, Global.CONF.headers, '']);
+      .toEqual([Global.CONF.baseUrl, merge({}, Global.CONF.headers, SynapseConf.DEFAULT.headers), '']);
     expect(conf.httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
   });
 
@@ -107,7 +110,7 @@ describe('@SynapseApi annotation', () => {
       const api = new ApiWithNoConfig();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
       expect([conf.baseUrl, conf.headers, conf.path])
-        .toEqual([Global.CONF.baseUrl, Global.CONF.headers, '']);
+        .toEqual([Global.CONF.baseUrl, merge({}, Global.CONF.headers, SynapseConf.DEFAULT.headers), '']);
       expect(conf.httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
     });
   });
@@ -125,41 +128,37 @@ describe('@SynapseApi annotation', () => {
     it('should extend global conf with provided path', () => {
       const api = new ApiWithPath();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      expect([conf.baseUrl, conf.headers, conf.path])
+      expect([conf.baseUrl, conf.path])
         .toEqual([
           Global.CONF.baseUrl,
-          Global.CONF.headers,
           API_PATH
         ]);
     });
   });
 
   describe('with provided custom config', () => {
-    it('should use values from provided config', () => {
+    it('should use values from provided config and SynapseConf.DEFAULT', () => {
       const api = new ApiWithCompleteConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
       const expected = CustomConf;
-      delete conf.headers;
-      delete expected.headers;
-
+      expected.headers = conf.headers;    // merged headers are another test's subject
+      expected.httpBackend = conf.httpBackend;  // don't compare backends;
       expect(conf as any)
-        .toEqual(expected);
+        .toEqual(mergeConfigs({}, expected, SynapseConf.DEFAULT));
     });
 
     it('should merge headers with those from global conf', () => {
       const api = new ApiWithCompleteConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      expect(conf.headers).toEqual(defaults({}, Custom.HEADERS, Global.HEADERS));
+      expect(conf.headers).toEqual(mergeConfigs({}, Custom.HEADERS, Global.HEADERS, SynapseConf.DEFAULT.headers));
     });
 
     it('should merge config with global conf', () => {
       const api = new ApiWithPartialConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      const expected = defaults({}, CustomPartialConf, Global.CONF);
-      delete expected.headers;
-      delete expected.httpBackend;
-      delete conf.headers;
-      delete conf.httpBackend;
+      const expected = mergeConfigs({}, CustomPartialConf, Global.CONF, SynapseConf.DEFAULT);
+      expected.headers = conf.headers;            // merged headers are another test's subject
+      expected.httpBackend = conf.httpBackend;    // this is mocked, so don't compare it
 
       expect(conf as any).toEqual(expected);
     });
@@ -171,19 +170,59 @@ describe('@SynapseApi annotation', () => {
         expect(Global.CONF[k]).not.toEqual(Custom.CONF[k]);
       }
     });
+
+    describe('with property "contentType"', () => {
+      it('not set, should default to "JSON"', done => {
+        new NoContentTypeApi().get().subscribe(res => {
+          expect(res).toEqual(jasmine.any(Object));
+          done();
+        });
+      });
+
+      it('= ContentTypeConstants.JSON, should set content type to "JSON"', done => {
+        new NoContentTypeApi().get().subscribe(res => {
+          expect(res).toEqual(jasmine.any(Object));
+          done();
+        });
+      });
+
+      it('= ContentTypeConstants.PLAIN_TEXT, should set content type to "text"', done => {
+        new ContentTypeTextApi().get().subscribe(res => {
+          expect(res).toEqual(jasmine.any(String));
+          done();
+        });
+      });
+
+      xit('= ContentTypeConstants.FORM_DATA, should set content type to "form-data"', done => {
+        // TODO implement
+        fail('not implemented');
+      });
+
+      xit('= ContentTypeConstants.JAVASCRIPT, should set content type to "application/javascript"', done => {
+        // TODO implement
+        fail('not implemented');
+      });
+
+      xit('= ContentTypeConstants.X_WWW_URL_ENCODED, should set content type to "urlencoded"', () => {
+        // TODO implement
+        fail('not implemented');
+      });
+    });
   });
 
   describe('extending another class annotated with @SynapseApi', () => {
-    it('should have prototype of daughter class', () => {
+    it('should have prototype of child class', () => {
       const api = new InheritedApi();
-      expect(api ).toEqual(jasmine.any(InheritedApi));
+      expect(api).toEqual(jasmine.any(InheritedApi));
     });
 
     it('should inherit configuration from parent classes', () => {
       const api = new InheritedApi();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
       const expected = cloneDeep(CustomConf);
-      expect(conf).toEqual(merge(expected, {headers: merge(expected.headers, conf.headers)}) as any);
+      expected.httpBackend = conf.httpBackend;
+
+      expect(conf).toEqual(mergeConfigs(expected, SynapseConf.DEFAULT, TestingModule.Global.CONF));
     });
 
     it('should inherits path from parent class if not path specified', () => {

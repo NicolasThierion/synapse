@@ -1,6 +1,6 @@
-import { HttpBackendAdapter } from '../http-backend.interface';
+import { HttpBackendAdapter } from '../http-backend';
 import { SynapseApiReflect } from './synapse-api.reflect';
-import { HttpRequestHandler, HttpResponseHandler } from '../core';
+import { ContentTypeConstants, HttpRequestHandler, HttpResponseHandler, ObserveType } from '../constants';
 import {
   isFunction,
   isString,
@@ -8,31 +8,35 @@ import {
 } from 'lodash';
 
 
-export interface SynapseApiConfig {
+export interface SynapseApiConf {
   path?: string;
   baseUrl?: string;
   httpBackend?: HttpBackendAdapter;
   headers?: Object;
+  // TODO test these
   requestHandlers?: HttpRequestHandler[];
   responseHandlers?: HttpResponseHandler[];
+  // TODO handle observe
+  observe?: ObserveType;
+  contentType?: ContentTypeConstants;
 }
 
 /**
  * Use this decorator on your web API class.
  *
- * You can specify an optional resource path to this API, or a complete {@link SynapseApiConfig},
+ * You can specify an optional resource path to this API, or a complete {@link SynapseApiConf},
  * that will applies to this class and all of its sub classes.
  *
- * @param {string | SynapseApiConfig} confOrCtor
+ * @param {string | SynapseApiConf} confOrCtor
  * @returns {ClassDecorator}
  * @constructor
  */
-export function SynapseApi(confOrCtor: string | SynapseApiConfig | Function = '' ): ClassDecorator | any {
+export function SynapseApi(confOrCtor: string | SynapseApiConf | Function = '' ): ClassDecorator | any {
   // if called SynapseApi(...???...)
   if (!isFunction(confOrCtor)) {
     return (ctor: any) => {
       if (!ctor) { throw new Error('assertion error'); }
-      confOrCtor = isString(confOrCtor) ? {path: confOrCtor as string} : cloneDeep(confOrCtor) as SynapseApiConfig;
+      confOrCtor = isString(confOrCtor) ? {path: confOrCtor as string} : cloneDeep(confOrCtor) as SynapseApiConf;
       return _makeNewCtor(ctor, confOrCtor);
     };
   } else {
@@ -40,7 +44,7 @@ export function SynapseApi(confOrCtor: string | SynapseApiConfig | Function = ''
     return _makeNewCtor(confOrCtor as Function, {path: ''});
   }
 
-  function _makeNewCtor(ctor: Function, conf: SynapseApiConfig) {
+  function _makeNewCtor(ctor: Function, conf: SynapseApiConf) {
 
     // decorate constructor to add config within reflect metadata
     let newCtor = function(...args: any[]): SynapseApiReflect.SynapseApiClass {

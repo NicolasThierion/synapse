@@ -1,13 +1,14 @@
 import { async, inject, TestBed } from '@angular/core/testing';
-import { AngularSynapseConf, SynapseModule } from './synapse.module';
+import { SynapseModule } from './synapse.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
 
-import { noop } from 'lodash';
+import { noop, merge } from 'lodash';
 import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { Synapse } from '../core/core';
-import { HttpBackendAdapter } from '../core/http-backend.interface';
+import { HttpBackendAdapter } from '../core/http-backend';
 import { TestingModule } from '../tests/testing.module';
+import { SynapseConf } from '../core/synapse-conf';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
   get(request: Request): Promise<Response> {
@@ -89,7 +90,7 @@ describe('SynapseModule.forRoot method', () => {
       }));
 
       it('should provide the same "AngularSynapseConf" as Synapse.getConfig()',
-        inject([AngularSynapseConf], (conf: AngularSynapseConf) => {
+        inject([SynapseConf], (conf: SynapseConf) => {
           expect(Synapse.getConfig()).toBe(conf as any);
         }));
 
@@ -97,9 +98,8 @@ describe('SynapseModule.forRoot method', () => {
         expect(Synapse.getConfig().httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
       });
 
-
       it('should set up the provided headers', () => {
-        expect(Synapse.getConfig().headers).toEqual(TestingModule.Global.HEADERS);
+        expect(Synapse.getConfig().headers).toEqual(merge({}, TestingModule.Global.HEADERS, SynapseConf.DEFAULT.headers));
       });
 
       it('should set up the provided baseUrl', () => {

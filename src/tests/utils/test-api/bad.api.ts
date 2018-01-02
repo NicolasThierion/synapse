@@ -1,14 +1,10 @@
 import { Observable } from 'rxjs/Observable';
-import { Injectable } from '@angular/core';
-import { GET, SynapseApi, Synapse, PathParam, QueryParams, Headers } from '../../../';
-import { Body } from '../../../';
-import { POST } from '../../../';
+import { GET, SynapseApi, Synapse, PathParam, QueryParams, Headers, Body, POST } from '../../../';
 
 /**
  * An example of badly used SynapseApi. For testing purpose only.
  */
 @SynapseApi()
-@Injectable()
 export class BadApi {
 
   /**

@@ -128,7 +128,9 @@ Return type is infered from the value your function returns, so be careful to re
     ```
     to the file `polyfills.ts`
 
+- **Error: Synapse not initialized**
 
+    Did you properly called `SynapseModule.forRoot(/* ... */)` in your angular's AppModule, or `Synapse.init(/* ... */)` ?
 ## TODO
 
 [TODO](./TODO.md) 
@@ -136,3 +138,5 @@ Return type is infered from the value your function returns, so be careful to re
 
 ## Development server
 Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+

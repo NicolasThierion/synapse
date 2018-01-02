@@ -1,10 +1,10 @@
-import { Global, TestingModule } from '../../testing.module';
+import { Global, TestingModule } from '../testing.module';
 import { TestBed } from '@angular/core/testing';
-import { Spies } from '../../utils/utils';
-import { GetApi } from '../../utils/test-api/get.api';
-import { Synapse } from '../../../';
-import { BadApi } from '../../utils/test-api/bad.api';
-import { joinPath } from '../../../utils/utils';
+import { Spies } from '../utils/utils';
+import { GetApi } from '../utils/test-api/get.api';
+import { Synapse } from '../../';
+import { BadApi } from '../utils/test-api/bad.api';
+import { joinPath } from '../../utils/utils';
 
 
 describe(`@PathParam decorator`, () => {
@@ -25,8 +25,8 @@ describe(`@PathParam decorator`, () => {
   });
 
   describe('when used with an endpoint that requires some pathParam', () => {
-    it('should replace corresponding pathParams within url', () => {
-      new GetApi().getWithParameterizedUrl('a', 'b');
+    it('should replace corresponding pathParams within url', async () => {
+      await new GetApi().getWithParameterizedUrl('a', 'b');
       expect(spies.get).toHaveBeenCalled();
 
       const r = spies.get.calls.mostRecent().args[0] as Request;

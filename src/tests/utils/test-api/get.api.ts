@@ -1,19 +1,15 @@
 import { Observable } from 'rxjs/Observable';
-import { Injectable } from '@angular/core';
 import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../../../';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @Get annotation. For test purpose.
  */
 @SynapseApi()
-@Injectable()
 export class GetApi {
 
   static URL = '/some-path';
   static PARAMETERIZED_URL = '/some-path/:pathParam1/:pathParam2';
   static QUERYPARAMS_URL = '?queryParamPresets=true';
-
-  constructor() {}
 
   @GET()
   get(): Observable<any> {

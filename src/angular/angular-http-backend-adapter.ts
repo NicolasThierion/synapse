@@ -1,7 +1,7 @@
-import { HttpBackendAdapter } from '../core/http-backend.interface';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { HttpResponse } from '@angular/common/http/src/response';
+import { toPairs } from 'lodash';
+import { HttpBackendAdapter } from '../core/http-backend';
 
 /**
  * An angular implementation of {@link HttpBackendAdapter} using {@link HttpClient} as a backend.
@@ -51,13 +51,13 @@ export class AngularHttpBackendAdapter implements HttpBackendAdapter {
 }
 
 interface AngularHttpOptions {
-  headers?: HttpHeaders | {[header: string]: string | string[]};
-  observe: 'response';
-  params?: HttpParams  | {
+  headers?: HttpHeaders | { [header: string]: string | string[] };
+  observe?: 'response' | any;   // typescript will complain that not assignable if not any
+  params?: HttpParams | {
     [param: string]: string | string[];
   };
   reportProgress?: boolean;
-  responseType?: 'json';
+  responseType?: 'arraybuffer' | any;  // typescript will complain that not assignable if not any
   withCredentials?: boolean;
 }
 
@@ -72,20 +72,21 @@ function _makeOptions(request: Request): AngularHttpOptions {
     headers: new HttpHeaders(headers),
     observe: 'response',
     reportProgress: false,
-    responseType: 'json',
+    responseType: 'arraybuffer',       // es6 Response expect a text, so do not let angular do a useless JSON parsing.
     withCredentials: false,
   };
 }
 
-function _toResponsePromise(observable: Observable<HttpResponse<Object>>): Promise<Response> {
-  return observable.map((r: HttpResponse<Object>) => {
+function _toResponsePromise(observable: Observable<any>): Promise<Response> {
+  return observable.map((r: any) => {
     return new Response(r.body, {
-      headers: new Headers(r.headers.keys()
-        .reduce((headers: {[k: string]: string[]}, key: string) => {
-          headers[key] = r.headers.getAll(key);
+      headers: new Headers(
+        toPairs(r.headers.keys()
+          .reduce((headers: { [k: string]: string[] }, key: string) => {
+            headers[key] = (r.headers.getAll(key) as string[]);
 
-          return headers;
-        }, {})),
+            return headers;
+          }, {}))),
       status: r.status,
       statusText: r.statusText
     });

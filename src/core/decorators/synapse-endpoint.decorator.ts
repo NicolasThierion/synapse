@@ -1,20 +1,26 @@
-import { SynapseApiConfig } from './synapse-api.decorator';
+import { SynapseApiConf } from './synapse-api.decorator';
 import { Observable } from 'rxjs/Observable';
 import { assert } from '../../utils/assert';
 import { SynapseApiReflect } from './synapse-api.reflect';
-import { joinPath, joinQueryParams, toQueryString } from '../../utils/utils';
-import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
+import { joinPath, joinQueryParams, mergeConfigs, toQueryString } from '../../utils/utils';
 import { MapperType } from '../mapper.type';
-import { HttpRequestHandler, HttpMethod, HttpResponseHandler, ContentType } from '../core';
-import { HttpBackendAdapter } from '../http-backend.interface';
+import { Headers } from '../core';
+import { HttpBackendAdapter } from '../http-backend';
 import { SynapseError } from '../../utils/synapse-error';
 import {
   isFunction, isString,
-  defaultsDeep, noop,
+  defaultsDeep,
   isUndefined,
   mergeWith,
   cloneDeep,
 } from 'lodash';
+
+import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
+
+import { ContentTypeConstants, HttpMethod, HttpRequestHandler, HttpResponseHandler, ObserveType } from '../constants';
+import { ResponseContentTypeConverter, ResponseContentTypeConverterStore } from './content-type-converters/rx/response-converter-store';
+import { PromiseConverterStore } from './promise-converters/promise-converter-store';
+import { RequestContentTypeConverter, RequestConverterStore } from './content-type-converters/tx/request-converter-store';
 
 /**
  * Use this conf for @GET, @POST, ...
@@ -22,10 +28,13 @@ import {
 export interface EndpointConf {
   // TODO support for mappers
   // TODO support for handler
+  // TODO support for Content-Type
   path?: string;
   mapper?: MapperType<any, any>;
   requestHandlers?: HttpRequestHandler[];
   responseHandlers?: HttpResponseHandler[];
+  contentType?: ContentTypeConstants;
+  observe?: ObserveType;
 }
 
 /**
@@ -98,10 +107,9 @@ export function DELETE(conf: EndpointConf | string = ''): MethodDecorator {
 /**
  * Parameters available at runtime to create the Request object.
  */
-interface RequestParameters {
-  request: Request;
-  requestHandlers: HttpRequestHandler[];
-  responseHandlers: HttpResponseHandler[];
+interface RequestAndConf {
+  request?: Request;
+  conf: EndpointConf & SynapseApiConf;
 }
 
 type EndpointReturnType = Promise<Response> | Observable<Response>;
@@ -113,21 +121,24 @@ class CallArgs {
   pathParams?: string[];
   queryParams?: QueryParametersType;
   headers?: HeadersType;
-  body?: any;
+  body?: {
+    value: any,
+    contentType: ContentTypeConstants
+  };
 }
 
-function _httpRequestDecorator(method: HttpMethod, params: EndpointConf | string): MethodDecorator {
+function _httpRequestDecorator(method: HttpMethod, conf: EndpointConf | string): MethodDecorator {
   return function HttpMethodDecorator(target: Object,
                                       propertyKey: string | symbol,
                                       descriptor: TypedPropertyDescriptor<any>): void {
     const original = descriptor.value;
-    const params_ = _asEndpointParameters(params);
+    const endpointConf = _asEndpointConf(conf);
 
-    const qId = params_.path.indexOf('?');
+    const qId = endpointConf.path.indexOf('?');
     let parsedQueryParams = {};
     if (qId >= 0) {
-      const queryString = params_.path.substring(qId + 1);
-      params_.path = params_.path.substring(0, qId);
+      const queryString = endpointConf.path.substring(qId + 1);
+      endpointConf.path = endpointConf.path.substring(0, qId);
 
       parsedQueryParams = JSON.parse(`{"${decodeURI(queryString)
         .replace(/"/g, '\\"')
@@ -146,46 +157,125 @@ function _httpRequestDecorator(method: HttpMethod, params: EndpointConf | string
       // do not only rely on target.
       // Target is proto of the annotated class of this method. If we call this method from a child class,
       // we rather want to get proto of this child class.
-      let conf = SynapseApiReflect.getConf(this.__proto__);
+      let apiConf = SynapseApiReflect.getConf(this.__proto__);
+
       if (SynapseApiReflect.hasConf(target) && target !== this.__proto__) {
         // but also get config from parent class if any
-        conf = defaultsDeep(conf, SynapseApiReflect.getConf(target));
+        apiConf = mergeConfigs({}, apiConf, SynapseApiReflect.getConf(target));
       }
 
       const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
       const cargs: CallArgs = _parseArgs(args, decoratedArgs);
       cargs.queryParams = _mergeQueryParams([parsedQueryParams, cargs.queryParams]);
-      params_.requestHandlers = [].concat(params_.requestHandlers || []).concat(conf.requestHandlers || []);
-      const req: Request = _createRequest(method, cargs, params_, conf);
 
-      // execute the request
-      const res = _doRequest(conf.httpBackend, _makeRequestParameters(req, conf, params_));
+      const promise = _makeRequestAndConf(method, apiConf, endpointConf, cargs)
+        .then((requestAndConf: RequestAndConf) => {
+          // execute the request
+          return _doRequest(apiConf.httpBackend, requestAndConf);
+        });
 
       // return result as a promise / observable.
-      return returnTypeConverter(res);
+      return returnTypeConverter(promise);
     };
   };
 }
 
-function _doRequest(http: HttpBackendAdapter, requestParams: RequestParameters): Promise<Response> {
-  _applyRequestHandlers(requestParams);
-  const m = `${HttpMethod.GET}`.toLocaleLowerCase();
+function _makeRequestAndConf(method: HttpMethod,
+                             apiConf: SynapseApiConf,
+                             endpointConf: EndpointConf,
+                             cargs: CallArgs): Promise<RequestAndConf> {
+  if (method === HttpMethod.GET && cargs.body) {
+    throw new TypeError('cannot specify @Body with method annotated with @Get');
+  }
+
+  // merge handlers
+  const requestHandlers = [].concat(apiConf.requestHandlers || []).concat(endpointConf.requestHandlers || []);
+  const responseHandlers = [].concat(apiConf.responseHandlers || []).concat(endpointConf.responseHandlers || []);
+
+  let body, converter: RequestContentTypeConverter;
+  const request = new Request(
+    _makeUrl(apiConf.baseUrl,
+      joinPath(apiConf.path, endpointConf.path),
+      cargs.pathParams,
+      cargs.queryParams
+    ), {
+      headers: defaultsDeep(cargs.headers, apiConf.headers),
+      method: method as string
+    });
+
+  const requestAndConf = {
+    request,
+    conf: defaultsDeep({
+      requestHandlers, responseHandlers,
+      mapper: endpointConf.mapper ? endpointConf.mapper : (a: any) => a
+    }, endpointConf, apiConf)
+  };
+
+  if (cargs.body) {
+    converter = _getRequestContentTypeConverter(cargs.body.contentType);
+    body = cargs.body.value;
+
+    const ctHeader = cargs.headers[Headers.CONTENT_TYPE];
+    if (!isUndefined(ctHeader) && ctHeader.indexOf(cargs.body.contentType as string) <= 0) {
+      throw new SynapseError(`Tried to send a @Body with Content-Type="${cargs.body.contentType}", \
+but "Content-Type" header has already been set to "${cargs.headers[Headers.CONTENT_TYPE]}"`);
+    }
+
+    // convert body according to its Content-Type, and set proper headers
+    return converter
+      .convert(body, request)
+      .then(r => {
+        requestAndConf.request = r;
+
+        return requestAndConf;
+      });
+  } else {
+    return Promise.resolve(requestAndConf);
+  }
+}
+
+function _getRequestContentTypeConverter(contentType: ContentTypeConstants): RequestContentTypeConverter {
+  return RequestConverterStore.getConverterFor(contentType);
+}
+
+/**
+ * Switch on {@link RequestAndConf.conf.observe}, and return either
+ *  - a converter to map the body
+ *  - a converter to create a copy of the response with the mapped body
+ * @param {RequestAndConf} requestConf
+ * @returns {ResponseContentTypeConverter<any>}
+ * @private
+ */
+function _getResponseContentTypeConverter(requestConf: RequestAndConf): ResponseContentTypeConverter<any> {
+  const converter = ResponseContentTypeConverterStore.getConverterFor(requestConf.conf.contentType);
+
+  switch (requestConf.conf.observe) {
+    case ObserveType.BODY:
+      return converter;
+
+    case ObserveType.RESPONSE:
+      return {
+        convert: async (res: Response) => new Response(await converter.convert(res), res)
+      };
+    default:
+      throw new TypeError(`Unhandled value for property "observe" : ${requestConf.conf.observe}`);
+  }
+}
+
+function _doRequest(http: HttpBackendAdapter, requestConf: RequestAndConf): Promise<Response> {
+  _applyRequestHandlers(requestConf);
+  const m = `${requestConf.request.method}`.toLocaleLowerCase();
+  const req = requestConf.request;
   if (!isFunction(http[m])) {
-    throw new TypeError(`unexpected method : ${r.method}`);
+    throw new TypeError(`unexpected method : ${req.method}`);
   }
 
-  const r = requestParams.request;
-  const res: Promise<Response> = http[m](r);
+  const res: Promise<Response> = http[m](req);
+  const converter = _getResponseContentTypeConverter(requestConf);
 
-  if (!res) {
-    throw new SynapseError(`HttpBackendAdapter ${http.constructor.name} did not returned any value after calling method ${r.method}.
-     That's an error. If you use your own HttpBackendAdapter implementation, please ensure it always returns a promise.`);
-  } else if (!res.then) {
-    throw new SynapseError(`HttpBackendAdapter ${http.constructor.name} did not returned a promise after calling method ${r.method}.
-     (Got ${res}). If you use your own HttpBackendAdapter implementation, please ensure it always returns a promise.`);
-  }
-
-  return res;
+  return _assertIsResponsePromise(http, req.method, res)
+    .then((r: Response) => converter.convert(r))
+    .then(requestConf.conf.mapper);
 }
 
 function _makeUrl(baseUrl: string, path: string, pathParams: PathParamsType[], queryParams: QueryParametersType): string {
@@ -227,52 +317,27 @@ function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
   // if invoke a body
   if (decoratedArgs.body) {
     // get body runtime value
-    res.body = args[decoratedArgs.body.index];
+    res.body = {
+      value: args[decoratedArgs.body.index],
+      contentType: decoratedArgs.body.params.contentType
+    };
+
     // if body comes with its mapper
     const mapper = decoratedArgs.body.params.mapper as MapperType<any, any>;
     if (mapper) {
       if (!isFunction(mapper)) {
         throw new TypeError(`mapper should be a function. Got ${mapper}`);
       }
-      res.body = mapper(res.body);
-      if (isUndefined(res.body)) {
+      res.body.value = mapper(res.body.value);
+      if (isUndefined(res.body.value)) {
         console.warn(`Mapper returned value undefined`);
       }
-    }
-
-    if (!isUndefined(res.body)) {
-      // get any present Content-Type
-      const contentType = decoratedArgs.body.params.contentType;
-
-      // converts body value according to this content type.
-      res.body = _wrapBody(contentType, res);
     }
   } else {
     res.body = undefined;
   }
 
   return res;
-}
-
-function _wrapBody(contentType: ContentType, callArgs: CallArgs): any {
-  // TODO support other formats
-  const getContentType = () => callArgs.headers['Content-Type'];
-  const setContentType = (ct) => callArgs.headers['Content-Type'] = ct;
-
-  if (getContentType() && contentType !== getContentType()) {
-    throw new SynapseError(`Tried to send a @Body with Content-Type="${contentType}", but "Content-Type" header has already been set to "${getContentType()}"`);
-  }
-
-  switch (contentType) {
-    case ContentType.JSON:
-      setContentType(contentType);
-
-      return JSON.stringify(callArgs.body);
-    case ContentType.X_WWW_URL_ENCODED:
-      return new URLSearchParams(toQueryString(callArgs.body));
-    default:
-      throw new Error(`unsupported ContentType: ${contentType}`);
-  }
 }
 
 function _replacePathParams(path: string, pathParams: (string | number | boolean)[] = []): string {
@@ -302,48 +367,26 @@ function _replacePathParams(path: string, pathParams: (string | number | boolean
   return path;
 }
 
-function _asEndpointParameters(params: EndpointConf | string = ''): EndpointConf {
-  let params_: EndpointConf;
-  if (isString(params)) {
-    params_ = {
-      path: params as string
+function _asEndpointConf(conf: EndpointConf | string = ''): EndpointConf {
+  let conf_: EndpointConf;
+  if (isString(conf)) {
+    conf_ = {
+      path: conf as string
     };
   } else {
-    params_ = cloneDeep(params) as EndpointConf;
+    conf_ = cloneDeep(conf) as EndpointConf;
   }
 
-  params_.path = params_.path || '';
-  params_.requestHandlers = params_.requestHandlers || [];
+  conf_.path = conf_.path || '';
+  conf_.requestHandlers = conf_.requestHandlers || [];
+  conf_.requestHandlers = conf_.requestHandlers || [];
 
-  return params_;
+  return conf_;
 }
 
-function _createRequest(method: HttpMethod,
-                        args: CallArgs,
-                        params: EndpointConf,
-                        conf: SynapseApiConfig): Request {
-  if (method === HttpMethod.GET && args.body) {
-    throw new TypeError('cannot specify @Body with method annotated with @Get');
-  }
-
-  return new Request(_makeUrl(conf.baseUrl, joinPath(conf.path, params.path), args.pathParams, args.queryParams), {
-    body: args.body,
-    headers: defaultsDeep(args.headers, conf.headers),
-    method: method as string
-  });
-}
-
-function _makeRequestParameters(request: Request, conf: SynapseApiConfig, params: EndpointConf): RequestParameters {
-  return {
-    request,
-    requestHandlers: [].concat(conf.requestHandlers || []).concat(params.requestHandlers || []),
-    responseHandlers: [].concat(conf.responseHandlers || []).concat(params.responseHandlers || []),
-  };
-}
-
-function _applyRequestHandlers(r: RequestParameters): RequestParameters {
-  if (r.requestHandlers) {
-    r.requestHandlers.forEach((h: HttpRequestHandler) => {
+function _applyRequestHandlers(r: RequestAndConf): RequestAndConf {
+  if (r.conf.requestHandlers) {
+    r.conf.requestHandlers.forEach((h: HttpRequestHandler) => {
       h(r.request);
     });
   }
@@ -361,15 +404,43 @@ function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
     console.warn(`cannot infer return type of function ${propertyKey}.`);
   }
 
-  if (!res || res instanceof Observable) {
-    return (p: Promise<Response>) => Observable.fromPromise(p);
-  } else if (isFunction((res as any).then)) {
-    if (res.catch) {
-      (res as Promise<any>).catch(noop);  // 'handle' the Synapse.PROMISE error to mute chrome warning
-    }
-    return (p) => p;
+  const converter = PromiseConverterStore.getConverterFor(res);
+
+  if (converter) {
+    return converter.convert;
   } else {
-    const type = (res as any).__proto__ ? (res as any).__proto__.constructor.name : typeof  res;
+    const type = ({} || res as any).__proto__ ? (res as any).__proto__.constructor.name : typeof res;
     throw new TypeError(`Function ${propertyKey} returned object of unexpected type ${type}`);
   }
+}
+
+
+/**
+ * Ensure the given object is a Response. We consider that any httpBackendAdapter should return a Promise<Response>,
+ * This function asserts that this is true.
+ *
+ */
+export function _assertIsResponsePromise(http: HttpBackendAdapter, method: string, object: any): Promise<Response> {
+
+  if (!object) {
+    throw new SynapseError(`HttpBackendAdapter ${http.constructor.name} did not returned any value after calling method ${method}. \
+That's an error. If you use your own HttpBackendAdapter implementation, please ensure it always returns a promise.`);
+  } else if (!object.then) {
+    throw new SynapseError(`HttpBackendAdapter ${http.constructor.name} did not returned a promise after calling method ${method}. \
+(Got ${object}). If you use your own HttpBackendAdapter implementation, please ensure it always returns a promise.`);
+  }
+
+  return (object as Promise<any>).then((r: any) => {
+
+    const mandatoryFields = ['headers', 'statusText', 'body', 'status'];
+    const missing = mandatoryFields.filter(f => isUndefined(r[f]));
+
+    if (missing.length) {
+      throw new TypeError(`HttpBackendAdapter ${http.constructor.name} returned an object \
+that does not look like a Response after calling method ${method}:
+Missing fields: ${missing.join(', ')}. Got ${JSON.stringify(r)}`);
+    }
+
+    return r as Response;
+  });
 }

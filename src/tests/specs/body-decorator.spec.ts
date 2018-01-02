@@ -1,16 +1,16 @@
-import { TestingModule } from '../../testing.module';
+import { TestingModule } from '../testing.module';
 import { TestBed } from '@angular/core/testing';
-import { Spies } from '../../utils/utils';
-import { Body, ContentType, Synapse, SynapseApi } from '../../../';
-import { BadApi } from '../../utils/test-api/bad.api';
+import { Spies } from '../utils/utils';
+import { Body, Synapse, SynapseApi } from '../../';
+import { BadApi } from '../utils/test-api/bad.api';
 import { Observable } from 'rxjs/Observable';
-import { POST } from '../../../';
-import { fromQueryString } from '../../../utils/utils';
+import { POST } from '../../';
+import { fromQueryString } from '../../utils/utils';
 
 @SynapseApi
 class BodyApi {
 
-  static customBodyMapper = function(obj: any): any {
+  static customBodyMapper = function (obj: any): any {
     obj.throughMapper = true;
 
     return obj;
@@ -22,7 +22,7 @@ class BodyApi {
   }
 
   @POST()
-  postWithUrlEncodedBody(@Body({contentType: ContentType.X_WWW_URL_ENCODED}) body: any): Observable<any> {
+  postWithUrlEncodedBody(@Body({contentType: Body.ContentType.X_WWW_URL_ENCODED}) body: any): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 
@@ -68,43 +68,47 @@ describe(`@Body decorator`, () => {
     });
   });
 
-  describe('when used with a method appart from @GET', () => {
+  describe('when used with a method apart from @GET', () => {
     it('should call HttpBackendAdapter with proper body', (done) => {
-      new BodyApi().postWithBody(body);
-      expect(spies.post).toHaveBeenCalled();
 
-      const r1 = spies.post.calls.mostRecent().args[0] as Request;
+      new BodyApi().postWithBody(body).subscribe(() => {
+        expect(spies.post).toHaveBeenCalled();
 
-      return r1.clone().json().then(b => {
-        expect(b).toEqual(body);
-        done();
-      }).catch(fail);
+        const r1 = spies.post.calls.mostRecent().args[0] as Request;
+
+        r1.json().then(b => {
+          expect(b).toEqual(body);
+          done();
+        }).catch(fail);
+
+      });
     });
   });
 
-  describe('=> property "contentType"', () => {
-    it('should default to "ContentType.JSON"', () => {
-      new BodyApi().postWithBody(body);
-      expect(spies.post).toHaveBeenCalled();
-      const r1 = spies.post.calls.mostRecent().args[0] as Request;
+  describe('have a property "contentType", that', () => {
+    it('should default to "ContentType.JSON"', (done) => {
+      new BodyApi().postWithBody(body)
+        .subscribe(() => {
+          expect(spies.post).toHaveBeenCalled();
+          const r1 = spies.post.calls.mostRecent().args[0] as Request;
 
-      expect(r1.headers.has('Content-Type'));
-      expect(r1.headers.get('Content-Type')).toEqual(`${ContentType.JSON}`);
+          expect(r1.headers.has('Content-Type'));
+          expect(r1.headers.get('Content-Type')).toEqual(`${Body.ContentType.JSON}`);
+          done();
+        });
+
     });
 
-    it('should be passed to httpBackendAdapter', () => {
-      new BodyApi().postWithUrlEncodedBody(body);
-
+    it('should be passed to httpBackendAdapter', async () => {
+      await new BodyApi().postWithUrlEncodedBody(body);
       const r1 = spies.post.calls.mostRecent().args[0] as Request;
-
       expect(r1.headers.has('Content-Type'));
-      expect(r1.headers.get('Content-Type')).toEqual(`${ContentType.X_WWW_URL_ENCODED}`);
+      expect(r1.headers.get('Content-Type')).toEqual(`${Body.ContentType.X_WWW_URL_ENCODED}`);
     });
 
     describe('when ContentType.X_WWW_URL_ENCODED', () => {
-      it('should pass the body as UrlEncoded', () => {
+      it('should pass the body as UrlEncoded', async () => {
         new BodyApi().postWithUrlEncodedBody(body);
-
         const r1 = spies.post.calls.mostRecent().args[0] as Request;
 
         r1.text().then(encodedBody => {
@@ -116,10 +120,9 @@ describe(`@Body decorator`, () => {
     });
   });
 
-  describe('=> property "mapper"', () => {
-    it('should set a serializer function that is called when body is submitted', () => {
-      new BodyApi().postWithMappedBody(body);
-
+  describe('have a property "mapper", that', () => {
+    it('should set a serializer function that is called when body is submitted', async () => {
+      await new BodyApi().postWithMappedBody(body);
       // /!\ Cannot set spy, because monkey patches on static methods are lost when decorating the class.
       // spyOn(BodyApi, 'customBodyMapper').and.callThrough();
 

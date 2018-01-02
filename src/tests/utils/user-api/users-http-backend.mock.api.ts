@@ -1,4 +1,4 @@
-import { HttpBackendAdapter } from '../../../core/http-backend.interface';
+import { HttpBackendAdapter } from '../../../core/http-backend/http-backend.interface';
 import { data } from './users.mock';
 import { cloneDeep } from 'lodash';
 

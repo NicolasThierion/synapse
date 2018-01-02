@@ -1,14 +1,14 @@
 import { Observable } from 'rxjs/Observable';
 import { User } from './models/user.model';
 import { Injectable } from '@angular/core';
-import { Body, GET, Headers, PathParam, PATCH, POST, PUT, QueryParams, SynapseApi, Synapse, ContentType } from '@ack/synapse';
-import { MockUserBackendAdapter } from './users-http-backend.mock.api';
+
+import { Body, GET, Headers, PathParam, PATCH, POST, PUT, QueryParams, SynapseApi, Synapse } from '../../../';
 import { UserMapper } from './user.mapper';
 
 const userMapper = new UserMapper();
 
 @SynapseApi({
-  httpBackend: new MockUserBackendAdapter(),
+  baseUrl: 'http://localhost:3000',
   path: 'users'
 })
 @Injectable()
@@ -31,7 +31,7 @@ export class UsersApi {
 
   @POST()
   postOne(@Body({
-            contentType: ContentType.FORM_DATA,
+            contentType: Body.ContentType.FORM_DATA,
             mapper: userMapper.fromJson
           }) user: User,
           @Headers() headers?: any): Observable<Response> {

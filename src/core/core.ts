@@ -1,7 +1,13 @@
 import { Observable } from 'rxjs/Observable';
-import { SynapseConf } from './synapse-conf';
+
 import '../utils/rxjs-import';
+import { SynapseConf } from './synapse-conf';
 import { assert } from '../utils/assert';
+import { mergeConfigs, validateHttpBackendAdapter } from '../utils/utils';
+
+declare const global: {
+  __SynapseConfig: SynapseConf
+};
 
 class StateError extends Error {
   constructor(s: string) {
@@ -16,42 +22,29 @@ export class Synapse {
   public static readonly PROMISE = Promise.reject(
     'should only use SynapseConf.PROMISE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
 
-  private static _conf: SynapseConf;
-
   public static init(conf: SynapseConf): void {
-    if (this._conf) {
+    if (global.__SynapseConfig) {
       assert(false);
       throw new StateError('Synapse already initialized');
     }
-    this._conf = conf;
+
+    conf = mergeConfigs(conf, SynapseConf.DEFAULT);
+    validateHttpBackendAdapter(conf.httpBackend);
+
+    global.__SynapseConfig = conf;
   }
 
   public static getConfig(): SynapseConf {
-    if (!this._conf) {
+    if (!global.__SynapseConfig) {
       throw new StateError('Synapse not initialized');
     }
-    return this._conf;
+    return global.__SynapseConfig;
   }
 
   public static teardown(): void {
-    this._conf = null;
+    global.__SynapseConfig = null;
   }
 }
 
-export enum ContentType {
-  FORM_DATA = 'form-data',
-  X_WWW_URL_ENCODED = 'application/x-www-form-urlencoded;charset=UTF-8',
-  PLAIN_TEXT = 'text/plain',
-  JSON = 'application/json',
-  JAVASCRIPT = 'application/javascript'
-}
-
-export enum HttpMethod {
-  GET = 'GET', POST = 'POST', PUT = 'PUT', DELETE = 'DELETE', PATCH = 'PATCH'
-}
-
-export type HttpRequestHandler = (request: Request) => void;
-export type HttpResponseHandler = (response: Response) => void;
-
-export * from './decorators/decorators';
-
+export * from './decorators/index';
+export * from './http-backend';
