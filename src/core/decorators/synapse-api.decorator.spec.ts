@@ -11,7 +11,7 @@ import {
   noop,
   cloneDeep,
 } from 'lodash';
-import { SynapseConf } from '../synapse-conf';
+import { SynapseConfig } from '../config.type';
 import { mergeConfigs } from '../../utils/utils';
 import { ContentTypeConstants } from '../constants';
 import { ContentTypeTextApi, NoContentTypeApi } from '../../tests/utils/test-api/content-type.api';
@@ -106,7 +106,7 @@ describe('@SynapseApi annotation', () => {
     const api = new Api('arg');
     const conf = SynapseApiReflect.getConf(api.constructor.prototype);
     expect([conf.baseUrl, conf.headers, conf.path])
-      .toEqual([Global.CONF.baseUrl, merge({}, Global.CONF.headers, SynapseConf.DEFAULT.headers), '']);
+      .toEqual([Global.CONF.baseUrl, merge({}, Global.CONF.headers, SynapseConfig.DEFAULT.headers), '']);
     expect(conf.httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
   });
 
@@ -115,7 +115,7 @@ describe('@SynapseApi annotation', () => {
       const api = new ApiWithNoConfig();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
       expect([conf.baseUrl, conf.headers, conf.path])
-        .toEqual([Global.CONF.baseUrl, merge({}, Global.CONF.headers, SynapseConf.DEFAULT.headers), '']);
+        .toEqual([Global.CONF.baseUrl, merge({}, Global.CONF.headers, SynapseConfig.DEFAULT.headers), '']);
       expect(conf.httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
     });
   });
@@ -142,26 +142,26 @@ describe('@SynapseApi annotation', () => {
   });
 
   describe('with provided custom config', () => {
-    it('should use values from provided config and SynapseConf.DEFAULT', () => {
+    it('should use values from provided config and SynapseConfig.DEFAULT', () => {
       const api = new ApiWithCompleteConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
       const expected = CustomConf;
       expected.headers = conf.headers;    // merged headers are another test's subject
       expected.httpBackend = conf.httpBackend;  // don't compare backends;
       expect(conf as any)
-        .toEqual(mergeConfigs({}, expected, SynapseConf.DEFAULT));
+        .toEqual(mergeConfigs({}, expected, SynapseConfig.DEFAULT));
     });
 
     it('should merge headers with those from global conf', () => {
       const api = new ApiWithCompleteConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      expect(conf.headers).toEqual(mergeConfigs({}, Custom.HEADERS, Global.HEADERS, SynapseConf.DEFAULT.headers));
+      expect(conf.headers).toEqual(mergeConfigs({}, Custom.HEADERS, Global.HEADERS, SynapseConfig.DEFAULT.headers));
     });
 
     it('should merge config with global conf', () => {
       const api = new ApiWithPartialConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      const expected = mergeConfigs({}, CustomPartialConf, Global.CONF, SynapseConf.DEFAULT);
+      const expected = mergeConfigs({}, CustomPartialConf, Global.CONF, SynapseConfig.DEFAULT);
       expected.headers = conf.headers;            // merged headers are another test's subject
       expected.httpBackend = conf.httpBackend;    // this is mocked, so don't compare it
 
@@ -248,7 +248,7 @@ describe('@SynapseApi annotation', () => {
       const expected = cloneDeep(CustomConf);
       expected.httpBackend = conf.httpBackend;
 
-      expect(conf).toEqual(mergeConfigs(expected, SynapseConf.DEFAULT, TestingModule.Global.CONF));
+      expect(conf).toEqual(mergeConfigs(expected, SynapseConfig.DEFAULT, TestingModule.Global.CONF));
     });
 
     it('should inherits path from parent class if not path specified', () => {

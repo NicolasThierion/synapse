@@ -2,10 +2,10 @@ import { QueryParametersType } from '../';
 import * as qs from 'qs';
 import { HttpBackendAdapter } from '../core/http-backend';
 import { isFunction, mergeWith, isUndefined, isObject, isArray, cloneDeep } from 'lodash';
-import { SynapseConf } from '../core/synapse-conf';
-import { EndpointConf, SynapseApiConf } from '../core/decorators';
+import { SynapseConfig } from '../core/config.type';
 import { assert } from './assert';
-import { headersToString } from 'selenium-webdriver/http';
+import { SynapseApiConfig } from '../core/api-config.type';
+import { EndpointConfig } from '../core/endpoint-config.type';
 
 export function removeTrailingSlash(path: string): string {
   if (path.endsWith('/')) {
@@ -47,7 +47,7 @@ export function validateHttpBackendAdapter(ba: HttpBackendAdapter): void {
   }
 }
 
-type CONF = SynapseConf | SynapseApiConf | EndpointConf;
+type CONF = SynapseConfig | SynapseApiConfig | EndpointConfig;
 export function mergeConfigs<T extends CONF, U extends CONF> (conf: T, ...confs: U[] ): T & U {
 
   return mergeWith(conf, ...confs, (value: any, srcValue: any, key: string, object: any, source: any) => {

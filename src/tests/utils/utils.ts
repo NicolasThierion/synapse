@@ -3,7 +3,7 @@ import { noop } from 'lodash';
 import Spy = jasmine.Spy;
 import { inject } from '@angular/core/testing';
 import { TestingModule } from '../testing.module';
-import { SynapseConf } from '../../core/synapse-conf';
+import { SynapseConfig } from '../../core/config.type';
 import { ContentTypeConstants, HeaderConstants } from '../../core/constants';
 
 type HttpSpies = {
@@ -18,7 +18,7 @@ export namespace Spies {
     static spies: HttpSpies = {};
     static setupFakeSpies(): void {
       inject([TestingModule], noop)();
-      inject([SynapseConf], (conf) => {
+      inject([SynapseConfig], (conf) => {
         // setup spies
         [ 'get', 'post', 'put', 'patch', 'delete'].forEach((s: keyof HttpBackendAdapter) => {
 

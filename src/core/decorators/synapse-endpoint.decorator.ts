@@ -1,4 +1,3 @@
-import { SynapseApiConf } from './synapse-api.decorator';
 import { Observable } from 'rxjs/Observable';
 import { assert } from '../../utils/assert';
 import { SynapseApiReflect } from './synapse-api.reflect';
@@ -21,21 +20,8 @@ import { ContentTypeConstants, HttpMethod, HttpRequestHandler, HttpResponseHandl
 import { ResponseContentTypeConverter, ResponseContentTypeConverterStore } from './content-type-converters/rx/response-converter-store';
 import { PromiseConverterStore } from './promise-converters/promise-converter-store';
 import { RequestContentTypeConverter, RequestConverterStore } from './content-type-converters/tx/request-converter-store';
-
-/**
- * Use this conf for @GET, @POST, ...
- */
-export interface EndpointConf {
-  // TODO support for mappers
-  // TODO support for handler
-  // TODO support for Content-Type
-  path?: string;
-  mapper?: MapperType<any, any>;
-  requestHandlers?: HttpRequestHandler[];
-  responseHandlers?: HttpResponseHandler[];
-  contentType?: ContentTypeConstants;
-  observe?: ObserveType;
-}
+import { EndpointConfig } from '../endpoint-config.type';
+import { SynapseApiConfig } from '../api-config.type';
 
 /**
  * Parameters decorated with @Headers are considered to be of this type.
@@ -57,50 +43,50 @@ export type QueryParametersType = Object;
 /**
  * GET method decorator.
  *
- * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @param {EndpointConfig | string} conf the configuration for this endpoint
  * @returns {MethodDecorator} the GET decorator
  */
-export function GET(conf: EndpointConf | string = ''): MethodDecorator {
+export function GET(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.GET, conf);
 }
 
 /**
  * POST method decorator.
  *
- * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @param {EndpointConfig | string} conf the configuration for this endpoint
  * @returns {MethodDecorator} the POST decorator
  */
-export function POST(conf: EndpointConf | string = ''): MethodDecorator {
+export function POST(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.POST, conf);
 }
 
 /**
  * PUT method decorator.
  *
- * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @param {EndpointConfig | string} conf the configuration for this endpoint
  * @returns {MethodDecorator} the PUT decorator
  */
-export function PUT(conf: EndpointConf | string = ''): MethodDecorator {
+export function PUT(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.PUT, conf);
 }
 
 /**
  * PATCH method decorator.
  *
- * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @param {EndpointConfig | string} conf the configuration for this endpoint
  * @returns {MethodDecorator} the PATCH decorator
  */
-export function PATCH(conf: EndpointConf | string = ''): MethodDecorator {
+export function PATCH(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.PATCH, conf);
 }
 
 /**
  * DELETE method decorator.
  *
- * @param {EndpointConf | string} conf the configuration for this endpoint
+ * @param {EndpointConfig | string} conf the configuration for this endpoint
  * @returns {MethodDecorator} the DELETE decorator
  */
-export function DELETE(conf: EndpointConf | string = ''): MethodDecorator {
+export function DELETE(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.DELETE, conf);
 }
 
@@ -109,7 +95,7 @@ export function DELETE(conf: EndpointConf | string = ''): MethodDecorator {
  */
 interface RequestAndConf {
   request?: Request;
-  conf: EndpointConf & SynapseApiConf;
+  conf: EndpointConfig & SynapseApiConfig;
 }
 
 type EndpointReturnType = Promise<Response> | Observable<Response>;
@@ -127,7 +113,7 @@ class CallArgs {
   };
 }
 
-function _httpRequestDecorator(method: HttpMethod, conf: EndpointConf | string): MethodDecorator {
+function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string): MethodDecorator {
   return function HttpMethodDecorator(target: Object,
                                       propertyKey: string | symbol,
                                       descriptor: TypedPropertyDescriptor<any>): void {
@@ -181,8 +167,8 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConf | string):
 }
 
 function _makeRequestAndConf(method: HttpMethod,
-                             apiConf: SynapseApiConf,
-                             endpointConf: EndpointConf,
+                             apiConf: SynapseApiConfig,
+                             endpointConf: EndpointConfig,
                              cargs: CallArgs): Promise<RequestAndConf> {
   if (method === HttpMethod.GET && cargs.body) {
     throw new TypeError('cannot specify @Body with method annotated with @Get');
@@ -368,14 +354,14 @@ function _replacePathParams(path: string, pathParams: (string | number | boolean
   return path;
 }
 
-function _asEndpointConf(conf: EndpointConf | string = ''): EndpointConf {
-  let conf_: EndpointConf;
+function _asEndpointConf(conf: EndpointConfig | string = ''): EndpointConfig {
+  let conf_: EndpointConfig;
   if (isString(conf)) {
     conf_ = {
       path: conf as string
     };
   } else {
-    conf_ = cloneDeep(conf) as EndpointConf;
+    conf_ = cloneDeep(conf) as EndpointConfig;
   }
 
   conf_.path = conf_.path || '';

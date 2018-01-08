@@ -5,7 +5,7 @@ import { SynapseModule } from '../angular/synapse.module';
 import { initAssert } from '../utils/assert';
 import { AngularHttpBackendAdapter } from '../angular/angular-http-backend-adapter';
 import { HttpBackendAdapter } from '../core/http-backend/http-backend.interface';
-import { SynapseConf } from '../core/synapse-conf';
+import { SynapseConfig } from '../core/config.type';
 
 class CustomBackendAdapter extends AngularHttpBackendAdapter {
 }
@@ -19,7 +19,7 @@ export class Global {
     'X-global-header': 'some-global-value'
   };
 
-  static readonly CONF: SynapseConf = {
+  static readonly CONF: SynapseConfig = {
     baseUrl: Global.BASE_URL,
     headers: Global.HEADERS
   };
@@ -35,7 +35,7 @@ export class Custom {
   };
   static BACKEND_ADAPTER: HttpBackendAdapter = new CustomBackendAdapter(null);
 
-  static readonly CONF: SynapseConf = {
+  static readonly CONF: SynapseConfig = {
     baseUrl: Custom.BASE_URL,
     headers: Custom.HEADERS,
     httpBackend: Custom.BACKEND_ADAPTER
@@ -62,11 +62,11 @@ export class TestingModule {
     initAssert(true);
   }
 
-  static forRoot(conf: SynapseConf = Global.CONF): ModuleWithProviders {
+  static forRoot(conf: SynapseConfig = Global.CONF): ModuleWithProviders {
     return {
       ngModule: TestingModule,
       providers: [
-        {provide: SynapseConf, useValue: conf}
+        {provide: SynapseConfig, useValue: conf}
       ]
     };
   }

@@ -4,15 +4,13 @@ import { ContentTypeConstants, HttpRequestHandler, HttpResponseHandler, ObserveT
 /**
  * Global configuration for Synapse APIs
  */
-export class SynapseConf {
-  static DEFAULT: SynapseConf = {
+export class SynapseConfig {
+  static DEFAULT: SynapseConfig = {
     baseUrl: null,
     responseHandlers: [],
     requestHandlers: [],
     observe: ObserveType.BODY,
-    headers: {
-      'x-some-default-header': 'x-some-default-header-value'
-    },
+    headers: {},
     httpBackend: new FetchApiBackendAdapter(),
     contentType: ContentTypeConstants.JSON
   };

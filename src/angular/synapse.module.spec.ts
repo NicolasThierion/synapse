@@ -8,7 +8,7 @@ import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { Synapse } from '../core/core';
 import { HttpBackendAdapter } from '../core/http-backend';
 import { TestingModule } from '../tests/testing.module';
-import { SynapseConf } from '../core/synapse-conf';
+import { SynapseConfig } from '../core/config.type';
 import { Spies } from '../tests/utils/utils';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
@@ -92,7 +92,7 @@ describe('SynapseModule.forRoot method', () => {
       }));
 
       it('should provide the same "AngularSynapseConf" as Synapse.getConfig()',
-        inject([SynapseConf], (conf: SynapseConf) => {
+        inject([SynapseConfig], (conf: SynapseConfig) => {
           expect(Synapse.getConfig()).toBe(conf as any);
         }));
 
@@ -101,7 +101,7 @@ describe('SynapseModule.forRoot method', () => {
       });
 
       it('should set up the provided headers', () => {
-        expect(Synapse.getConfig().headers).toEqual(merge({}, TestingModule.Global.HEADERS, SynapseConf.DEFAULT.headers));
+        expect(Synapse.getConfig().headers).toEqual(merge({}, TestingModule.Global.HEADERS, SynapseConfig.DEFAULT.headers));
       });
 
       it('should set up the provided baseUrl', () => {

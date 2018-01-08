@@ -3,7 +3,7 @@ import { Synapse } from '../core/core';
 import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { HttpClient } from '@angular/common/http';
 import { throwIfAlreadyLoaded } from './utils/module-import-guard';
-import { SynapseConf } from '../core/synapse-conf';
+import { SynapseConfig } from '../core/config.type';
 import { validateHttpBackendAdapter } from '../utils/utils';
 
 /**
@@ -14,7 +14,7 @@ import { validateHttpBackendAdapter } from '../utils/utils';
  */
 @NgModule()
 export class SynapseModule {
-  constructor(@Optional() http: HttpClient, @Optional() @SkipSelf() parentModule: SynapseModule, conf: SynapseConf) {
+  constructor(@Optional() http: HttpClient, @Optional() @SkipSelf() parentModule: SynapseModule, conf: SynapseConfig) {
     throwIfAlreadyLoaded(parentModule, 'SynapseModule');
     if (!conf.httpBackend) {
 
@@ -27,14 +27,14 @@ export class SynapseModule {
       validateHttpBackendAdapter(conf.httpBackend);
     }
 
-    Synapse.init(conf as SynapseConf);
+    Synapse.init(conf as SynapseConfig);
   }
 
-  static forRoot(conf: SynapseConf): ModuleWithProviders {
+  static forRoot(conf: SynapseConfig): ModuleWithProviders {
     return {
       ngModule: SynapseModule,
       providers: [
-        {provide: SynapseConf, useValue: conf}
+        {provide: SynapseConfig, useValue: conf}
       ]
     };
   }
