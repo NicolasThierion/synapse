@@ -274,6 +274,7 @@ function _doRequest(http: HttpBackendAdapter, requestConf: RequestAndConf): Prom
   const converter = _getResponseContentTypeConverter(requestConf);
 
   return _assertIsResponsePromise(http, req.method, res)
+    .then((response: Response) => _applyResponseHandlers(requestConf, response))
     .then((r: Response) => converter.convert(r))
     .then(requestConf.conf.mapper);
 }
@@ -393,6 +394,13 @@ function _applyRequestHandlers(r: RequestAndConf): RequestAndConf {
 
   return r;
 }
+
+function _applyResponseHandlers(requestAndConf: RequestAndConf, response: Response): Response {
+  requestAndConf.conf.responseHandlers.forEach((h: HttpResponseHandler) => h(response));
+
+  return response;
+}
+
 
 function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
                               propertyKey: string | symbol): (promise: Promise<Response>) => EndpointReturnType {

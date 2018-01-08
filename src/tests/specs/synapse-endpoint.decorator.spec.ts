@@ -15,6 +15,8 @@ import { UsersApi } from '../utils/user-api/users.api';
 import { User } from '../utils/user-api/models/user.model';
 import { noop, isObject, isString } from 'lodash';
 import { ContentTypeTextApi, NoContentTypeApi } from '../utils/test-api/content-type.api';
+import { HandlerApi } from '../utils/test-api/handler.api';
+import { ObserveType } from '../../core/constants';
 
 describe('', () => {
 
@@ -42,10 +44,11 @@ describe('', () => {
     describe('when called', () => {
       beforeEach(Spies.HttpBackend.setupFakeSpies);
 
-      it(`should call registered HttpBackendAdapter's get method`, async () => {
-        await new GetApi().get();
+      it(`should call registered HttpBackendAdapter's get method`, async (done) => {
+        await new GetApi().get().toPromise();
         expect(spies.get).toHaveBeenCalled();
         expect(spies.get.calls.mostRecent().args[0]).toEqual(jasmine.any(Request));
+        done();
       });
     });
   });
@@ -66,9 +69,10 @@ describe('', () => {
     });
 
     describe('when called', () => {
-      it(`should call registered HttpBackendAdapter's post method`, async () => {
-        await new PostApi().post();
+      it(`should call registered HttpBackendAdapter's post method`, async (done) => {
+        await new PostApi().post().toPromise();
         expect(spies.post).toHaveBeenCalled();
+        done();
       });
     });
   });
@@ -90,9 +94,10 @@ describe('', () => {
     });
 
     describe('when called', () => {
-      it(`should call registered HttpBackendAdapter's put method`, async () => {
-        await new PutApi().put();
+      it(`should call registered HttpBackendAdapter's put method`, async (done) => {
+        await new PutApi().put().toPromise();
         expect(spies.put).toHaveBeenCalled();
+        done();
       });
     });
   });
@@ -113,9 +118,10 @@ describe('', () => {
     });
 
     describe('when called', () => {
-      it(`should call registered HttpBackendAdapter's put method`, async () => {
-        await new PatchApi().patch();
+      it(`should call registered HttpBackendAdapter's put method`, async (done) => {
+        await new PatchApi().patch().toPromise();
         expect(spies.patch).toHaveBeenCalled();
+        done();
       });
     });
   });
@@ -136,9 +142,10 @@ describe('', () => {
     });
 
     describe('when called', () => {
-      it(`should call registered HttpBackendAdapter's put method`, async () => {
-        await new DeleteApi().delete();
+      it(`should call registered HttpBackendAdapter's put method`, async (done) => {
+        await new DeleteApi().delete().toPromise();
         expect(spies.delete).toHaveBeenCalled();
+        done();
       });
     });
   });
@@ -156,21 +163,23 @@ describe('', () => {
     describe('when called', () => {
       beforeEach(Spies.HttpBackend.setupFakeSpies);
 
-      it(`should call httpBackendAdpater method with proper global configuration`, async () => {
+      it(`should call httpBackendAdpater method with proper global configuration`, async (done) => {
 
-        await new GetApi().get();
+        await new GetApi().get().toPromise();
         const r = spies.get.calls.mostRecent().args[0] as Request;
         expect(removeTrailingSlash(r.url)).toEqual(removeTrailingSlash(Global.BASE_URL));
         expect(r.headers).toEqual(new Headers(Global.HEADERS));
+        done();
       });
 
       describe('with an annotated path', () => {
-        it('should append the provided path to the global baseUrl', async () => {
-          await new GetApi.WithPath().get();
+        it('should append the provided path to the global baseUrl', async (done) => {
+          await new GetApi.WithPath().get().toPromise();
           expect(spies.get).toHaveBeenCalled();
 
           const r = spies.get.calls.mostRecent().args[0] as Request;
           expect(r.url).toEqual(joinPath(Global.BASE_URL, GetApi.WithPath.PATH));
+          done();
         });
 
         describe('that requires pathParams', () => {
@@ -182,20 +191,60 @@ describe('', () => {
       });
 
       describe('with an annotated path and baseUrl', () => {
-        it('should append the provided path to the provided baseUrl', async () => {
-          await new GetApi.WithBaseUrlAndPath().get();
+        it('should append the provided path to the provided baseUrl', async (done) => {
+          await new GetApi.WithBaseUrlAndPath().get().toPromise();
           expect(spies.get).toHaveBeenCalled();
 
           const r = spies.get.calls.mostRecent().args[0] as Request;
           expect(r.url).toEqual(joinPath(GetApi.WithBaseUrlAndPath.BASEURL, GetApi.WithBaseUrlAndPath.PATH));
+          done();
+        });
+      });
+
+      describe('with property "requestHandlers"', () => {
+        it('should call through the registered handlers', async (done) => {
+          await new HandlerApi().getWithCustomHandler().toPromise();
+          expect(spies.get).toHaveBeenCalled();
+
+          const r = spies.get.calls.mostRecent().args[0] as Request;
+          expect(r.headers.has(HandlerApi.Global.REQUEST_HANDLER_HEADER)).toEqual(true);
+          expect(r.headers.has(HandlerApi.Custom.REQUEST_HANDLER_HEADER)).toEqual(true);
+          done();
+        });
+      });
+
+      describe('with property "responseHandlers"', () => {
+        it('should call through the registered handlers', async (done) => {
+          await new HandlerApi().getWithCustomHandler()
+            .subscribe(response => {
+              expect(response.headers.has(HandlerApi.Global.RESPONSE_HANDLER_HEADER)).toEqual(true);
+              expect(response.headers.has(HandlerApi.Custom.RESPONSE_HANDLER_HEADER)).toEqual(true);
+              done();
+            });
+        });
+      });
+
+      describe('have a property "observe", that', () => {
+        it('should default to "ObserveType.BODY"', () => {
+          new GetApi().get().subscribe(res => {
+            expect(res).not.toEqual(jasmine.any(Response));
+          });
+        });
+
+        it('should return response when "observe=ObserveType.RESPONSE"', () => {
+          new HandlerApi().get().subscribe(res => {
+            expect(res).toEqual(jasmine.any(Response));
+          });
         });
       });
     });
 
     describe('after called', () => {
+      beforeEach(Spies.HttpBackend.setupFakeSpies);
+
       describe('on a method that returns a promise', () => {
-        it('should return a promise', async () => {
-          const ret = await new GetApi().getThatReturnsAPromise();
+        it('should return a promise', () => {
+          const ret = new GetApi().getThatReturnsAPromise();
           expect(ret).toEqual(jasmine.any(Promise));
         });
       });

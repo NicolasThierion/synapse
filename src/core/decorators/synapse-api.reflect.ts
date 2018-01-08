@@ -38,7 +38,9 @@ export namespace SynapseApiReflect {
     const globalConf = Synapse.getConfig();
 
     // patch it with local @SynapseApi config.
-    const conf_: SynapseConf | SynapseApiConf = mergeConfigs({}, conf as SynapseApiConf, globalConf);
+    const conf_: SynapseConf | SynapseApiConf = mergeConfigs({}, conf as SynapseApiConf, globalConf, {
+      path: ''
+    });
     Object.freeze(conf_);
 
     // save conf for this class.

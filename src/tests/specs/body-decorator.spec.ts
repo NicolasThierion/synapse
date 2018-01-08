@@ -100,7 +100,7 @@ describe(`@Body decorator`, () => {
     });
 
     it('should be passed to httpBackendAdapter', async () => {
-      await new BodyApi().postWithUrlEncodedBody(body);
+      await new BodyApi().postWithUrlEncodedBody(body).toPromise();
       const r1 = spies.post.calls.mostRecent().args[0] as Request;
       expect(r1.headers.has('Content-Type'));
       expect(r1.headers.get('Content-Type')).toEqual(`${Body.ContentType.X_WWW_URL_ENCODED}`);
@@ -108,13 +108,12 @@ describe(`@Body decorator`, () => {
 
     describe('when ContentType.X_WWW_URL_ENCODED', () => {
       it('should pass the body as UrlEncoded', async () => {
-        new BodyApi().postWithUrlEncodedBody(body);
+        await new BodyApi().postWithUrlEncodedBody(body).toPromise();
         const r1 = spies.post.calls.mostRecent().args[0] as Request;
 
         r1.text().then(encodedBody => {
           expect(encodedBody).toBeTruthy();
           expect(fromQueryString(encodedBody)).toEqual(body);
-
         }).catch(fail);
       });
     });
@@ -122,7 +121,7 @@ describe(`@Body decorator`, () => {
 
   describe('have a property "mapper", that', () => {
     it('should set a serializer function that is called when body is submitted', async () => {
-      await new BodyApi().postWithMappedBody(body);
+      await new BodyApi().postWithMappedBody(body).toPromise();
       // /!\ Cannot set spy, because monkey patches on static methods are lost when decorating the class.
       // spyOn(BodyApi, 'customBodyMapper').and.callThrough();
 

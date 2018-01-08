@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersApi } from '../users/users.api';
+import { HttpClient } from '@angular/common/http';
+import { GET, PathParam, QueryParametersType, QueryParams, SynapseApi } from '../../../src/core/decorators';
+const BASE_URL = 'https://mon-prod-url';
 
 @Component({
   selector: 'ack-root',
@@ -7,8 +10,25 @@ import { UsersApi } from '../users/users.api';
 })
 export class AppComponent implements OnInit {
   private _users: UsersApi;
-  constructor(users: UsersApi) {
-    this._users = users;
+  public constructor(private http: HttpClient) {
+    const searchParameters = {
+      name: 'toto',
+      age: 12,
+      city: 'Paris'
+    };
+    this.searchUser(searchParameters);
+  }
+
+  getUser(userId: number) {
+    this.http.get(BASE_URL + '/users/' + userId);
+  }
+
+  getAccount(accountId: number) {
+    this.http.get(BASE_URL + '/accounts/' + accountId);
+  }
+
+  searchUser(searchParameters) {
+    this.http.get(BASE_URL + '/users?name=' + searchParameters.name + '&age=' + searchParameters.age + 'city=' + searchParameters.city);
   }
 
   ngOnInit(): void {
@@ -16,4 +36,36 @@ export class AppComponent implements OnInit {
       console.log(res);
     });
   }
+}
+// => https://mon-prod-url / users
+@SynapseApi({
+  baseUrl: BASE_URL,
+  path: ''
+})
+class UserApi {
+
+  @GET('users/:id')
+  // => https://mon-prod-url / users / 10
+  getUser(@PathParam() userId: number) {
+
+  }
+  @GET('accounts/:id')
+  getAccount(@PathParam() accountId: number) {
+
+  }
+
+  @GET({
+    path: 'users'
+  })
+  // => https://mon-prod-url / users ? .. & ...& ...
+  searchUser(@QueryParams() searchParameters) {
+  }
+}
+
+
+function main() {
+
+  const httpClent = new HttpClient();
+  new AppComponent(httpClent);
+
 }

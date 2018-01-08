@@ -41,16 +41,18 @@ describe(`@Headers decorator`, () => {
     'x-some-custom-header-parameter': 'x-some-custom-header-parameter-value'
   };
 
-  it('should merge headers with global headers', async() => {
+  it('should merge headers with global headers', async(done) => {
     await new GetApi().getWithHeaders(HEADERS);
     const r = spies.get.calls.mostRecent().args[0] as Request;
     expect(r.headers).toEqual(new Headers(defaults(HEADERS, Global.HEADERS)));
+    done();
   });
 
-  it('should merge headers with @SynapseApi headers', async() => {
+  it('should merge headers with @SynapseApi headers', async(done) => {
     await new GetApi.WithHeaders().getWithHeaders(HEADERS);
     const r = spies.get.calls.mostRecent().args[0] as Request;
     expect(r.headers).toEqual(new Headers(defaults(HEADERS, Global.HEADERS, GetApi.WithHeaders.HEADERS)));
+    done();
   });
 });
 

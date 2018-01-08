@@ -48,9 +48,9 @@ describe(`@QueryParams decorator`, () => {
     qp23: 1
   };
 
-  it('should pass queryParams to the adapter', async () => {
-    await new GetApi().getWithQueryParams(QUERY_PARAMS, QUERY_PARAMS2);
-    await new GetApi().getWithQueryParams(MERGED_QUERY_PARAMS);
+  it('should pass queryParams to the adapter', async (done) => {
+    await new GetApi().getWithQueryParams(QUERY_PARAMS, QUERY_PARAMS2).toPromise();
+    await new GetApi().getWithQueryParams(MERGED_QUERY_PARAMS).toPromise();
     expect(spies.get).toHaveBeenCalled();
     const r1 = spies.get.calls.all()[0].args[0] as Request;
     const r2 = spies.get.calls.all()[1].args[0] as Request;
@@ -60,11 +60,12 @@ describe(`@QueryParams decorator`, () => {
 
     expect(fromPairs([...(new URLSearchParams(qs1) as any).entries()]))
       .toEqual(fromPairs([...(new URLSearchParams(qs2) as any).entries()]));
+    done();
   });
 
-  it('should add query params to any existing query params defined within path', async () => {
-    await new GetApi().getWithMoreQueryParams(QUERY_PARAMS);
-    await new GetApi().getWithQueryParams(QUERY_PARAMS, {queryParamPresets: 'true'});
+  it('should add query params to any existing query params defined within path', async (done) => {
+    await new GetApi().getWithMoreQueryParams(QUERY_PARAMS).toPromise();
+    await new GetApi().getWithQueryParams(QUERY_PARAMS, {queryParamPresets: 'true'}).toPromise();
 
     new URLSearchParams().toString();
     expect(spies.get).toHaveBeenCalled();
@@ -78,6 +79,7 @@ describe(`@QueryParams decorator`, () => {
 
     expect(fromPairs([...(new URLSearchParams(qs1) as any).entries()]))
       .toEqual(fromPairs([...(new URLSearchParams(qs2) as any).entries()]));
+    done();
   });
 });
 

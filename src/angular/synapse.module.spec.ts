@@ -9,6 +9,7 @@ import { Synapse } from '../core/core';
 import { HttpBackendAdapter } from '../core/http-backend';
 import { TestingModule } from '../tests/testing.module';
 import { SynapseConf } from '../core/synapse-conf';
+import { Spies } from '../tests/utils/utils';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
   get(request: Request): Promise<Response> {
@@ -85,6 +86,7 @@ describe('SynapseModule.forRoot method', () => {
           })],
           providers: []
         });
+
         // force eager construction of SynapseModule
         inject([SynapseModule], noop)();
       }));

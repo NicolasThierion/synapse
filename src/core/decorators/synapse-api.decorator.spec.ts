@@ -15,6 +15,8 @@ import { SynapseConf } from '../synapse-conf';
 import { mergeConfigs } from '../../utils/utils';
 import { ContentTypeConstants } from '../constants';
 import { ContentTypeTextApi, NoContentTypeApi } from '../../tests/utils/test-api/content-type.api';
+import { HandlerApi } from '../../tests/utils/test-api/handler.api';
+import { Spies } from '../../tests/utils/utils';
 
 const API_PATH = 'some-api-path/';
 const EXTENDED_API_PATH = '/some-extended-api-path';
@@ -80,12 +82,15 @@ class ApiWithAttributes {
 }
 
 describe('@SynapseApi annotation', () => {
+  const spies = Spies.HttpBackend.spies;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
     });
     // force eager construction of SynapseModule
     inject([TestingModule], noop)();
+    Spies.HttpBackend.setupFakeSpies();
   });
 
   afterEach(() => {
@@ -207,6 +212,27 @@ describe('@SynapseApi annotation', () => {
         // TODO implement
         fail('not implemented');
       });
+    });
+  });
+
+  describe('with property "requestHandlers"', () => {
+    it('should call through the registered handlers', async (done) => {
+      await new HandlerApi().get().toPromise();
+      expect(spies.get).toHaveBeenCalled();
+
+      const r = spies.get.calls.mostRecent().args[0] as Request;
+      expect(r.headers.has(HandlerApi.Global.REQUEST_HANDLER_HEADER)).toEqual(true);
+      done();
+    });
+  });
+
+  describe('with property "responseHandlers"', () => {
+    it('should call through the registered handlers', async (done) => {
+      await new HandlerApi().get()
+        .subscribe(response => {
+          expect(response.headers.has(HandlerApi.Global.RESPONSE_HANDLER_HEADER)).toEqual(true);
+          done();
+        });
     });
   });
 
