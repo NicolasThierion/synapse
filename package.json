@@ -5,15 +5,16 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --preserve-symlinks",
-    "start-test": "ng test --preserve-symlinks --sourcemap=false",
-    "coverage": "ng test --watch=false --code-coverage",
+    "coverage": "npm run ::concurently \"ng test --watch=false --code-coverage\" \"npm run start-api\"",
     "lint": "ng lint",
     "build": "./node_modules/.bin/ngc -p src/tsconfig.app.json && cp -R src/main/package.json dist/package.json",
     "build:watch": "./node_modules/nodemon/bin/nodemon.js -i dist -w src -e ts,json,html,scss --exec \"npm run build\"",
     "package": "npm run clean && npm run build",
-    "start-api": "cd tests/server && nodemon --ext ts --ignore *.spec.ts --exec ts-node main",
-    "test": "./node_modules/.bin/concurrently \"npm run start-test\" \"npm run start-api\" ",
-    "e2e": "ng e2e"
+    "start-api": "cd tests/server && nodemon --ext ts --ignore *.spec.ts --exec ts-node main; return 0",
+    "test": "npm run ::concurently \"ng test --preserve-symlinks --sourcemap=false --watch=false\" \"npm run start-api\" ",
+    "test:watch": "ng test --preserve-symlinks --sourcemap=false",
+    "e2e": "ng e2e",
+    "::concurently": "./node_modules/.bin/concurrently --kill-others --success=first --"
   },
   "private": true,
   "author": "Nicolas THIERION <thierion.nicolas@gmail.com>",
