@@ -1,6 +1,6 @@
 {
   "name": "@ack/synapse",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -16,7 +16,14 @@
     "e2e": "ng e2e"
   },
   "private": true,
-  "description": "Easy to use http client based on es6 annotations, inspired by the 'Retrofit' library",
+  "author": "Nicolas THIERION <thierion.nicolas@gmail.com>",
+  "repository" :
+  {
+    "type" : "git",
+    "url" : "https://gitlab.com/Pryum/ack-synapse"
+  },
+
+  "description": "Easy to use http client based on es6 annotations, inspired by the library 'Retrofit'",
   "keywords": [
     "http",
     "rest",

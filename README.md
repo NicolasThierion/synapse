@@ -266,3 +266,4 @@ Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app 
 
 [CHANGELOG](./CHANGELOG.md) 
 
+This project is licensed under the [MIT License](./LICENCE)
