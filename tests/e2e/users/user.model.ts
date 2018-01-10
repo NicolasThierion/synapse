@@ -25,7 +25,7 @@ export class User {
     this.phone = phone;
   }
 
-  static of(user: any): User {
+  static of(user: {[key in keyof User]?: any}): User {
     const u = user as User;
     const mandatoryAttributes = ['id', 'firstName', 'lastName', 'username'];
 

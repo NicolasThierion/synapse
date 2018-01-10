@@ -21,6 +21,6 @@ export type HttpResponseHandler = (response: Response) => void;
  * What element of the response should the API return?
  */
 export enum ObserveType {
-  RESPONSE = 'RESPONSE',  // the whole response with headers?
-  BODY = 'BODY'           // only the (mapped?) body extracted from the response
+  RESPONSE = 'response',  // the whole response with headers?
+  BODY = 'body'           // only the (mapped?) body extracted from the response
 }

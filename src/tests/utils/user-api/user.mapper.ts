@@ -5,8 +5,8 @@ export class UserMapper {
   fromJson(json: any): User {
     return User.of({
       id: json.id,
-      firstName: json.name.split(' ')[0],
-      lastName: json.name.split(' ')[1],
+      firstName: (json.name || ``).split(' ')[0],
+      lastName: (json.name || ``).split(' ')[1],
       username: json.username,
       email: json.email,
       address: Address.of({

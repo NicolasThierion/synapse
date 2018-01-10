@@ -1,3 +1,7 @@
+// TODO remove those ?
+import 'core-js/es7/reflect';   // reflect api polyfill
+import 'whatwg-fetch';          // Fetch API
+
 import { Observable } from 'rxjs/Observable';
 
 import '../utils/rxjs-import';
@@ -48,3 +52,8 @@ export class Synapse {
 
 export * from './decorators/index';
 export * from './http-backend';
+export * from './api-config.type';
+export * from './config.type';
+export * from './endpoint-config.type';
+export * from './mapper.type';
+export * from './typed-response.model';

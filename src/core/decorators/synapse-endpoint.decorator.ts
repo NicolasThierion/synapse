@@ -22,6 +22,7 @@ import { PromiseConverterStore } from './promise-converters/promise-converter-st
 import { RequestContentTypeConverter, RequestConverterStore } from './content-type-converters/tx/request-converter-store';
 import { EndpointConfig } from '../endpoint-config.type';
 import { SynapseApiConfig } from '../api-config.type';
+import { TypedResponse } from '../typed-response.model';
 
 /**
  * Parameters decorated with @Headers are considered to be of this type.
@@ -233,16 +234,16 @@ function _getRequestContentTypeConverter(contentType: ContentTypeConstants): Req
  * @private
  */
 function _getResponseContentTypeConverter(requestConf: RequestAndConf): ResponseContentTypeConverter<any> {
-  const converter = ResponseContentTypeConverterStore.getConverterFor(requestConf.conf.contentType);
+  return ResponseContentTypeConverterStore.getConverterFor(requestConf.conf.contentType);
+}
 
+function _toObservedReturnType<T>(requestConf: RequestAndConf, response: TypedResponse<T>): T | TypedResponse<T> {
   switch (requestConf.conf.observe) {
     case ObserveType.BODY:
-      return converter;
+      return response.body;
 
     case ObserveType.RESPONSE:
-      return {
-        convert: async (res: Response) => new Response(await converter.convert(res), res)
-      };
+      return response;
     default:
       throw new TypeError(`Unhandled value for property "observe" : ${requestConf.conf.observe}`);
   }
@@ -261,8 +262,8 @@ function _doRequest(http: HttpBackendAdapter, requestConf: RequestAndConf): Prom
 
   return _assertIsResponsePromise(http, req.method, res)
     .then((response: Response) => _applyResponseHandlers(requestConf, response))
-    .then((r: Response) => converter.convert(r))
-    .then(requestConf.conf.mapper);
+    .then(async r => new TypedResponse(requestConf.conf.mapper(await converter.convert(r)), r))
+    .then(r => _toObservedReturnType(requestConf, r));
 }
 
 function _makeUrl(baseUrl: string, path: string, pathParams: PathParamsType[], queryParams: QueryParametersType): string {
@@ -426,7 +427,7 @@ That's an error. If you use your own HttpBackendAdapter implementation, please e
 
   return (object as Promise<any>).then((r: any) => {
 
-    const mandatoryFields = ['headers', 'statusText', 'body', 'status'];
+    const mandatoryFields = ['headers', 'statusText', 'status'];
     const missing = mandatoryFields.filter(f => isUndefined(r[f]));
 
     if (missing.length) {

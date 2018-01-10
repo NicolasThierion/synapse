@@ -5,25 +5,24 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --preserve-symlinks",
-    "coverage": "npm run ::concurently \"ng test --watch=false --code-coverage\" \"npm run start-api\"",
+    "coverage": "npm run ::concurently \"npm run start-api\" \"ng test --watch=false --code-coverage\"",
     "lint": "ng lint",
     "build": "./node_modules/.bin/ngc -p src/tsconfig.app.json && cp -R src/main/package.json dist/package.json",
     "build:watch": "./node_modules/nodemon/bin/nodemon.js -i dist -w src -e ts,json,html,scss --exec \"npm run build\"",
     "package": "npm run clean && npm run build",
-    "start-api": "cd tests/server && nodemon --ext ts --ignore *.spec.ts --exec ts-node main; return 0",
-    "test": "npm run ::concurently \"ng test --preserve-symlinks --sourcemap=false --watch=false\" \"npm run start-api\" ",
-    "test:watch": "ng test --preserve-symlinks --sourcemap=false",
+    "start-api": "cd tests/server && nodemon --ext ts --ignore *.spec.ts --exec ts-node main",
+    "test": "npm run ::concurently \"npm run start-api\" \"ng test --sourcemap=false --watch=false\"",
+    "test:ci": "npm run ::concurently \"npm run start-api\" \"ng test  --browsers PhantomJS --watch=false\" ",
+    "test:watch": "npm run ::concurently \"npm run start-api\" \"ng test --sourcemap=false\" ",
     "e2e": "ng e2e",
-    "::concurently": "./node_modules/.bin/concurrently --kill-others --success=first --"
+    "::concurently": "./node_modules/.bin/concurrently --kill-others --success=last -- "
   },
   "private": true,
   "author": "Nicolas THIERION <thierion.nicolas@gmail.com>",
-  "repository" :
-  {
-    "type" : "git",
-    "url" : "https://gitlab.com/Pryum/ack-synapse"
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/Pryum/ack-synapse"
   },
-
   "description": "Easy to use http client based on es6 annotations, inspired by the library 'Retrofit'",
   "keywords": [
     "http",
@@ -38,7 +37,7 @@
     "npm": "^5.6.0",
     "qs": "^6.5.1",
     "reflect-metadata": "^0.1.10",
-    "whatwg-url": "^6.4.0"
+    "whatwg-fetch": "^2.0.3"
   },
   "peerDependencies": {
     "@angular/common": "^5.0.0",
@@ -81,8 +80,11 @@
     "karma-coverage-istanbul-reporter": "^1.2.1",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-mocha-reporter": "^2.2.5",
+    "karma-phantomjs-launcher": "^1.0.4",
     "lodash": "^4.17.4",
     "nodemon": "^1.14.3",
+    "phantomjs-prebuilt": "^2.1.16",
     "protractor": "~5.1.2",
     "reflect-metadata": "^0.1.10",
     "rxjs": "^5.5.2",

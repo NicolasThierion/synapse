@@ -13,10 +13,10 @@ import { Spies } from '../utils/utils';
 import { Observable } from 'rxjs/Observable';
 import { UsersApi } from '../utils/user-api/users.api';
 import { User } from '../utils/user-api/models/user.model';
-import { noop, isObject, isString } from 'lodash';
-import { ContentTypeTextApi, NoContentTypeApi } from '../utils/test-api/content-type.api';
+import { noop } from 'lodash';
+import { NoContentTypeApi } from '../utils/test-api/content-type.api';
 import { HandlerApi } from '../utils/test-api/handler.api';
-import { ObserveType } from '../../core/constants';
+import { TypedResponse } from '../../core/typed-response.model';
 
 describe('', () => {
 
@@ -160,88 +160,96 @@ describe('', () => {
       inject([TestingModule], noop)();
     });
 
-    describe('when called', () => {
-      beforeEach(Spies.HttpBackend.setupFakeSpies);
+    beforeEach(Spies.HttpBackend.setupFakeSpies);
 
-      it(`should call httpBackendAdpater method with proper global configuration`, async (done) => {
+    it(`should call httpBackendAdpater method with proper global configuration`, async (done) => {
 
-        await new GetApi().get().toPromise();
+      await new GetApi().get().toPromise();
+      const r = spies.get.calls.mostRecent().args[0] as Request;
+      expect(removeTrailingSlash(r.url)).toEqual(removeTrailingSlash(Global.BASE_URL));
+      expect(r.headers).toEqual(new Headers(Global.HEADERS));
+      done();
+    });
+
+    describe('with an annotated path', () => {
+      it('should append the provided path to the global baseUrl', async (done) => {
+        await new GetApi.WithPath().get().toPromise();
+        expect(spies.get).toHaveBeenCalled();
+
         const r = spies.get.calls.mostRecent().args[0] as Request;
-        expect(removeTrailingSlash(r.url)).toEqual(removeTrailingSlash(Global.BASE_URL));
-        expect(r.headers).toEqual(new Headers(Global.HEADERS));
+        expect(r.url).toEqual(joinPath(Global.BASE_URL, GetApi.WithPath.PATH));
         done();
       });
 
-      describe('with an annotated path', () => {
-        it('should append the provided path to the global baseUrl', async (done) => {
-          await new GetApi.WithPath().get().toPromise();
-          expect(spies.get).toHaveBeenCalled();
-
-          const r = spies.get.calls.mostRecent().args[0] as Request;
-          expect(r.url).toEqual(joinPath(Global.BASE_URL, GetApi.WithPath.PATH));
-          done();
-        });
-
-        describe('that requires pathParams', () => {
-          it('should throw an error if @PathParams not specified', () => {
-            expect(() => new BadApi().getWithMissingPathParameter())
-              .toThrowError(/param ":missingPathParam" not provided/);
-          });
-        });
-      });
-
-      describe('with an annotated path and baseUrl', () => {
-        it('should append the provided path to the provided baseUrl', async (done) => {
-          await new GetApi.WithBaseUrlAndPath().get().toPromise();
-          expect(spies.get).toHaveBeenCalled();
-
-          const r = spies.get.calls.mostRecent().args[0] as Request;
-          expect(r.url).toEqual(joinPath(GetApi.WithBaseUrlAndPath.BASEURL, GetApi.WithBaseUrlAndPath.PATH));
-          done();
-        });
-      });
-
-      describe('with property "requestHandlers"', () => {
-        it('should call through the registered handlers', async (done) => {
-          await new HandlerApi().getWithCustomHandler().toPromise();
-          expect(spies.get).toHaveBeenCalled();
-
-          const r = spies.get.calls.mostRecent().args[0] as Request;
-          expect(r.headers.has(HandlerApi.Global.REQUEST_HANDLER_HEADER)).toEqual(true);
-          expect(r.headers.has(HandlerApi.Custom.REQUEST_HANDLER_HEADER)).toEqual(true);
-          done();
-        });
-      });
-
-      describe('with property "responseHandlers"', () => {
-        it('should call through the registered handlers', async (done) => {
-          await new HandlerApi().getWithCustomHandler()
-            .subscribe(response => {
-              expect(response.headers.has(HandlerApi.Global.RESPONSE_HANDLER_HEADER)).toEqual(true);
-              expect(response.headers.has(HandlerApi.Custom.RESPONSE_HANDLER_HEADER)).toEqual(true);
-              done();
-            });
-        });
-      });
-
-      describe('have a property "observe", that', () => {
-        it('should default to "ObserveType.BODY"', () => {
-          new GetApi().get().subscribe(res => {
-            expect(res).not.toEqual(jasmine.any(Response));
-          });
-        });
-
-        it('should return response when "observe=ObserveType.RESPONSE"', () => {
-          new HandlerApi().get().subscribe(res => {
-            expect(res).toEqual(jasmine.any(Response));
-          });
+      describe('that requires pathParams', () => {
+        it('should throw an error if @PathParams not specified', () => {
+          expect(() => new BadApi().getWithMissingPathParameter())
+            .toThrowError(/param ":missingPathParam" not provided/);
         });
       });
     });
 
-    describe('after called', () => {
-      beforeEach(Spies.HttpBackend.setupFakeSpies);
+    describe('with an annotated path and baseUrl', () => {
+      it('should append the provided path to the provided baseUrl', async (done) => {
+        await new GetApi.WithBaseUrlAndPath().get().toPromise();
+        expect(spies.get).toHaveBeenCalled();
 
+        const r = spies.get.calls.mostRecent().args[0] as Request;
+        expect(r.url).toEqual(joinPath(GetApi.WithBaseUrlAndPath.BASEURL, GetApi.WithBaseUrlAndPath.PATH));
+        done();
+      });
+    });
+
+    describe('with property "requestHandlers"', () => {
+      it('should call through the registered handlers', async (done) => {
+        await new HandlerApi().getWithCustomHandler().toPromise();
+        expect(spies.get).toHaveBeenCalled();
+
+        const r = spies.get.calls.mostRecent().args[0] as Request;
+        expect(r.headers.has(HandlerApi.Global.REQUEST_HANDLER_HEADER)).toEqual(true);
+        expect(r.headers.has(HandlerApi.Custom.REQUEST_HANDLER_HEADER)).toEqual(true);
+        done();
+      });
+    });
+
+    describe('with property "responseHandlers"', () => {
+      it('should call through the registered handlers', async (done) => {
+        await new HandlerApi().getWithCustomHandler()
+          .subscribe(response => {
+            expect(response.headers.has(HandlerApi.Global.RESPONSE_HANDLER_HEADER)).toEqual(true);
+            expect(response.headers.has(HandlerApi.Custom.RESPONSE_HANDLER_HEADER)).toEqual(true);
+            done();
+          });
+      });
+    });
+
+    describe('have a property "observe", that', () => {
+      it('should default to "ObserveType.BODY"', () => {
+        new GetApi().get().subscribe(res => {
+          expect(res).not.toEqual(jasmine.any(Response));
+        });
+      });
+
+      describe('when equals "ObserveType.RESPONSE"', () => {
+        it('should return an object of type response ', (done) => {
+          new HandlerApi().get().subscribe((res: TypedResponse<any>) => {
+            expect(res).toEqual(jasmine.any(TypedResponse));
+            done();
+          });
+        });
+
+        it(`should map the response's body according to registered mapper`, (done) => {
+          new UsersApi().getOneWithObserveResponse(1).subscribe(res => {
+            expect(res).toEqual(jasmine.any(TypedResponse));
+            expect(res.body).toEqual(jasmine.any(User));
+            done();
+          }, fail);
+        });
+      });
+
+    });
+
+    describe('after called', () => {
       describe('on a method that returns a promise', () => {
         it('should return a promise', () => {
           const ret = new GetApi().getThatReturnsAPromise();

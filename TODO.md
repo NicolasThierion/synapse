@@ -1,6 +1,6 @@
 - Update README.md
-- support for mappers
-- support for promises
+- document property observe with example
+- add mapper property to @SynapseApi
 - write CHANGELOG.md
 - support for fetching images
-- provide a default implementation based on fetch;
+- test the default implementation based on fetch;

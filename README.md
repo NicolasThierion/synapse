@@ -1,7 +1,7 @@
 # Synapse <sub>- 0.1.0</sub>
 Designing clean and versatile HTTP api, made easy. With ES6 decorators, promises, and Fetch API included !
 
- ## ![question](.README/question.png) What is it ?
+ ## What is it ?
 
 ```typescript
 const BASE_URL='https://my-awesome-web-api-PROD'
@@ -57,8 +57,9 @@ class UserApi {
 
 Please note that synapse comes with the following polyfills: 
  - **reflect-metadata** ()for [ES7 Metadata Reflection API](http://www.ecma-international.org/ecma-262/6.0/#sec-reflect-object)
- - **whatwg-url** for [ES6 UrlSearchParams](https://url.spec.whatwg.org/#urlsearchparams)
-
+ - **whatwg-fetch** for [ES6 Fetch API](https://fetch.spec.whatwg.org/)
+##[Out of date] - **whatwg-url** for [ES6 UrlSearchParams](https://url.spec.whatwg.org/#urlsearchparams)
+ 
 ## Setup Synapse with angular.
 > ![warning](.README/warning.png) Synapse has only been tested with Angular (>= 5)
 
@@ -189,7 +190,11 @@ Synapse owns a global configuration of type `SynapseConf`, that is set through t
 - **`observe`**
   - *type* : `ObserveType`
   - *default value* : `ObserveType.BODY`
-  *description* : Observe only the body by default. That is, any method of the API will return a `promise` (or an `Observable`) that holds the response's body only.
+  *description* : Observe only the body by default. That is, any method of the API will return a `promise` (or an `Observable`) that holds the (eventually mapped) response's body only.
+
+> ![info](.README/info.png) The same way ObserveType.BODY returns the mapped response body, ObserveType.RESPONSE returns the complete response with the mapped body. 
+Because [ES6's Response] as only a limited set of possible body types, ObserveType.RESPONSE returns in fact an object of type TypedResponse, 
+that acts as a Response but with a body that holds a complete (non asynchronous) body of any type.
   
 - **`headers`**
   - *type* : `Object`

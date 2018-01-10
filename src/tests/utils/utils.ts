@@ -1,10 +1,12 @@
-import { HttpBackendAdapter } from '../../core/http-backend/http-backend.interface';
 import { noop } from 'lodash';
-import Spy = jasmine.Spy;
 import { inject } from '@angular/core/testing';
+import { HttpBackendAdapter } from '../../core/http-backend';
 import { TestingModule } from '../testing.module';
-import { SynapseConfig } from '../../core/config.type';
+import { SynapseConfig } from '../../';
 import { ContentTypeConstants, HeaderConstants } from '../../core/constants';
+import { User } from './user-api/models/user.model';
+
+import Spy = jasmine.Spy;
 
 type HttpSpies = {
   [k in keyof HttpBackendAdapter]?: Spy;
@@ -25,9 +27,21 @@ export namespace Spies {
           const fakeHeaders = new Headers();
           fakeHeaders.append(HeaderConstants.CONTENT_TYPE, ContentTypeConstants.JSON);
           HttpBackend.spies[s] = spyOn(conf.httpBackend, s).and.callFake(
-            () => Promise.resolve(new Response('["from fake spied httpBackend"]', {headers: fakeHeaders})));
+            () => Promise.resolve(new Response(JSON.stringify(_fakeUser()), {headers: fakeHeaders})));
         });
       })();
     }
   }
+}
+
+
+function _fakeUser() {
+  return {
+    name: 'fake firstName fake lastName',
+    username: 'fake username',
+    id: 0,
+    street: 'fake street',
+    city: 'fake city',
+    zipcode: 'fake zipcode'
+  };
 }

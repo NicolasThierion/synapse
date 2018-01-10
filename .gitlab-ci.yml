@@ -1,4 +1,8 @@
 image: node:latest
+
+variables:
+  GIT_STRATEGY: fetch
+
 cache:
   paths:
     - node_modules/
@@ -6,4 +10,4 @@ cache:
 all_tests:
   script:
    - npm install
-   - npm test
+   - npm run test:ci
