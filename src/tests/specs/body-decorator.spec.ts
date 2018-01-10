@@ -81,7 +81,7 @@ describe(`@Body decorator`, () => {
           done();
         }).catch(fail);
 
-      });
+      }, fail);
     });
   });
 
@@ -95,7 +95,7 @@ describe(`@Body decorator`, () => {
           expect(r1.headers.has('Content-Type'));
           expect(r1.headers.get('Content-Type')).toEqual(`${Body.ContentType.JSON}`);
           done();
-        });
+        }, fail);
 
     });
 

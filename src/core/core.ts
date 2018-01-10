@@ -2,6 +2,13 @@
 import 'core-js/es7/reflect';   // reflect api polyfill
 import 'whatwg-fetch';          // Fetch API
 
+// TODO whatwg-url uses es6 that needs to be transpiled to es5. But  as of 2018/01/11, ngc refuses to process js when "allowJs" is set,
+// and complains because of bug https://github.com/angular/angular/issues/21080 So we need to use another polyfill.
+import 'url-search-params-polyfill';            // UrlSearchParams
+
+// import 'whatwg-url';            // UrlSearchParams uncomment when bug above is resolved
+
+
 import { Observable } from 'rxjs/Observable';
 
 import '../utils/rxjs-import';

@@ -13,8 +13,12 @@
       "node_modules/@types"
     ],
     "lib": [
-      "es2017",
-      "dom"
+      "es2017", "dom"
     ]
-  }
+// TODO put in tsconfig.prod
+//    "declaration": "true",
+//    "declarationDir": "types",
+  },
+  "exclude": [ "./dist/out-tsc" ]
+
 }

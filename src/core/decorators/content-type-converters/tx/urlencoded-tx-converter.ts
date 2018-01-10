@@ -16,7 +16,7 @@ Got "${typeof body}"`);
     request.headers.set(HeaderConstants.CONTENT_TYPE, ContentTypeConstants.X_WWW_URL_ENCODED);
 
     return Promise.resolve(new Request(request, {
-      body: new URLSearchParams(toQueryString(body))
+      body: new URLSearchParams(toQueryString(body)).toString()
     }));
   }
 

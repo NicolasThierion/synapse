@@ -1,14 +1,14 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../out-tsc/spec",
-    "baseUrl": "./",
-    "module": "commonjs",
     "target": "es5",
     "types": [
       "jasmine",
       "node"
-    ]
+    ],
+//    "allowJs": true,  // TODO uncomment when https://github.com/angular/angular/issues/21080 is resolved.
+    "listEmittedFiles": true,
+    "listFiles": true
   },
   "files": [
     "test.ts"
@@ -16,7 +16,8 @@
   "include": [
     "**/*.spec.ts",
     "**/*.d.ts",
-    "../../src",
-    "../../node_modules/@ack/synapse"
+    "../../src"
+    // force transpile of whatwg-url from es6 to es5. Why do we even need to do this ?!?
+//    "../../node_modules/whatwg-url" //  TODO uncomment when https://github.com/angular/angular/issues/21080 is resolved.
   ]
 }

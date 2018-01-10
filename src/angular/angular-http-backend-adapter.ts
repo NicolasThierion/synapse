@@ -1,6 +1,5 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { toPairs } from 'lodash';
 import { HttpBackendAdapter } from '../core/http-backend';
 
 /**
@@ -78,15 +77,14 @@ function _makeOptions(request: Request): AngularHttpOptions {
 }
 
 function _toResponsePromise(observable: Observable<any>): Promise<Response> {
-  return observable.map((r: any) => {
+  return observable.map((r: HttpResponse<any>) => {
     return new Response(r.body, {
-      headers: new Headers(
-        toPairs(r.headers.keys()
-          .reduce((headers: { [k: string]: string[] }, key: string) => {
-            headers[key] = (r.headers.getAll(key) as string[]);
+      headers: new Headers(r.headers.keys()
+          .reduce((headers: { [k: string]: string }, key: string) => {
+            headers[key] = (r.headers.get(key) as string);
 
             return headers;
-          }, {}))),
+          }, {})),
       status: r.status,
       statusText: r.statusText
     });
