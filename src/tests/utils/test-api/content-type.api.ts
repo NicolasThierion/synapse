@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { GET, SynapseApi, Synapse } from '../../../';
+import { GET, Synapse, SynapseApi } from '../../../';
 import { ContentTypeConstants } from '../../../core/constants';
 
 @SynapseApi({

@@ -6,7 +6,7 @@ import { ContentTypeConstants, HttpRequestHandler, HttpResponseHandler, ObserveT
  */
 export class SynapseConfig {
   static DEFAULT: SynapseConfig = {
-    baseUrl: null,
+    baseUrl: undefined,
     responseHandlers: [],
     requestHandlers: [],
     observe: ObserveType.BODY,

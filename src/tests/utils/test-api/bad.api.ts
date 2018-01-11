@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { GET, SynapseApi, Synapse, PathParam, QueryParams, Headers, Body, POST } from '../../../';
+import { Body, GET, Headers, PathParam, POST, QueryParams, Synapse, SynapseApi } from '../../../';
 
 /**
  * An example of badly used SynapseApi. For testing purpose only.
@@ -27,7 +27,6 @@ export class BadApi {
     return Synapse.OBSERVABLE;
   }
 
-
   @GET('/:param1/:param1')
   getWithTwiceTheSamePathParam(@PathParam() param1: 'a', @PathParam() param2: 'b'): Observable<any> {
     return Synapse.OBSERVABLE;
@@ -39,12 +38,12 @@ export class BadApi {
   }
 
   @GET()
-  getWithBadHeader(@Headers() header: boolean = false): Observable<any> {
+  getWithBadHeader(@Headers() header = false): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 
   @GET()
-  getWithBadQueryParam(@QueryParams() param: boolean = false, @QueryParams() param2: Object = {obj: new Date()}): Observable<any> {
+  getWithBadQueryParam(@QueryParams() param = false, @QueryParams() param2: Object = {obj: new Date()}): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 

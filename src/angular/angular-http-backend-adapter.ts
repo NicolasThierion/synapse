@@ -72,7 +72,7 @@ function _makeOptions(request: Request): AngularHttpOptions {
     observe: 'response',
     reportProgress: false,
     responseType: 'arraybuffer',       // es6 Response expect a text, so do not let angular do a useless JSON parsing.
-    withCredentials: false,
+    withCredentials: false
   };
 }
 

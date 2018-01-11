@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { DELETE, SynapseApi, Synapse, Body } from '../../../';
+import { Body, DELETE, Synapse, SynapseApi } from '../../../';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @DELETE annotation. For test purpose.

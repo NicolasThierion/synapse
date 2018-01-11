@@ -34,7 +34,7 @@ export function QueryParams(): ParameterDecorator {
  * @returns {ParameterDecorator}
  * @constructor
  */
-export const Headers = assign( (): ParameterDecorator  => {
+export const Headers = assign((): ParameterDecorator  => {
   return SynapseApiReflect.addHeadersArg();
 }, HeaderConstants);
 

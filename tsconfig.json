@@ -3,7 +3,6 @@
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
-    "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -12,13 +11,11 @@
     "typeRoots": [
       "node_modules/@types"
     ],
+    "strictNullChecks": false,
+    "alwaysStrict": true,
     "lib": [
-      "es2017", "dom"
+      "es2017",
+      "dom"
     ]
-// TODO put in tsconfig.prod
-//    "declaration": "true",
-//    "declarationDir": "types",
-  },
-  "exclude": [ "./dist/out-tsc" ]
-
+  }
 }

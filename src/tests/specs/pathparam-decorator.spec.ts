@@ -6,15 +6,14 @@ import { Synapse } from '../../';
 import { BadApi } from '../utils/test-api/bad.api';
 import { joinPath } from '../../utils/utils';
 
-
-describe(`@PathParam decorator`, () => {
+describe('@PathParam decorator', () => {
   const spies = Spies.HttpBackend.spies;
 
   beforeEach(() => {
 
     // setup modules
     TestBed.configureTestingModule({
-      imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
+      imports: [TestingModule.forRoot(TestingModule.Global.CONF)]
     });
 
     Spies.HttpBackend.setupFakeSpies();

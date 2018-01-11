@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
-import { GET, Headers, PathParam, QueryParams, SynapseApi, Synapse} from '../../../';
-import { HttpRequestHandler, ObserveType } from '../../../core/constants';
+import { GET, Synapse, SynapseApi } from '../../../';
+import { ObserveType } from '../../../core/constants';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @Get annotation. For test purpose.
@@ -34,7 +34,6 @@ export class HandlerApi {
       response.headers.set('x-custom-response-handler-header', 'x-custom-handler-header-value');
     }
   };
-
 
   @GET()
   get(): Observable<any> {

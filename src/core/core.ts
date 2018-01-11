@@ -8,7 +8,6 @@ import 'url-search-params-polyfill';            // UrlSearchParams
 
 // import 'whatwg-url';            // UrlSearchParams uncomment when bug above is resolved
 
-
 import { Observable } from 'rxjs/Observable';
 
 import '../utils/rxjs-import';
@@ -27,13 +26,13 @@ class StateError extends Error {
 }
 
 export class Synapse {
-  public static readonly OBSERVABLE = Observable.throw(
+  static readonly OBSERVABLE = Observable.throw(
     'should only use SynapseConfig.OBSERVABLE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
 
-  public static readonly PROMISE = Promise.reject(
+  static readonly PROMISE = Promise.reject(
     'should only use SynapseConfig.PROMISE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
 
-  public static init(conf: SynapseConfig): void {
+  static init(conf: SynapseConfig): void {
     if (global.__SynapseConfig) {
       assert(false);
       throw new StateError('Synapse already initialized');
@@ -45,15 +44,16 @@ export class Synapse {
     global.__SynapseConfig = conf;
   }
 
-  public static getConfig(): SynapseConfig {
+  static getConfig(): SynapseConfig {
     if (!global.__SynapseConfig) {
       throw new StateError('Synapse not initialized');
     }
+
     return global.__SynapseConfig;
   }
 
-  public static teardown(): void {
-    global.__SynapseConfig = null;
+  static teardown(): void {
+    global.__SynapseConfig = undefined;
   }
 }
 

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { PATCH, SynapseApi, Synapse, Body } from '../../../';
+import { Body, PATCH, Synapse, SynapseApi } from '../../../';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @PATCH annotation. For test purpose.

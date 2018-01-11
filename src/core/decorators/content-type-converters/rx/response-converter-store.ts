@@ -1,8 +1,8 @@
-import { SynapseError } from '../../../../utils/synapse-error';
 import { ContentTypeConstants } from '../../../constants';
 import { JsonConverter } from './json-rx-converter';
 import { TextConverter } from './text-rx-converter';
 import { BlobConverter } from './blob-rx-converter';
+
 
 export interface ResponseContentTypeConverter<T> {
   convert(response: Response): Promise<T>;
@@ -11,7 +11,7 @@ export interface ResponseContentTypeConverter<T> {
 export class ResponseContentTypeConverterStore {
   private static converters: {[key: string]: ResponseContentTypeConverter<any>} = {};
 
-  static addConverter(converter: ResponseContentTypeConverter<any>, contentType: ContentTypeConstants | string) {
+  static addConverter(converter: ResponseContentTypeConverter<any>, contentType: ContentTypeConstants | string): void {
     this.converters[contentType] = converter;
   }
 

@@ -1,12 +1,10 @@
 import { RequestContentTypeConverter } from './request-converter-store';
 import { ContentTypeConstants, HeaderConstants } from '../../../constants';
 import { SynapseError } from '../../../../utils/synapse-error';
-import { isObject, isArray, isString } from 'lodash';
+import { isArray, isObject } from 'lodash';
 import { toQueryString } from '../../../../utils/utils';
 
 export class UrlencodedTxConverter implements RequestContentTypeConverter {
-  private static readonly SUPPORTED_CONTENT_TYPES = [ContentTypeConstants.JSON];
-
   async convert(body: any, request: Request): Promise<Request> {
     if (!UrlencodedTxConverter.accept(body)) {
       throw new SynapseError(`Expected body be Object | Array. \

@@ -33,7 +33,7 @@ export class Custom {
   static readonly HEADERS = {
     'X-custom-header': 'some-custom-value'
   };
-  static BACKEND_ADAPTER: HttpBackendAdapter = new CustomBackendAdapter(null);
+  static BACKEND_ADAPTER: HttpBackendAdapter = new CustomBackendAdapter(undefined);
 
   static readonly CONF: SynapseConfig = {
     baseUrl: Custom.BASE_URL,
@@ -48,7 +48,7 @@ export class Custom {
 @NgModule({
   imports: [
     BrowserModule,
-    HttpClientModule,
+    HttpClientModule
   ],
   exports: [
     SynapseModule

@@ -18,16 +18,19 @@ const CONF_KEY = 'SynapseApiConfig';
 export namespace SynapseApiReflect {
 
   export class DecoratedArgs {
-    public readonly path: number[] = [];
-    public readonly query: number[] = [];
-    public readonly headers: number[] = [];
-    public body: {
+    readonly path: number[] = [];
+    readonly query: number[] = [];
+    readonly headers: number[] = [];
+    body: {
       index: number,
       params: BodyParams
     };
   }
 
-  export interface SynapseApiClass {}
+  /**
+   * Class decorated with @SynapseApi
+   */
+  export interface SynapseApiClass {} // tslint:disable-line
 
   export function init(classPrototype: SynapseApiClass, conf: SynapseApiConfig): void {
     assert(classPrototype);
@@ -59,6 +62,7 @@ export namespace SynapseApiReflect {
 
   export function hasConf(classPrototype: SynapseApiClass): boolean {
     assert(classPrototype);
+
     return !!Reflect.getOwnMetadata(CONF_KEY, classPrototype);
   }
 
@@ -132,7 +136,7 @@ function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
   return conf;
 }
 
-function _assertDecorateParameter(decorator: string, key: string | symbol, parameterIndex: number) {
+function _assertDecorateParameter(decorator: string, key: string | symbol, parameterIndex: number): void {
   if (!isNumber(parameterIndex)) {
     throw new SynapseError(`${decorator} should decorate parameters only. (Found @Header on function ${key}})`);
   }

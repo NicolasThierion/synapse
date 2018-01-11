@@ -3,13 +3,12 @@ import { SynapseModule } from './synapse.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
 
-import { noop, merge } from 'lodash';
+import { merge, noop } from 'lodash';
 import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { Synapse } from '../core/core';
 import { HttpBackendAdapter } from '../core/http-backend';
 import { TestingModule } from '../tests/testing.module';
 import { SynapseConfig } from '../core/config.type';
-import { Spies } from '../tests/utils/utils';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
   get(request: Request): Promise<Response> {
@@ -44,7 +43,7 @@ describe('SynapseModule.forRoot method', () => {
     }));
 
     it('should throw an error with useful error msg', async(() => {
-      let thrownError: Error = null;
+      let thrownError: Error;
 
       try {
         inject([SynapseModule], noop)();
@@ -52,7 +51,8 @@ describe('SynapseModule.forRoot method', () => {
         thrownError = e;
       }
       expect(thrownError).not.toBeNull();
-      expect(thrownError.message).toEqual('Cannot find dependency HttpClient. Make sure you import BrowserModule & HttpClientModule within your root module.');
+      expect(thrownError.message).toEqual('Cannot find dependency HttpClient.' +
+        ' Make sure you import BrowserModule & HttpClientModule within your root module.');
     }));
   });
 
@@ -62,7 +62,6 @@ describe('SynapseModule.forRoot method', () => {
     });
   });
 
-
   describe('with proper HttpClientModule setup', () => {
     afterEach(() => {
       Synapse.teardown();
@@ -70,7 +69,7 @@ describe('SynapseModule.forRoot method', () => {
 
     it('should call Synapse.init with proper parameters', () => {
       TestBed.configureTestingModule({
-        imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot(TestingModule.Global.CONF)],
+        imports: [HttpClientModule, HttpClientTestingModule, SynapseModule.forRoot(TestingModule.Global.CONF)]
       });
       spyOn(Synapse, 'init').and.callThrough();
       inject([SynapseModule], noop)();
@@ -121,7 +120,6 @@ describe('SynapseModule.forRoot method', () => {
         // force eager construction of SynapseModule
         inject([SynapseModule], noop)();
       }));
-
 
       it('should wire up HttpBackendAdapter with angular http backend', async(() => {
         expect(Synapse.getConfig().httpBackend instanceof CustomAngularHttpBackendAdapter).toBe(true);

@@ -1,6 +1,9 @@
 - Update README.md
-- document property observe with example
+  - document property observe with example
+  - add build / tests / dependencies / why badges
+- write e2e test app
+- add .gitlab-ci config to npm publish on push->master
 - add mapper property to @SynapseApi
-- write CHANGELOG.md
+- create @Authorization to setup handler for auth header
 - support for fetching images
-- test the default implementation based on fetch;
+- test the default httpAdapter implementation based on fetch;

@@ -4,7 +4,6 @@ import { HttpBackendAdapter } from '../../core/http-backend';
 import { TestingModule } from '../testing.module';
 import { SynapseConfig } from '../../';
 import { ContentTypeConstants, HeaderConstants } from '../../core/constants';
-import { User } from './user-api/models/user.model';
 
 import Spy = jasmine.Spy;
 

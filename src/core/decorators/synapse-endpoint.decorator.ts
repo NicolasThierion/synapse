@@ -1,18 +1,12 @@
 import { Observable } from 'rxjs/Observable';
 import { assert } from '../../utils/assert';
 import { SynapseApiReflect } from './synapse-api.reflect';
-import { joinPath, joinQueryParams, mergeConfigs, toQueryString } from '../../utils/utils';
+import { joinPath, joinQueryParams, mergeConfigs } from '../../utils/utils';
 import { MapperType } from '../mapper.type';
 import { Headers } from '../core';
 import { HttpBackendAdapter } from '../http-backend';
 import { SynapseError } from '../../utils/synapse-error';
-import {
-  isFunction, isString,
-  defaultsDeep,
-  isUndefined,
-  mergeWith,
-  cloneDeep,
-} from 'lodash';
+import { cloneDeep, defaultsDeep, isFunction, isString, isUndefined, mergeWith } from 'lodash';
 
 import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
 
@@ -139,17 +133,18 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string
 
     // infer desired return type, and make a converter for it (Promise / Observable)
     const returnTypeConverter = _returnTypeConverter(descriptor, propertyKey);
-    descriptor.value = function (...args: any[]): EndpointReturnType {
-
+    descriptor.value = function(...args: any[]): EndpointReturnType {
+      // tslint:disable no-invalid-this
       // do not only rely on target.
       // Target is proto of the annotated class of this method. If we call this method from a child class,
       // we rather want to get proto of this child class.
-      let apiConf = SynapseApiReflect.getConf(this.__proto__);
+      let apiConf = SynapseApiReflect.getConf((this as any).__proto__);
 
-      if (SynapseApiReflect.hasConf(target) && target !== this.__proto__) {
+      if (SynapseApiReflect.hasConf(target) && target !== (this as any).__proto__) {
         // but also get config from parent class if any
         apiConf = mergeConfigs({}, apiConf, SynapseApiReflect.getConf(target));
       }
+      // tslint:enable
 
       const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
       const cargs: CallArgs = _parseArgs(args, decoratedArgs);
@@ -271,10 +266,11 @@ function _makeUrl(baseUrl: string, path: string, pathParams: PathParamsType[], q
   assert(!isUndefined(pathParams));
   assert(!isUndefined(baseUrl));
   assert(!isUndefined(path));
+
   return joinQueryParams(joinPath(baseUrl, _replacePathParams(path, pathParams)), queryParams);
 }
 
-function _mergeQueryParams(queryParams: QueryParametersType[]) {
+function _mergeQueryParams(queryParams: QueryParametersType[]): QueryParametersType {
   return mergeWith({}, ...queryParams.filter(a => !isUndefined(a)),
     (objValue: any, srcValue: any, key: string, object: any /*, source: any, stack: any */) => {
       if (isUndefined(objValue)) {
@@ -318,7 +314,7 @@ function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
       }
       res.body.value = mapper(res.body.value);
       if (isUndefined(res.body.value)) {
-        console.warn(`Mapper returned value undefined`);
+        console.warn('Mapper returned value undefined');
       }
     }
   } else {
@@ -388,13 +384,12 @@ function _applyResponseHandlers(requestAndConf: RequestAndConf, response: Respon
   return response;
 }
 
-
 function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
                               propertyKey: string | symbol): (promise: Promise<Response>) => EndpointReturnType {
   assert(isFunction(descriptor.value));
-  let res: any = null;
+  let res: any;
   try {
-    res = (descriptor.value as Function).apply(null);
+    res = (descriptor.value as Function).apply(undefined);
   } catch (e) {
     console.warn(`cannot infer return type of function ${propertyKey}.`);
   }
@@ -408,7 +403,6 @@ function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
     throw new TypeError(`Function ${propertyKey} returned object of unexpected type ${type}`);
   }
 }
-
 
 /**
  * Ensure the given object is a Response. We consider that any httpBackendAdapter should return a Promise<Response>,

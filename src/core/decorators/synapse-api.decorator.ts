@@ -1,10 +1,8 @@
 import { SynapseApiReflect } from './synapse-api.reflect';
-import {
-  isFunction,
-  isString,
-  cloneDeep
-} from 'lodash';
+import { cloneDeep, isFunction, isString } from 'lodash';
 import { SynapseApiConfig } from '../api-config.type';
+import { Constructor } from '../../utils/utils';
+import SynapseApiClass = SynapseApiReflect.SynapseApiClass;
 
 /**
  * Use this decorator on your web API class.
@@ -16,33 +14,34 @@ import { SynapseApiConfig } from '../api-config.type';
  * @returns {ClassDecorator}
  * @constructor
  */
-export function SynapseApi(confOrCtor: string | SynapseApiConfig | Function = '' ): ClassDecorator | any {
+export function SynapseApi(confOrCtor: string | SynapseApiConfig | Constructor<SynapseApiClass> = ''): ClassDecorator | any {
   // if called SynapseApi(...???...)
   if (!isFunction(confOrCtor)) {
-    return (ctor: any) => {
+    return (ctor: Constructor<SynapseApiClass>) => {
       if (!ctor) { throw new Error('assertion error'); }
       confOrCtor = isString(confOrCtor) ? {path: confOrCtor as string} : cloneDeep(confOrCtor) as SynapseApiConfig;
+
       return _makeNewCtor(ctor, confOrCtor);
     };
   } else {
     // if called SynapseApi
-    return _makeNewCtor(confOrCtor as Function, {path: ''});
+    return _makeNewCtor(confOrCtor as Constructor<SynapseApiClass>, {path: ''});
   }
 
-  function _makeNewCtor(ctor: Function, conf: SynapseApiConfig) {
+  function _makeNewCtor(ctor: Constructor<SynapseApiClass>, conf: SynapseApiConfig): Constructor<SynapseApiClass> {
 
     // decorate constructor to add config within reflect metadata
-    let newCtor = function(...args: any[]): SynapseApiReflect.SynapseApiClass {
+    let newCtor: Constructor<SynapseApiClass> = function(...args: any[]): SynapseApiClass {
 
       // call decoree constructor
-      const res = ctor.apply(this, args);
+      const res = ctor.apply(this as any, args); // tslint:disable-line
 
       // store conf within metadata.
       // !!! It is important to call constructor before, to register config of any parent class decorated with @SynapseApi
       SynapseApiReflect.init(ctor.prototype, conf);
 
       return res;
-    };
+    } as any;
 
     newCtor = renameFn(newCtor, ctor.prototype.constructor.name);
     newCtor.prototype = ctor.prototype;
@@ -50,10 +49,10 @@ export function SynapseApi(confOrCtor: string | SynapseApiConfig | Function = ''
     // copy static values
     Object.keys(ctor).forEach(k => newCtor[k] = ctor[k]);
 
-    return newCtor as any;
+    return newCtor;
   }
 
-  function renameFn(fn, name) {
-    return new Function('fn', `return function ${name}() {\n return fn.apply(this, arguments);\n}`)(fn);
+  function renameFn<T extends Function>(fn: T, name: string): T {
+    return new Function('fn', `return function ${name}() {\n return fn.apply(this, arguments);\n}`)(fn) as T;
   }
 }

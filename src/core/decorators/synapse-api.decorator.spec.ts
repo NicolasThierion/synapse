@@ -6,14 +6,9 @@ import { SynapseApiReflect } from './synapse-api.reflect';
 import { Synapse } from '../core';
 import { AngularHttpBackendAdapter } from '../../angular/angular-http-backend-adapter';
 
-import {
-  merge,
-  noop,
-  cloneDeep,
-} from 'lodash';
+import { cloneDeep, merge, noop } from 'lodash';
 import { SynapseConfig } from '../config.type';
 import { mergeConfigs } from '../../utils/utils';
-import { ContentTypeConstants } from '../constants';
 import { ContentTypeTextApi, NoContentTypeApi } from '../../tests/utils/test-api/content-type.api';
 import { HandlerApi } from '../../tests/utils/test-api/handler.api';
 import { Spies } from '../../tests/utils/utils';
@@ -23,7 +18,10 @@ const EXTENDED_API_PATH = '/some-extended-api-path';
 
 @SynapseApi
 class Api {
-  constructor(a: any) {}
+  arg: any;
+  constructor(arg: any) {
+    this.arg = arg;
+  }
 }
 
 @SynapseApi()
@@ -36,11 +34,11 @@ class ApiWithPath {
 
 }
 
-const CustomConf = merge(TestingModule.Custom.CONF, {
+const customConf = merge(TestingModule.Custom.CONF, {
   path: API_PATH
 });
 
-@SynapseApi(CustomConf)
+@SynapseApi(customConf)
 class ApiWithCompleteConf {
 
 }
@@ -55,7 +53,7 @@ class ApiWithPartialConf {
 
 }
 
-@SynapseApi(CustomConf)
+@SynapseApi(customConf)
 class ParentApi {
 
 }
@@ -86,7 +84,7 @@ describe('@SynapseApi annotation', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
+      imports: [TestingModule.forRoot(TestingModule.Global.CONF)]
     });
     // force eager construction of SynapseModule
     inject([TestingModule], noop)();
@@ -108,6 +106,11 @@ describe('@SynapseApi annotation', () => {
     expect([conf.baseUrl, conf.headers, conf.path])
       .toEqual([Global.CONF.baseUrl, merge({}, Global.CONF.headers, SynapseConfig.DEFAULT.headers), '']);
     expect(conf.httpBackend).toEqual(jasmine.any(AngularHttpBackendAdapter));
+  });
+
+  it('should run through original constructor', () => {
+    const api = new Api('arg');
+    expect(api.arg).toEqual('arg');
   });
 
   describe('with no arg', () => {
@@ -145,7 +148,7 @@ describe('@SynapseApi annotation', () => {
     it('should use values from provided config and SynapseConfig.DEFAULT', () => {
       const api = new ApiWithCompleteConf();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      const expected = CustomConf;
+      const expected = customConf;
       expected.headers = conf.headers;    // merged headers are another test's subject
       expected.httpBackend = conf.httpBackend;  // don't compare backends;
       expect(conf as any)
@@ -171,7 +174,7 @@ describe('@SynapseApi annotation', () => {
     it('should leave global conf untouched', () => {
       let a = new ApiWithCompleteConf();
       a = a;
-      for (const k of Object.keys(Global.CONF)) {
+      for (const k of Object.keys(Global.CONF) as (keyof SynapseConfig)[]) {
         expect(Global.CONF[k]).not.toEqual(Custom.CONF[k]);
       }
     });
@@ -216,7 +219,7 @@ describe('@SynapseApi annotation', () => {
   });
 
   describe('with property "requestHandlers"', () => {
-    it('should call through the registered handlers', async (done) => {
+    it('should call through the registered handlers', async done => {
       await new HandlerApi().get().toPromise();
       expect(spies.get).toHaveBeenCalled();
 
@@ -227,7 +230,7 @@ describe('@SynapseApi annotation', () => {
   });
 
   describe('with property "responseHandlers"', () => {
-    it('should call through the registered handlers', async (done) => {
+    it('should call through the registered handlers', async done => {
       await new HandlerApi().get()
         .subscribe(response => {
           expect(response.headers.has(HandlerApi.Global.RESPONSE_HANDLER_HEADER)).toEqual(true);
@@ -245,7 +248,7 @@ describe('@SynapseApi annotation', () => {
     it('should inherit configuration from parent classes', () => {
       const api = new InheritedApi();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      const expected = cloneDeep(CustomConf);
+      const expected = cloneDeep(customConf);
       expected.httpBackend = conf.httpBackend;
 
       expect(conf).toEqual(mergeConfigs(expected, SynapseConfig.DEFAULT, TestingModule.Global.CONF));
@@ -254,7 +257,7 @@ describe('@SynapseApi annotation', () => {
     it('should inherits path from parent class if not path specified', () => {
       const api = new InheritedApi();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
-      expect(conf.path).toEqual(CustomConf.path);
+      expect(conf.path).toEqual(customConf.path);
     });
 
     it('should replace path of parent class if path specified', () => {

@@ -12,7 +12,7 @@ export class TypedResponse<T> {
   readonly redirected: boolean;
 
   clone(): TypedResponse<T> {
-    return new TypedResponse<T>(cloneDeep(this.body as T), defaults({body: null}, this));
+    return new TypedResponse<T>(cloneDeep(this.body as T), defaults({body: undefined}, this));
   }
 
   constructor(body?: T, init: ResponseInit | Response = {}) {
@@ -20,7 +20,7 @@ export class TypedResponse<T> {
 
     if (isUndefined((init as Response).url)) {
       const i = init as ResponseInit;
-      defaults(this, new Response(null, i));
+      defaults(this, new Response(undefined, i));
     } else {
       const r = init as Response;
       defaults(this, r);

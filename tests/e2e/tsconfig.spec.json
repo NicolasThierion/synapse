@@ -5,10 +5,8 @@
     "types": [
       "jasmine",
       "node"
-    ],
-//    "allowJs": true,  // TODO uncomment when https://github.com/angular/angular/issues/21080 is resolved.
-    "listEmittedFiles": true,
-    "listFiles": true
+    ]
+    //    "allowJs": true,  // TODO uncomment when https://github.com/angular/angular/issues/21080 is resolved.
   },
   "files": [
     "test.ts"

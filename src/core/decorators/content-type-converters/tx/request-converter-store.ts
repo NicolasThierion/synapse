@@ -11,7 +11,7 @@ export interface RequestContentTypeConverter {
 export class RequestConverterStore {
   private static converters: {[key: string]: RequestContentTypeConverter} = {};
 
-  static addConverter(converter: RequestContentTypeConverter, contentType: ContentTypeConstants | string) {
+  static addConverter(converter: RequestContentTypeConverter, contentType: ContentTypeConstants | string): void {
     this.converters[contentType] = converter;
   }
 

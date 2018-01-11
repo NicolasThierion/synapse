@@ -14,7 +14,7 @@ let _assertFn: IAssertFn = () => {
 
 function _makeAssertFn(enableAsserts: boolean): IAssertFn {
   if (enableAsserts) {
-    return function(condition: any, message?: string): void {
+    return (condition: any, message?: string): void => {
       if (!condition) {
         // Create a new `Error`, which automatically gets `stack`
         const err = new Error(message || 'Assertion failed');

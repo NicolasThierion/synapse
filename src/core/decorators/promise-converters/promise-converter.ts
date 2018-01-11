@@ -1,7 +1,7 @@
 import { isFunction, noop } from 'lodash';
 import { PromiseConverter } from './promise-converter-store';
 
-export class PromiseConverterImpl implements PromiseConverter<Promise<any>> {
+export class PromiseConverterImpl implements PromiseConverter {
   convert<T>(promise: Promise<T>): Promise <T> {
     return promise;
   }

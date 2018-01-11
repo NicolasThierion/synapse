@@ -1,16 +1,15 @@
 import { TestingModule } from '../testing.module';
 import { TestBed } from '@angular/core/testing';
 import { Spies } from '../utils/utils';
-import { Body, Synapse, SynapseApi } from '../../';
+import { Body, POST, Synapse, SynapseApi } from '../../';
 import { BadApi } from '../utils/test-api/bad.api';
 import { Observable } from 'rxjs/Observable';
-import { POST } from '../../';
 import { fromQueryString } from '../../utils/utils';
 
 @SynapseApi
 class BodyApi {
 
-  static customBodyMapper = function (obj: any): any {
+  static customBodyMapper = (obj: any): any => {
     obj.throughMapper = true;
 
     return obj;
@@ -32,7 +31,7 @@ class BodyApi {
   }
 }
 
-describe(`@Body decorator`, () => {
+describe('@Body decorator', () => {
   const spies = Spies.HttpBackend.spies;
   const body = {
     someKey: 'someValue',
@@ -47,7 +46,7 @@ describe(`@Body decorator`, () => {
 
     // setup modules
     TestBed.configureTestingModule({
-      imports: [TestingModule.forRoot(TestingModule.Global.CONF)],
+      imports: [TestingModule.forRoot(TestingModule.Global.CONF)]
     });
 
     Spies.HttpBackend.setupFakeSpies();
@@ -62,14 +61,14 @@ describe(`@Body decorator`, () => {
     expect(Body).toEqual(jasmine.any(Function));
   });
 
-  describe(`When used with @GET`, () => {
+  describe('When used with @GET', () => {
     it('should throw an error', () => {
       expect(() => new BadApi().getWithBody(new Date())).toThrowError('cannot specify @Body with method annotated with @Get');
     });
   });
 
   describe('when used with a method apart from @GET', () => {
-    it('should call HttpBackendAdapter with proper body', (done) => {
+    it('should call HttpBackendAdapter with proper body', done => {
 
       new BodyApi().postWithBody(body).subscribe(() => {
         expect(spies.post).toHaveBeenCalled();
@@ -86,7 +85,7 @@ describe(`@Body decorator`, () => {
   });
 
   describe('have a property "contentType", that', () => {
-    it('should default to "ContentType.JSON"', (done) => {
+    it('should default to "ContentType.JSON"', done => {
       new BodyApi().postWithBody(body)
         .subscribe(() => {
           expect(spies.post).toHaveBeenCalled();
