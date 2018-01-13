@@ -4,6 +4,7 @@
     "outDir": "./dist",
     "sourceMap": true,
     "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
     "downlevelIteration": true,
@@ -15,6 +16,15 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "rootDir": "./"
+//    "paths": {
+//      "@ack/synapse": ["./src"]
+//    },
+//    "baseUrl": "."
+  },
+  "angularCompilerOptions": {
+    // Angular compiler specific config
+    "strictMetadataEmit": true
   }
 }

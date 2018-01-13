@@ -12,9 +12,8 @@
     "test.ts"
   ],
   "include": [
-    "**/*.spec.ts",
-    "**/*.d.ts",
-    "../../src"
+    "../../src",
+    "../../angular"
     // force transpile of whatwg-url from es6 to es5. Why do we even need to do this ?!?
 //    "../../node_modules/whatwg-url" //  TODO uncomment when https://github.com/angular/angular/issues/21080 is resolved.
   ]

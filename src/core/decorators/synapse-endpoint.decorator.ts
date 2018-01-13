@@ -1,22 +1,20 @@
-import { Observable } from 'rxjs/Observable';
-import { assert } from '../../utils/assert';
-import { SynapseApiReflect } from './synapse-api.reflect';
-import { joinPath, joinQueryParams, mergeConfigs } from '../../utils/utils';
-import { MapperType } from '../mapper.type';
-import { Headers } from '../core';
-import { HttpBackendAdapter } from '../http-backend';
-import { SynapseError } from '../../utils/synapse-error';
 import { cloneDeep, defaultsDeep, isFunction, isString, isUndefined, mergeWith } from 'lodash';
+import { Observable } from 'rxjs/Observable';
+import { assert, SynapseError, joinPath, joinQueryParams, mergeConfigs } from '../../utils';
+import { Headers } from './parameters.decorator';
+import { SynapseApiReflect } from './synapse-api.reflect';
 
 import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
 
 import { ContentTypeConstants, HttpMethod, HttpRequestHandler, HttpResponseHandler, ObserveType } from '../constants';
 import { ResponseContentTypeConverter, ResponseContentTypeConverterStore } from './content-type-converters/rx/response-converter-store';
-import { PromiseConverterStore } from './promise-converters/promise-converter-store';
 import { RequestContentTypeConverter, RequestConverterStore } from './content-type-converters/tx/request-converter-store';
+import { PromiseConverterStore } from './promise-converters/promise-converter-store';
 import { EndpointConfig } from '../endpoint-config.type';
 import { SynapseApiConfig } from '../api-config.type';
+import { HttpBackendAdapter } from '../http-backend';
 import { TypedResponse } from '../typed-response.model';
+import { MapperType } from '../mapper.type';
 
 /**
  * Parameters decorated with @Headers are considered to be of this type.
@@ -225,8 +223,7 @@ function _getRequestContentTypeConverter(contentType: ContentTypeConstants): Req
  *  - a converter to map the body
  *  - a converter to create a copy of the response with the mapped body
  * requestConf
- * @returns {ResponseContentTypeConverter<any>}
- * @private
+ * @returns
  */
 function _getResponseContentTypeConverter(requestConf: RequestAndConf): ResponseContentTypeConverter<any> {
   return ResponseContentTypeConverterStore.getConverterFor(requestConf.conf.contentType);

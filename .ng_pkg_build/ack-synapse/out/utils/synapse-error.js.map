@@ -1,1 +1,0 @@
-{"version":3,"file":"synapse-error.js","sourceRoot":"","sources":["../../../../src/utils/synapse-error.ts"],"names":[],"mappings":";;;;AAAA,MAAM,mBAAoB,SAAQ,KAAK;CAEtC","sourcesContent":["export class SynapseError extends Error {\n\n}\n"]}

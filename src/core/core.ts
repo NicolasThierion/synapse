@@ -13,10 +13,9 @@ import 'url-search-params-polyfill';            // UrlSearchParams
 
 import { Observable } from 'rxjs/Observable';
 
+import { assert, mergeConfigs, validateHttpBackendAdapter } from '../utils';
 import '../utils/rxjs-import';
 import { SynapseConfig } from './config.type';
-import { assert } from '../utils/assert';
-import { mergeConfigs, validateHttpBackendAdapter } from '../utils/utils';
 
 declare const global: {
   __SynapseConfig: SynapseConfig
@@ -60,10 +59,3 @@ export class Synapse {
   }
 }
 
-export * from './decorators/index';
-export * from './http-backend';
-export * from './api-config.type';
-export * from './config.type';
-export * from './endpoint-config.type';
-export * from './mapper.type';
-export * from './typed-response.model';

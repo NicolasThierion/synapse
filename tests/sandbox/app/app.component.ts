@@ -1,6 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UsersApi } from '../users/users.api';
-import { HttpClient } from '@angular/common/http';
 import { GET, PathParam, QueryParams, SynapseApi } from '../../../src/core/decorators';
 
 const BASE_URL = 'https://mon-prod-url';

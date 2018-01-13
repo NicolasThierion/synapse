@@ -1,17 +1,14 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { SynapseApi } from './synapse-api.decorator';
-import { Custom, Global, TestingModule } from '../../tests/testing.module';
+import { ContentTypeTextApi, Custom, Global, HandlerApi, NoContentTypeApi, Spies, TestingModule } from '../../../tests/utils';
 import { SynapseApiReflect } from './synapse-api.reflect';
 
+import { AngularHttpBackendAdapter } from '../../angular';
 import { Synapse } from '../core';
-import { AngularHttpBackendAdapter } from '../../angular/angular-http-backend-adapter';
 
 import { cloneDeep, merge, noop } from 'lodash';
+import { mergeConfigs } from '../../utils';
+import { SynapseApi } from './synapse-api.decorator';
 import { SynapseConfig } from '../config.type';
-import { mergeConfigs } from '../../utils/utils';
-import { ContentTypeTextApi, NoContentTypeApi } from '../../tests/utils/test-api/content-type.api';
-import { HandlerApi } from '../../tests/utils/test-api/handler.api';
-import { Spies } from '../../tests/utils/utils';
 
 const API_PATH = 'some-api-path/';
 const EXTENDED_API_PATH = '/some-extended-api-path';
@@ -201,12 +198,12 @@ describe('@SynapseApi annotation', () => {
         });
       });
 
-      xit('= ContentTypeConstants.FORM_DATA, should set content type to "form-data"', done => {
+      xit('= ContentTypeConstants.FORM_DATA, should set content type to "form-data"', () => {
         // TODO implement
         fail('not implemented');
       });
 
-      xit('= ContentTypeConstants.JAVASCRIPT, should set content type to "application/javascript"', done => {
+      xit('= ContentTypeConstants.JAVASCRIPT, should set content type to "application/javascript"', () => {
         // TODO implement
         fail('not implemented');
       });

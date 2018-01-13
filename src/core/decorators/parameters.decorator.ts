@@ -1,7 +1,7 @@
-import { SynapseApiReflect } from './synapse-api.reflect';
-import { MapperType } from '../mapper.type';
 import { assign, defaults, isString } from 'lodash';
 import { ContentTypeConstants, HeaderConstants } from '../constants';
+import { SynapseApiReflect } from './synapse-api.reflect';
+import { MapperType } from '../mapper.type';
 
 // TODO support pathParam mapping
 /**

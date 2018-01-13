@@ -1,4 +1,6 @@
 // TODO unit tests
+
+
 import { HttpBackendAdapter } from './http-backend.interface';
 
 export class FetchApiBackendAdapter implements HttpBackendAdapter {

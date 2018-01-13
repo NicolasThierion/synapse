@@ -1,6 +1,6 @@
+import { isNull, isUndefined } from 'lodash';
 import { ObservableConverter } from './observable-converter';
 import { PromiseConverterImpl } from './promise-converter';
-import { isNull, isUndefined } from 'util';
 
 export interface PromiseConverter {
   convert(promise: Promise<any>): any;

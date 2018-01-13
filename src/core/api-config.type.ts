@@ -1,5 +1,5 @@
-import { HttpBackendAdapter } from './http-backend';
 import { ContentTypeConstants, HttpRequestHandler, HttpResponseHandler, ObserveType } from './constants';
+import { HttpBackendAdapter } from './http-backend';
 
 export interface SynapseApiConfig {
   path?: string;

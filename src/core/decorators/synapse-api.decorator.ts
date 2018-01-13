@@ -1,8 +1,8 @@
-import { SynapseApiReflect } from './synapse-api.reflect';
 import { cloneDeep, isFunction, isString } from 'lodash';
-import { SynapseApiConfig } from '../api-config.type';
-import { Constructor } from '../../utils/utils';
+import { Constructor } from '../../utils';
+import { SynapseApiReflect } from './synapse-api.reflect';
 import SynapseApiClass = SynapseApiReflect.SynapseApiClass;
+import { SynapseApiConfig } from '../api-config.type';
 
 /**
  * Use this decorator on your web API class.

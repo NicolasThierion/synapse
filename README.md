@@ -1,17 +1,16 @@
 # Synapse <sub>- 0.1.0</sub>
-Designing clean and versatile HTTP api, made easy. With ES6 decorators, promises, and Fetch API included !
+
+> Designing clean and versatile HTTP api, made easy. With ES6 decorators, promises, and Fetch API included !
 
  ## What is it ?
+We all already did, one day, some http calls by straight forward concatenating url parts :
 
 ```typescript
 const BASE_URL='https://my-awesome-web-api-PROD'
-
 class UserApi {
- 
   constructor(private http: HttpClient) {}
-  getUser(userId: number): Observable {
-    return this.http.get(BASE_URL + '/users/' + userId);
-  }
+  
+  getUser(userId: number): Observable { return this.http.get(BASE_URL + '/users/' + userId); }
 
   getAccount(userId: number): Observable {
     return this.http.get(BASE_URL + '/users/' + userId + '/account/', {
@@ -28,8 +27,7 @@ class UserApi {
   }
 }
 ```
-You probably already encountered some piece of code with such similar fuzzy url concatenations, did you?
-
+Tired of all those fuzzy url concatenations and obscure parameter parsing ?
 Synapse is a library that allows you to achieve the same as above with much less boilerplate code: 
 ```typescript
 @SynapseApi({
@@ -58,7 +56,7 @@ class UserApi {
 Please note that synapse comes with the following polyfills: 
  - **reflect-metadata** ()for [ES7 Metadata Reflection API](http://www.ecma-international.org/ecma-262/6.0/#sec-reflect-object)
  - **whatwg-fetch** for [ES6 Fetch API](https://fetch.spec.whatwg.org/)
-##[Out of date] - **whatwg-url** for [ES6 UrlSearchParams](https://url.spec.whatwg.org/#urlsearchparams)
+ - [Out of date] - **url-search-params-polyfill** for [ES6 UrlSearchParams](https://url.spec.whatwg.org/#urlsearchparams)
  
 ## Setup Synapse with angular.
 > ![warning](.README/warning.png) Synapse has only been tested with Angular (>= 5)
@@ -262,7 +260,7 @@ Providing those configurations will not override existing one but rather merge w
 - **Error: Synapse not initialized**
 
     Did you properly called `SynapseModule.forRoot(/* ... */)` in your angular's AppModule, or `Synapse.init(/* ... */)` ?
-
+- **Error : has no exported member 'SynapseModule'**
 ## Development server
 Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 

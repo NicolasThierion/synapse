@@ -6,7 +6,7 @@
   "apps": [
     {
       "root": "tests/sandbox",
-      "outDir": "dist",
+      "outDir": "tmp/dist",
       "assets": [
         "assets",
         "favicon.ico"

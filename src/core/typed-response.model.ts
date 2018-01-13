@@ -1,5 +1,4 @@
-import { cloneDeep, defaults } from 'lodash';
-import { isUndefined } from 'util';
+import { cloneDeep, defaults, isUndefined } from 'lodash';
 
 export class TypedResponse<T> {
   readonly body: T;

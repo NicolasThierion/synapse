@@ -1,16 +1,13 @@
-import 'reflect-metadata';
-import { SynapseConfig } from '../config.type';
-import { assert } from '../../utils/assert';
 import {
   cloneDeep,
   isNumber
 } from 'lodash';
-import { StateError } from '../../utils/state-error';
+import 'reflect-metadata';
+import { StateError, SynapseError, mergeConfigs, assert } from '../../utils';
 import { Synapse } from '../core';
 import { BodyParams } from './parameters.decorator';
-import { SynapseError } from '../../utils/synapse-error';
-import { mergeConfigs } from '../../utils/utils';
 import { SynapseApiConfig } from '../api-config.type';
+import { SynapseConfig } from '../config.type';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
 const CONF_KEY = 'SynapseApiConfig';

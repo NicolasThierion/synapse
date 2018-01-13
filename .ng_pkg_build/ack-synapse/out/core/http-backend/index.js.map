@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../../src/core/http-backend/index.ts"],"names":[],"mappings":";;;;AAAA,uCAAc,2BAA2B,CAAC","sourcesContent":["export * from './fetch-http-backend.impl';\nexport * from './http-backend.interface';\n"]}

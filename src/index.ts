@@ -1,4 +1,4 @@
-import { initAssert } from './utils/assert';
+import { initAssert } from './utils';
 
 // TODO turn false
 initAssert(false);

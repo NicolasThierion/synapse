@@ -1,3 +1,5 @@
+// TODO doc
+
 export interface HttpBackendAdapter {
   get(request: Request): Promise<Response>;
   post(request: Request): Promise<Response>;

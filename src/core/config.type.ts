@@ -1,5 +1,5 @@
-import { FetchApiBackendAdapter, HttpBackendAdapter } from './http-backend';
 import { ContentTypeConstants, HttpRequestHandler, HttpResponseHandler, ObserveType } from './constants';
+import { FetchApiBackendAdapter, HttpBackendAdapter } from './http-backend';
 
 /**
  * Global configuration for Synapse APIs

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { HttpBackendAdapter } from '../core/http-backend';
+import { HttpBackendAdapter } from '../';
 
 /**
  * An angular implementation of {@link HttpBackendAdapter} using {@link HttpClient} as a backend.

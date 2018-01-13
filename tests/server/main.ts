@@ -1,7 +1,7 @@
 // server.js
-import { data } from '../../src/tests/utils/user-api/users.mock';
+import { data } from './users.mock';
 
-const jsonServer = require('json-server');
+const jsonServer = require('json-server');  // tslint:disable-line
 const server = jsonServer.create();
 const router = jsonServer.router(data);
 const middlewares = jsonServer.defaults();

@@ -1,5 +1,5 @@
-import { PromiseConverter } from './promise-converter-store';
 import { Observable } from 'rxjs/Observable';
+import { PromiseConverter } from './promise-converter-store';
 
 export class ObservableConverter implements PromiseConverter {
   convert<T>(promise: Promise<T>): Observable<T> {

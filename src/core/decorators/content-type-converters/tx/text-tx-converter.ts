@@ -1,6 +1,6 @@
+import { isString } from 'lodash';
 import { RequestContentTypeConverter } from './request-converter-store';
 import { ContentTypeConstants, HeaderConstants } from '../../../constants';
-import { isString } from 'lodash';
 
 export class TextConverter implements RequestContentTypeConverter {
   async convert(body: any, request: Request): Promise<Request> {

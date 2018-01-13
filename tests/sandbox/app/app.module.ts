@@ -1,11 +1,11 @@
 import { HttpClientModule } from '@angular/common/http';
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 
-import { SynapseModule } from '@ack/synapse';
-import { AppComponent } from './app.component';
 import { UsersModule } from '../users/users.module';
+import { AppComponent } from './app.component';
+import { SynapseModule } from '../../../src/angular';
 
 @NgModule({
   declarations: [

@@ -1,7 +1,8 @@
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { User } from './user.model';
-import { Injectable } from '@angular/core';
-import { Body, GET, Headers, PathParam, PATCH, POST, PUT, QueryParams, SynapseApi, Synapse} from '@ack/synapse';
+import { Headers, Body, GET, PATCH, PathParam, POST, PUT, QueryParams, SynapseApi } from '../../../src/core/decorators';
+import { Synapse } from '../../../src';
 
 @SynapseApi({
   baseUrl: 'https://jsonplaceholder.typicode.com/',

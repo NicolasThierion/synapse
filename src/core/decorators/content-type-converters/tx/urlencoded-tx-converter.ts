@@ -1,8 +1,7 @@
+import { isArray, isObject } from 'lodash';
+import { toQueryString, SynapseError } from '../../../../utils';
 import { RequestContentTypeConverter } from './request-converter-store';
 import { ContentTypeConstants, HeaderConstants } from '../../../constants';
-import { SynapseError } from '../../../../utils/synapse-error';
-import { isArray, isObject } from 'lodash';
-import { toQueryString } from '../../../../utils/utils';
 
 export class UrlencodedTxConverter implements RequestContentTypeConverter {
   async convert(body: any, request: Request): Promise<Request> {

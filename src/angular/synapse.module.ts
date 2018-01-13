@@ -1,10 +1,9 @@
-import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
-import { Synapse } from '../core/core';
-import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { HttpClient } from '@angular/common/http';
+import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+
+import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { throwIfAlreadyLoaded } from './utils/module-import-guard';
-import { SynapseConfig } from '../core/config.type';
-import { validateHttpBackendAdapter } from '../utils/utils';
+import { Synapse, SynapseConfig } from '../';
 
 /**
  * Register this module using {@link SynapseModule#forRoot} to be able to use Synapse decorators within your app.
@@ -23,8 +22,6 @@ export class SynapseModule {
           'Cannot find dependency HttpClient. Make sure you import BrowserModule & HttpClientModule within your root module.');
       }
       conf.httpBackend = new AngularHttpBackendAdapter(http);
-    } else {
-      validateHttpBackendAdapter(conf.httpBackend);
     }
 
     Synapse.init(conf as SynapseConfig);

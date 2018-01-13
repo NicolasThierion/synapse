@@ -1,11 +1,8 @@
-import { QueryParametersType } from '../';
-import * as qs from 'qs';
-import { HttpBackendAdapter } from '../core/http-backend';
 import { cloneDeep, isArray, isFunction, isObject, isUndefined, mergeWith } from 'lodash';
-import { SynapseConfig } from '../core/config.type';
+import { parse, stringify } from 'qs';
+import { EndpointConfig, QueryParametersType, SynapseApiConfig, SynapseConfig } from '../';
 import { assert } from './assert';
-import { SynapseApiConfig } from '../core/api-config.type';
-import { EndpointConfig } from '../core/endpoint-config.type';
+import { HttpBackendAdapter } from '../core/http-backend';
 
 export type Constructor<T> = Function & {
   new(...args: any[]): T;
@@ -29,11 +26,11 @@ export function joinPath(...path: string[]): string {
 }
 
 export function toQueryString(queryParameters: QueryParametersType | Object): string {
- return qs.stringify(queryParameters);
+  return stringify(queryParameters);
 }
 
 export function fromQueryString(queryString: string): Object {
-  return qs.parse(queryString);
+  return parse(queryString);
 }
 
 export function joinQueryParams(url: string, queryParams: QueryParametersType): string {
@@ -53,6 +50,7 @@ export function validateHttpBackendAdapter(ba: HttpBackendAdapter): void {
 }
 
 export type SynapseMergedConfig = SynapseConfig | SynapseApiConfig | EndpointConfig;
+
 export function mergeConfigs<T extends SynapseMergedConfig, U extends SynapseMergedConfig>(conf: T, ...confs: U[]): T & U {
 
   return mergeWith(conf, ...confs, (value: any, srcValue: any, key: string, object: any, source: any) => {

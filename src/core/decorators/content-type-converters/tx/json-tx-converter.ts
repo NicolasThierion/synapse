@@ -1,7 +1,7 @@
+import { isArray, isObject, isString } from 'lodash';
+import { SynapseError } from '../../../../utils';
 import { RequestContentTypeConverter } from './request-converter-store';
 import { ContentTypeConstants, HeaderConstants } from '../../../constants';
-import { SynapseError } from '../../../../utils/synapse-error';
-import { isArray, isObject, isString } from 'lodash';
 
 export class JsonConverter implements RequestContentTypeConverter {
   async convert(body: any, request: Request): Promise<Request> {
