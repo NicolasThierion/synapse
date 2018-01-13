@@ -10,9 +10,8 @@ import SynapseApiClass = SynapseApiReflect.SynapseApiClass;
  * You can specify an optional resource path to this API, or a complete {@link SynapseApiConfig},
  * that will applies to this class and all of its sub classes.
  *
- * @param {string | SynapseApiConfig} confOrCtor
- * @returns {ClassDecorator}
- * @constructor
+ * @param confOrCtor
+ * @returns
  */
 export function SynapseApi(confOrCtor: string | SynapseApiConfig | Constructor<SynapseApiClass> = ''): ClassDecorator | any {
   // if called SynapseApi(...???...)

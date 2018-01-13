@@ -38,8 +38,8 @@ export type QueryParametersType = Object;
 /**
  * GET method decorator.
  *
- * @param {EndpointConfig | string} conf the configuration for this endpoint
- * @returns {MethodDecorator} the GET decorator
+ * conf the configuration for this endpoint
+ * the GET decorator
  */
 export function GET(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.GET, conf);
@@ -48,8 +48,8 @@ export function GET(conf: EndpointConfig | string = ''): MethodDecorator {
 /**
  * POST method decorator.
  *
- * @param {EndpointConfig | string} conf the configuration for this endpoint
- * @returns {MethodDecorator} the POST decorator
+ * conf the configuration for this endpoint
+ * the POST decorator
  */
 export function POST(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.POST, conf);
@@ -58,8 +58,8 @@ export function POST(conf: EndpointConfig | string = ''): MethodDecorator {
 /**
  * PUT method decorator.
  *
- * @param {EndpointConfig | string} conf the configuration for this endpoint
- * @returns {MethodDecorator} the PUT decorator
+ * conf the configuration for this endpoint
+ * the PUT decorator
  */
 export function PUT(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.PUT, conf);
@@ -68,8 +68,8 @@ export function PUT(conf: EndpointConfig | string = ''): MethodDecorator {
 /**
  * PATCH method decorator.
  *
- * @param {EndpointConfig | string} conf the configuration for this endpoint
- * @returns {MethodDecorator} the PATCH decorator
+ * conf the configuration for this endpoint
+ * the PATCH decorator
  */
 export function PATCH(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.PATCH, conf);
@@ -78,8 +78,8 @@ export function PATCH(conf: EndpointConfig | string = ''): MethodDecorator {
 /**
  * DELETE method decorator.
  *
- * @param {EndpointConfig | string} conf the configuration for this endpoint
- * @returns {MethodDecorator} the DELETE decorator
+ * conf the configuration for this endpoint
+ * the DELETE decorator
  */
 export function DELETE(conf: EndpointConfig | string = ''): MethodDecorator {
   return _httpRequestDecorator(HttpMethod.DELETE, conf);
@@ -224,7 +224,7 @@ function _getRequestContentTypeConverter(contentType: ContentTypeConstants): Req
  * Switch on {@link RequestAndConf.conf.observe}, and return either
  *  - a converter to map the body
  *  - a converter to create a copy of the response with the mapped body
- * @param {RequestAndConf} requestConf
+ * requestConf
  * @returns {ResponseContentTypeConverter<any>}
  * @private
  */

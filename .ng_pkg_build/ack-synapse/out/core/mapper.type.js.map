@@ -1,0 +1,1 @@
+{"version":3,"file":"mapper.type.js","sourceRoot":"","sources":["../../../../src/core/mapper.type.ts"],"names":[],"mappings":"","sourcesContent":["export type MapperType<U, V> = (obj: U) => V;\n"]}

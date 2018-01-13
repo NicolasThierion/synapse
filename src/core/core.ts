@@ -1,3 +1,6 @@
+// DO NOT REMOVE THIS ONE. AT the moment, it is needed for name resolution when generating .d.ts because of --declarations
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+
 // TODO remove those ?
 import 'core-js/es7/reflect';   // reflect api polyfill
 import 'whatwg-fetch';          // Fetch API

@@ -3,6 +3,7 @@ import { Headers } from '../../parameters.decorator';
 import { ContentTypeConstants } from '../../../constants';
 import { SynapseError } from '../../../../utils/synapse-error';
 
+// @dynamic // https://github.com/angular/angular/issues/19698#issuecomment-338340211
 export class JsonConverter implements ResponseContentTypeConverter<Object> {
   private static readonly SUPPORTED_CONTENT_TYPES = [ContentTypeConstants.JSON];
   convert(response: Response): Promise<Object> {

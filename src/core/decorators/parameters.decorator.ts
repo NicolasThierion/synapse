@@ -8,8 +8,7 @@ import { ContentTypeConstants, HeaderConstants } from '../constants';
  * Use this decorator on a parameter to specify that it should be considered as a path parameter.
  * The mapped parameter should be either a string, a number or a boolean. Any other type will throw an error.
  *
- * @returns {ParameterDecorator}
- * @constructor
+ * @returns
  */
 export function PathParam(): ParameterDecorator {
   return SynapseApiReflect.addPathParamArg();
@@ -18,8 +17,7 @@ export function PathParam(): ParameterDecorator {
 // TODO support queryParam mapping
 /**
  * Use this decorator on a parameter to specify that it should be considered as a query parameter.
- * @returns {ParameterDecorator}
- * @constructor
+ * @returns
  */
 export function QueryParams(): ParameterDecorator {
   return SynapseApiReflect.addQueryParamsArg();
@@ -31,8 +29,7 @@ export function QueryParams(): ParameterDecorator {
  * Use this decorator on a parameter to specify that it should be considered as a header.
  * The given headers will be merged with any specified global header.
  * If you use multiple {@code Headers} decorators for a method, header will be merged as well.
- * @returns {ParameterDecorator}
- * @constructor
+ * @returns
  */
 export const Headers = assign((): ParameterDecorator  => {
   return SynapseApiReflect.addHeadersArg();
@@ -40,8 +37,7 @@ export const Headers = assign((): ParameterDecorator  => {
 
 /**
  * Use this decorator on a parameter to specify that it should be considered as a body. Can be used once at most per method.
- * @returns {ParameterDecorator}
- * @constructor
+ * @returns
  */
 // TODO support for mappers
 // TODO let choice between 'form-data', 'x-www-form-urlencoded', 'raw' or 'binary'

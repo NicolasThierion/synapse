@@ -5,7 +5,7 @@
   },
   "apps": [
     {
-      "root": "tests/e2e",
+      "root": "tests/sandbox",
       "outDir": "dist",
       "assets": [
         "assets",

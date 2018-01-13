@@ -2,6 +2,19 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "types"
-  }
+    "declarationDir": "dist/types"
+  },
+  "angularCompilerOptions": {         // Angular compiler specific config
+    "genDir": "./dist",
+    "skipTemplateCodegen": true,       // Don't produce *.ngfactory.ts
+    "emitDecoratorMetadata": true,
+    "strictMetadataEmit": true
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "node_modules",
+    "tests",
+    "src/tests",
+    "dist"
+  ]
 }

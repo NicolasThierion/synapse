@@ -1,7 +1,6 @@
 import { initAssert } from './utils/assert';
 
 // TODO turn false
-initAssert(true);
+initAssert(false);
 
-export * from './core/core';
-export * from './angular/synapse.module';
+export * from './public_api';

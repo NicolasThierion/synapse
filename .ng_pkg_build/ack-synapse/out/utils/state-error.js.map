@@ -1,0 +1,1 @@
+{"version":3,"file":"state-error.js","sourceRoot":"","sources":["../../../../src/utils/state-error.ts"],"names":[],"mappings":";;;;AAAA,MAAM,iBAAkB,SAAQ,KAAK;CAEpC","sourcesContent":["export class StateError extends Error {\n\n}\n"]}

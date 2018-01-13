@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
   searchUser(searchParameters) {
     this.http.get(BASE_URL + '/users?name=' + searchParameters.name
       + (searchParameters.age ? '&age=' + searchParameters.age : '')
-      + (searchParameters.city ? 'city=' + searchParameters.city : '');
+      + (searchParameters.city ? 'city=' + searchParameters.city : ''));
   }
 
   ngOnInit(): void {
@@ -72,10 +72,3 @@ class UserApi {
   }
 }
 
-
-function main() {
-
-  const httpClent = new HttpClient();
-  new AppComponent(httpClent);
-
-}

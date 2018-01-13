@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/index.ts"],"names":[],"mappings":";;;;AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,gBAAgB,CAAC;;AAG5C,UAAU,CAAC,KAAK,CAAC,CAAC;AAElB,0LAAc,cAAc,CAAC","sourcesContent":["import { initAssert } from './utils/assert';\n\n// TODO turn false\ninitAssert(false);\n\nexport * from './public_api';\n"]}
