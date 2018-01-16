@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "npm run ::bg-test-server \"ng serve --preserve-symlinks\"",
+    "start": "npm run ::bg-test-server \"ng serve --preserve-symlinks --hmr\"",
     "coverage": "npm run ::concurently \"npm run start-test-server\" \"ng test --watch=false --code-coverage\"",
     "lint": "ng lint",
     "build": "./node_modules/.bin/ngc -p tsconfig.dist.json",
@@ -50,6 +50,7 @@
     "@angular/compiler": "^5.0.0",
     "@angular/compiler-cli": "^5.0.0",
     "@angular/core": "^5.0.0",
+    "@angular/forms": "^5.2.0",
     "@angular/http": "^5.0.0",
     "@angular/language-service": "^5.0.0",
     "@angular/platform-browser": "^5.0.0",

@@ -1,0 +1,29 @@
+<div class="card">
+  <a data-toggle="collapse" role="button" href="#{{elementId}}">
+    <span class="badge" [ngClass]="method">{{method}}</span>
+    {{name}}({{paramsString()}})
+  </a>
+  <section class="details collapse container-fluid" [id]="elementId">
+    <section class="request bg-light mb-3">
+      <span class="badge badge-info">Parameters</span>
+      <form class="px-2">
+        <ng-container *ngFor="let paramName of paramNames; index as i;">
+        <label>{{paramName}}: {{getParamType(paramName)}}</label>
+        <input [(ngModel)]="paramValues[i]" type="{{getParamType(paramName) === 'number' ? 'number' : 'text'}}"
+               name="userId">
+        </ng-container>
+        <button type="submit" class="btn btn-outline-primary fa fa-arrow-right" (click)="submit()">
+        </button>
+      </form>
+    </section>
+    <div class="container-fluid"
+         [style.display]="isSubmit ? 'block' : 'none'">
+      <section class="result" [ngClass]="isError ? 'bg-danger' : 'bg-success'">
+        <label class="badge" [ngClass]="isError ? 'badge-danger' : 'badge-success'">{{isError ? 'Error' :
+          'Success'}}</label>
+        <div class="px-2" #resultContent></div>
+      </section>
+    </div>
+  </section>
+
+</div>

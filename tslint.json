@@ -154,6 +154,19 @@
         "variable-declaration": "nospace"
       }
     ],
+    "directive-selector": [
+      true,
+      "attribute",
+      "ack",
+      "camelCase"
+    ],
+
+    "component-selector": [
+      true,
+      "element",
+      "ack",
+      "kebab-case"
+    ],
     "typeof-compare": true,
     "unified-signatures": true,
     "whitespace": [

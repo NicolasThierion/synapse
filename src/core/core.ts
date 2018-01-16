@@ -27,12 +27,17 @@ class StateError extends Error {
   }
 }
 
+// @dynamic
 export class Synapse {
-  static readonly OBSERVABLE = Observable.throw(
-    'should only use SynapseConfig.OBSERVABLE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
+  static get OBSERVABLE(): Observable<any> {
+    return Observable.throw(
+      'should only use Synapse.OBSERVABLE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
+  }
 
-  static readonly PROMISE = Promise.reject(
-    'should only use SynapseConfig.PROMISE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
+  static get PROMISE(): Promise<any> {
+    return Promise.reject(
+      'should only use Synapse.PROMISE within a method annotated with @Get, @Post, @Put, @Patch or @Delete');
+  }
 
   static init(conf: SynapseConfig): void {
     if (global.__SynapseConfig) {
@@ -44,6 +49,10 @@ export class Synapse {
     validateHttpBackendAdapter(conf.httpBackend);
 
     global.__SynapseConfig = conf;
+  }
+
+  static isInit(): boolean {
+    return !!(global.__SynapseConfig);
   }
 
   static getConfig(): SynapseConfig {

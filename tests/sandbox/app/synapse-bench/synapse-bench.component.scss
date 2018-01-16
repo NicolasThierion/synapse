@@ -1,0 +1,63 @@
+@import '../../node_modules/bootstrap/scss/functions';
+@import '../../node_modules/bootstrap/scss/variables';
+
+:host {
+
+  .badge {
+    color: #FFFFFF;
+    border-radius: 4px 0;
+    padding: 4px;
+    vertical-align: top;
+
+    &.GET {
+      background-color: #4290ff;
+    }
+
+    &.POST {
+      background-color: #ea910d;
+    }
+
+    &.PUT {
+      background-color: #7dd356;
+    }
+
+    &.PATCH {
+      background-color: #c74fff;
+    }
+
+    &.DELETE {
+      background-color: #ea352c;
+    }
+  }
+
+  .request, .result {
+    border-top-left-radius: 4px;
+  }
+
+
+  .details {
+    flex-flow: row nowrap;
+    &.show, &.collapsing {
+      display: flex;
+    }
+
+    > {
+      flex: auto;
+    }
+
+    form {
+      display: flex;
+      flex-flow: row nowrap;
+    }
+
+    .result {
+      &.bg-danger {
+        background-color: lighten($danger, 40) !important;
+      }
+
+      &.bg-success {
+        background-color: lighten($success, 40) !important;
+      }
+    }
+  }
+}

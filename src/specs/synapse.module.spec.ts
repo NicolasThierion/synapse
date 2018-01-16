@@ -3,12 +3,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, inject, TestBed } from '@angular/core/testing';
 import { merge, noop } from 'lodash';
 
-import { AngularHttpBackendAdapter } from '../angular';
+import { SynapseModule, AngularHttpBackendAdapter } from '../angular';
 
 import { TestingModule } from '../../tests/utils';
-import { SynapseModule } from '../angular';
 import { HttpBackendAdapter } from '../core/http-backend';
-import { Synapse, SynapseConfig } from '../index';
+import { Synapse, SynapseConfig } from '../core';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
   get(request: Request): Promise<Response> {

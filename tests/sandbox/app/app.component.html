@@ -1,1 +1,13 @@
-<h1>This is E2E test app</h1>
+<header class="navbar navbar-light bg-primary text-white">
+  <h1>This is Synapse demo app</h1>
+</header>
+
+<div class="container-fluid">
+  <h2>GET</h2>
+  <ack-synapse-bench
+    method="GET"
+    name="getOne"
+    [fn]="users.getOne"
+    [parameters]="{id:'number'}"
+  ></ack-synapse-bench>
+</div>

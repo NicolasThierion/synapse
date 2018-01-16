@@ -129,17 +129,25 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string
       throw new TypeError(`@${method} should annotate methods only`);
     }
 
-    // infer desired return type, and make a converter for it (Promise / Observable)
-    const returnTypeConverter = _returnTypeConverter(descriptor, propertyKey);
+    const oldFn = descriptor.value;
+
     descriptor.value = function(...args: any[]): EndpointReturnType {
+      // infer desired return type, and make a converter for it (Promise / Observable)
+      const returnTypeConverter = _returnTypeConverter(oldFn, name);
+
+      let apiConf: SynapseApiConfig;
+
       // tslint:disable no-invalid-this
       // do not only rely on target.
       // Target is proto of the annotated class of this method. If we call this method from a child class,
       // we rather want to get proto of this child class.
-      let apiConf = SynapseApiReflect.getConf((this as any).__proto__);
-
-      if (SynapseApiReflect.hasConf(target) && target !== (this as any).__proto__) {
-        // but also get config from parent class if any
+      if (this) {
+        apiConf = SynapseApiReflect.getConf((this as any).__proto__);
+        if (SynapseApiReflect.hasConf(target) && target !== (this as any).__proto__) {
+          // but also get config from parent class if any
+          apiConf = mergeConfigs({}, apiConf, SynapseApiReflect.getConf(target));
+        }
+      } else {
         apiConf = mergeConfigs({}, apiConf, SynapseApiReflect.getConf(target));
       }
       // tslint:enable
@@ -148,11 +156,16 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string
       const cargs: CallArgs = _parseArgs(args, decoratedArgs);
       cargs.queryParams = _mergeQueryParams([parsedQueryParams, cargs.queryParams]);
 
-      const promise = _makeRequestAndConf(method, apiConf, endpointConf, cargs)
-        .then((requestAndConf: RequestAndConf) => {
-          // execute the request
-          return _doRequest(apiConf.httpBackend, requestAndConf);
-        });
+      let promise: Promise<any>;
+      try {
+        promise = _makeRequestAndConf(method, apiConf, endpointConf, cargs)
+          .then((requestAndConf: RequestAndConf) => {
+            // execute the request
+            return _doRequest(apiConf.httpBackend, requestAndConf);
+          });
+      } catch (e) {
+        promise = Promise.reject(e);
+      }
 
       // return result as a promise / observable.
       return returnTypeConverter(promise);
@@ -331,10 +344,10 @@ function _replacePathParams(path: string, pathParams: (string | number | boolean
       (got ${pathParams.length}, but expected ${i}). Cannot bind value ${p} to any path parameter`);
     }
 
-    path = path.replace(PATH_PARAMS_REGEX, `${p}`);
     if (isUndefined(p)) {
       throw new TypeError(`${path} : value for path parameter #${i} is undefined`);
     }
+    path = path.replace(PATH_PARAMS_REGEX, `${p}`);
     i++;
   });
 
@@ -381,14 +394,14 @@ function _applyResponseHandlers(requestAndConf: RequestAndConf, response: Respon
   return response;
 }
 
-function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
-                              propertyKey: string | symbol): (promise: Promise<Response>) => EndpointReturnType {
-  assert(isFunction(descriptor.value));
+function _returnTypeConverter(fn: Function,
+                              name: string): (promise: Promise<Response>) => EndpointReturnType {
+  assert(isFunction(fn));
   let res: any;
   try {
-    res = (descriptor.value as Function).apply(undefined);
+    res = fn.apply(undefined);
   } catch (e) {
-    console.warn(`cannot infer return type of function ${propertyKey}.`);
+    console.warn(`cannot infer return type of function ${name}.`);
   }
 
   const converter = PromiseConverterStore.getConverterFor(res);
@@ -397,7 +410,7 @@ function _returnTypeConverter(descriptor: TypedPropertyDescriptor<any>,
     return converter.convert;
   } else {
     const type = ({} || res as any).__proto__ ? (res as any).__proto__.constructor.name : typeof res;
-    throw new TypeError(`Function ${propertyKey} returned object of unexpected type ${type}`);
+    throw new TypeError(`Function ${name} returned object of unexpected type ${type}`);
   }
 }
 

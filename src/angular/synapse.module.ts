@@ -14,17 +14,21 @@ import { Synapse, SynapseConfig } from '../';
 @NgModule()
 export class SynapseModule {
   constructor(@Optional() http: HttpClient, @Optional() @SkipSelf() parentModule: SynapseModule, conf: SynapseConfig) {
-    throwIfAlreadyLoaded(parentModule, 'SynapseModule');
-    if (!conf.httpBackend) {
 
-      if (!http) {
-        throw new Error(
-          'Cannot find dependency HttpClient. Make sure you import BrowserModule & HttpClientModule within your root module.');
+    if (!Synapse.isInit()) {
+      throwIfAlreadyLoaded(parentModule, 'SynapseModule');
+      if (!conf.httpBackend) {
+
+        if (!http) {
+          throw new Error(
+            'Cannot find dependency HttpClient. Make sure you import BrowserModule & HttpClientModule within your root module.');
+        }
+        conf.httpBackend = new AngularHttpBackendAdapter(http);
       }
-      conf.httpBackend = new AngularHttpBackendAdapter(http);
+
+      Synapse.init(conf as SynapseConfig);
     }
 
-    Synapse.init(conf as SynapseConfig);
   }
 
   static forRoot(conf: SynapseConfig): ModuleWithProviders {

@@ -3,10 +3,25 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
+import './utils/bootstrap-import/bootstrap-imports';
+import './utils/font-awesome/font-awesome';
+import { hmrBootstrap } from './hmr';
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.log(err));
+if (environment.production) {
+  enableProdMode();
+}
+
+const bootstrap = () => platformBrowserDynamic().bootstrapModule(AppModule);
+
+// bootstraps the app, loading AppModule which defines 'bootstrap' meta.
+// this is Hot Module Replacement boilerplate, required to make hmr working in dev mode.
+if (module['hot']) {
+  hmrBootstrap(module, bootstrap);
+} else {
+  console.error('HMR is not enabled for webpack-dev-server!');
+  console.log('Are you using the --hmr tag for ng serve?');
+}
