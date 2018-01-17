@@ -1,5 +1,5 @@
 import {
-  cloneDeep,
+  cloneDeep, isFunction,
   isNumber
 } from 'lodash';
 import 'reflect-metadata';
@@ -8,9 +8,14 @@ import { Synapse } from '../core';
 import { BodyParams } from './parameters.decorator';
 import { SynapseApiConfig } from '../api-config.type';
 import { SynapseConfig } from '../config.type';
+import { SynapseApiClass } from '../synapse-api.type';
+import { SynapseMethod } from '../synapse-method.type';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
 const CONF_KEY = 'SynapseApiConfig';
+const ORIGINAL_PROTO = 'origProto';
+// keep track of metadata for further cleanup
+const CLASS_METADATA_REGISTRY = [];
 
 export namespace SynapseApiReflect {
 
@@ -24,27 +29,31 @@ export namespace SynapseApiReflect {
     };
   }
 
-  /**
-   * Class decorated with @SynapseApi
-   */
-  export interface SynapseApiClass {} // tslint:disable-line
-
-  export function init(classPrototype: SynapseApiClass, conf: SynapseApiConfig): void {
+  export function init(classPrototype: SynapseApiClass, conf: SynapseApiConfig): SynapseConfig & SynapseApiConfig {
     assert(classPrototype);
     // inherits config from parent annotation
-    conf = _inheritConf(classPrototype, cloneDeep(conf));
+    conf = _inheritConf(classPrototype, conf);
 
     // retrieve global config
     const globalConf = Synapse.getConfig();
 
     // patch it with local @SynapseApi config.
-    const conf_: SynapseConfig | SynapseApiConfig = mergeConfigs({}, conf as SynapseApiConfig, globalConf, {
+    const conf_: any = mergeConfigs({}, conf as SynapseApiConfig, globalConf, {
       path: ''
-    });
+    } as any);
     Object.freeze(conf_);
-
+    CLASS_METADATA_REGISTRY.push(classPrototype);
     // save conf for this class.
     Reflect.defineMetadata(CONF_KEY, conf_, classPrototype);
+
+    // store proto twice, as classPrototype will we enhanced to inject apiConfig within methods
+    // but we still need orig proto for child classes.
+    const oldProto = _flatProto(classPrototype);
+    _patchProto(classPrototype);
+
+    Reflect.defineMetadata(ORIGINAL_PROTO, oldProto, classPrototype);
+
+    return conf_;
   }
 
   export function getConf(classPrototype: SynapseApiClass): SynapseApiConfig & SynapseConfig {
@@ -54,7 +63,7 @@ export namespace SynapseApiReflect {
       Are you sure that this type is properly decorated with "@SynapseApi" ?`);
     }
 
-    return cloneDeep(Reflect.getOwnMetadata(CONF_KEY, classPrototype));
+    return Reflect.getOwnMetadata(CONF_KEY, classPrototype);
   }
 
   export function hasConf(classPrototype: SynapseApiClass): boolean {
@@ -95,7 +104,7 @@ export namespace SynapseApiReflect {
         throw new TypeError('Can specify only one @Body parameter per method.');
       }
 
-      getDecoratedArgs(target, key).body = {
+      args.body = {
         index: parameterIndex,
         params
       };
@@ -106,21 +115,22 @@ export namespace SynapseApiReflect {
     let args: DecoratedArgs = Reflect.getOwnMetadata(DECORATED_PARAMETERS_KEY, target, key);
     if (!args) {
       args = new DecoratedArgs();
-      Reflect.defineMetadata(DECORATED_PARAMETERS_KEY, args , target, key);
+      Reflect.defineMetadata(DECORATED_PARAMETERS_KEY, args, target, key);
     }
 
     return args;
   }
 
-  export function addHandler(): void {
-    // TODO
-    throw new Error('not implemented');
+  export function teardown() {
+    CLASS_METADATA_REGISTRY.forEach(i => {
+      Reflect.deleteMetadata(CONF_KEY, i);
+    });
   }
 }
 
-function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
+function _inheritConf(classPrototype: SynapseApiClass,
                       conf: SynapseApiConfig): SynapseApiConfig {
-  const parentCtor  = Object.getPrototypeOf(classPrototype).constructor;
+  const parentCtor = Object.getPrototypeOf(classPrototype).constructor;
 
   // if parent constructor is not 'Object'
   if (parentCtor.name !== 'Object') {
@@ -135,6 +145,37 @@ function _inheritConf(classPrototype: SynapseApiReflect.SynapseApiClass,
 
 function _assertDecorateParameter(decorator: string, key: string | symbol, parameterIndex: number): void {
   if (!isNumber(parameterIndex)) {
-    throw new SynapseError(`${decorator} should decorate parameters only. (Found @Header on function ${key}})`);
+    throw new SynapseError(`${decorator} should decorate parameters only. (Found @${decorator} on function ${key}})`);
   }
+}
+
+function _patchProto(classPrototype: SynapseApiClass) {
+  // patch annotated methods by injecting current target (and its conf)
+  const flatProto = _flatProto(classPrototype);   // patch methods from all parents too.
+  Object.keys(flatProto)
+    // only want functions
+    .filter(p => p !== 'constructor')
+    .filter(p => isFunction(classPrototype[p]))
+    // only want decorated methods that needs patch
+    .filter(p => !!Object.getOwnPropertyDescriptor((classPrototype[p] as SynapseMethod), 'synapseConfig'))
+    .forEach(p => {
+      // as per synapseENdpointDecorator, functions are defined as a lazy-init function, that needs to be init with target.
+      classPrototype[p] = flatProto[p](classPrototype);
+    });
+}
+
+function _flatProto(proto: Object): Object {
+  const flat = {};
+  while (proto) {
+    proto = Reflect.getOwnMetadata(ORIGINAL_PROTO, proto) || proto;
+      Object.getOwnPropertyNames(proto)
+        .filter(p => p !== 'constructor')
+        .forEach(p => {
+        flat[p] = flat[p] === undefined ? proto[p] : flat[p];
+      });
+
+      const parentProto = Object.getPrototypeOf(proto);
+      proto = parentProto.constructor !== Object ? parentProto : null;
+  }
+  return flat;
 }

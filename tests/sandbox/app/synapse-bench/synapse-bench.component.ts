@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/fromPromise';
 
 import { isObject } from 'lodash';
+import { SynapseMethod } from '../../../../src/core/synapse-method.type';
 let count = 0;
 
 type paramType = 'object' | 'number' | 'string';
@@ -49,6 +50,10 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
       this.paramNames = Object.keys(this.parameters);
       this.paramTypes = this.paramNames.map(p => this.parameters[p]);
       this.paramValues = [];
+    }
+
+    if (changes.fn) {
+      const conf = (this.fn as SynapseMethod).conf;
     }
   }
 

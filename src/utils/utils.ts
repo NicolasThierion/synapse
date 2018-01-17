@@ -40,6 +40,9 @@ export function joinQueryParams(url: string, queryParams: QueryParametersType): 
 }
 
 export function validateHttpBackendAdapter(ba: HttpBackendAdapter): void {
+  if (!ba) {
+    throw new TypeError(`Did not provided any httpBackendAdapter, which is mandatory`);
+  }
   const mandatoryFn = ['get', 'post', 'put', 'patch', 'delete'];
   for (const fn of mandatoryFn) {
     if (!isFunction(ba[fn])) {
@@ -49,7 +52,7 @@ export function validateHttpBackendAdapter(ba: HttpBackendAdapter): void {
   }
 }
 
-export type SynapseMergedConfig = SynapseConfig | SynapseApiConfig | EndpointConfig;
+export type SynapseMergedConfig = SynapseConfig | SynapseApiConfig | EndpointConfig | {};
 
 export function mergeConfigs<T extends SynapseMergedConfig, U extends SynapseMergedConfig>(conf: T, ...confs: U[]): T & U {
 
@@ -74,4 +77,8 @@ export function mergeConfigs<T extends SynapseMergedConfig, U extends SynapseMer
       }
     }
   });
+}
+
+export function renameFn<T extends Function>(fn: T, name: string): T {
+  return new Function('fn', `return function ${name}_() {\n return fn.apply(this, arguments);\n}`)(fn) as T;
 }

@@ -17,7 +17,17 @@ import {
   User,
   UsersApi } from '../../tests/utils';
 import { DELETE, GET, PATCH, POST, PUT, Synapse, TypedResponse } from '../core';
-import { joinPath, removeTrailingSlash } from '../utils';
+import { joinPath, mergeConfigs, removeTrailingSlash } from '../utils';
+import { SynapseMethod } from '../core/synapse-method.type';
+import { SynapseApi } from '../core/decorators';
+
+@SynapseApi()
+class UniqueApi {
+  @GET()
+  get(): Observable<any> {
+    return Synapse.OBSERVABLE;
+  }
+}
 
 describe('', () => {
 
@@ -42,8 +52,21 @@ describe('', () => {
       expect(GET).toEqual(jasmine.any(Function));
     });
 
+    describe('.synapseConfig', () => {
+
+      it('should offer conf', () => {
+        const m = ((new GetApi().get) as SynapseMethod);
+        expect(m.synapseConfig).toBeDefined();
+      });
+
+      xit('should offer conf even if class was never construct', () => {
+        expect((UniqueApi.prototype.get as SynapseMethod).synapseConfig).toBeDefined();
+      });
+
+    });
+
     describe('when called', () => {
-      beforeEach(Spies.HttpBackend.setupFakeSpies);
+      beforeEach(() => Spies.HttpBackend.setupFakeSpies());
 
       it('should call registered HttpBackendAdapter\'s get method', async done => {
         await new GetApi().get().toPromise();
@@ -161,7 +184,7 @@ describe('', () => {
       inject([TestingModule], noop)();
     });
 
-    beforeEach(Spies.HttpBackend.setupFakeSpies);
+    beforeEach(() => Spies.HttpBackend.setupFakeSpies());
 
     it('should call httpBackendAdapter method with proper global configuration', async done => {
 

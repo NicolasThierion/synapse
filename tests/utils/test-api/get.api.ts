@@ -52,7 +52,12 @@ export class GetApi {
   getThatReturnsAPromise(): Promise<any> {
     return Synapse.PROMISE;
   }
+
+  iAmNotASynapseFn(): boolean {
+    return false;
+  }
 }
+(GetApi.prototype as any).dummyProp = {};
 
 export namespace GetApi {
 

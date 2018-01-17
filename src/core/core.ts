@@ -16,6 +16,7 @@ import { Observable } from 'rxjs/Observable';
 import { assert, mergeConfigs, validateHttpBackendAdapter } from '../utils';
 import '../utils/rxjs-import';
 import { SynapseConfig } from './config.type';
+import { SynapseApiReflect } from './decorators/synapse-api.reflect';
 
 declare const global: {
   __SynapseConfig: SynapseConfig
@@ -65,6 +66,7 @@ export class Synapse {
 
   static teardown(): void {
     global.__SynapseConfig = undefined;
+    SynapseApiReflect.teardown();
   }
 }
 

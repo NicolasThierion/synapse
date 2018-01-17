@@ -1,6 +1,6 @@
 import { cloneDeep, defaultsDeep, isFunction, isString, isUndefined, mergeWith } from 'lodash';
 import { Observable } from 'rxjs/Observable';
-import { assert, SynapseError, joinPath, joinQueryParams, mergeConfigs } from '../../utils';
+import { assert, SynapseError, joinPath, joinQueryParams, mergeConfigs, renameFn } from '../../utils';
 import { Headers } from './parameters.decorator';
 import { SynapseApiReflect } from './synapse-api.reflect';
 
@@ -15,6 +15,9 @@ import { SynapseApiConfig } from '../api-config.type';
 import { HttpBackendAdapter } from '../http-backend';
 import { TypedResponse } from '../typed-response.model';
 import { MapperType } from '../mapper.type';
+import { SynapseApiClass } from '../synapse-api.type';
+import { SynapseMethod } from '../synapse-method.type';
+import { SynapseConfig } from '../config.type';
 
 /**
  * Parameters decorated with @Headers are considered to be of this type.
@@ -107,7 +110,7 @@ class CallArgs {
 }
 
 function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string): MethodDecorator {
-  return function HttpMethodDecorator(target: Object,
+  return function HttpMethodDecorator(target: SynapseApiClass,
                                       propertyKey: string | symbol,
                                       descriptor: TypedPropertyDescriptor<any>): void {
     const original = descriptor.value;
@@ -129,47 +132,51 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string
       throw new TypeError(`@${method} should annotate methods only`);
     }
 
-    const oldFn = descriptor.value;
+    const oldFn: SynapseMethod = descriptor.value;
 
-    descriptor.value = function(...args: any[]): EndpointReturnType {
-      // infer desired return type, and make a converter for it (Promise / Observable)
-      const returnTypeConverter = _returnTypeConverter(oldFn, name);
-
-      let apiConf: SynapseApiConfig;
-
-      // tslint:disable no-invalid-this
+    // replace method with implementation
+    descriptor.value = (realTarget: SynapseApiClass): Function => {
       // do not only rely on target.
-      // Target is proto of the annotated class of this method. If we call this method from a child class,
-      // we rather want to get proto of this child class.
-      if (this) {
-        apiConf = SynapseApiReflect.getConf((this as any).__proto__);
-        if (SynapseApiReflect.hasConf(target) && target !== (this as any).__proto__) {
-          // but also get config from parent class if any
-          apiConf = mergeConfigs({}, apiConf, SynapseApiReflect.getConf(target));
-        }
-      } else {
-        apiConf = mergeConfigs({}, apiConf, SynapseApiReflect.getConf(target));
-      }
-      // tslint:enable
+      // Target is proto of the class that defines this method. If we call in fact this method from a child class,
+      // we need to gather conf of the child class, rather to get conf of the parent class where this method has been defined.
+      // So, let class decorator feed the real overloaded target of child class
+      const apiConf = realTarget.synapseConfig;
 
-      const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
-      const cargs: CallArgs = _parseArgs(args, decoratedArgs);
-      cargs.queryParams = _mergeQueryParams([parsedQueryParams, cargs.queryParams]);
+      let newFn = function (...args: any[]): any {
+        // infer desired return type, and make a converter for it (Promise / Observable)
+        const returnTypeConverter = _returnTypeConverter(oldFn, name);
 
-      let promise: Promise<any>;
-      try {
+        const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
+        const cargs: CallArgs = _parseArgs(args, decoratedArgs);
+        cargs.queryParams = _mergeQueryParams([parsedQueryParams, cargs.queryParams]);
+
+        let promise: Promise<any>;
         promise = _makeRequestAndConf(method, apiConf, endpointConf, cargs)
           .then((requestAndConf: RequestAndConf) => {
             // execute the request
             return _doRequest(apiConf.httpBackend, requestAndConf);
           });
-      } catch (e) {
-        promise = Promise.reject(e);
-      }
 
-      // return result as a promise / observable.
-      return returnTypeConverter(promise);
+        // return result as a promise / observable.
+        return returnTypeConverter(promise);
+      };
+
+      assert(typeof propertyKey === 'string');
+      newFn = renameFn(newFn, `${propertyKey}`);
+
+      Object.defineProperty(newFn, 'synapseConfig', {
+        // TODO this is wrong. Should return apiConf & endpointConf
+        get: () => apiConf
+      });
+
+      return newFn;
     };
+
+    Object.defineProperty(descriptor.value, 'synapseConfig', {
+      get: () => {
+        throw new SynapseError('Cannot get synapseConfig of a method whose class has never been construct');
+      }
+    });
   };
 }
 
@@ -394,7 +401,7 @@ function _applyResponseHandlers(requestAndConf: RequestAndConf, response: Respon
   return response;
 }
 
-function _returnTypeConverter(fn: Function,
+function _returnTypeConverter(fn: SynapseMethod,
                               name: string): (promise: Promise<Response>) => EndpointReturnType {
   assert(isFunction(fn));
   let res: any;

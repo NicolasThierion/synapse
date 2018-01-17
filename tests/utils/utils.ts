@@ -16,15 +16,15 @@ export class Spies {
 export namespace Spies {
   export class HttpBackend {
     static spies: HttpSpies = {};
-    static setupFakeSpies(): void {
+    static setupFakeSpies(conf?: SynapseConfig): void {
       inject([TestingModule], noop)();
-      inject([SynapseConfig], (conf) => {
+      inject([SynapseConfig], (globalConf) => {
         // setup spies
         [ 'get', 'post', 'put', 'patch', 'delete'].forEach((s: keyof HttpBackendAdapter) => {
 
           const fakeHeaders = new Headers();
           fakeHeaders.append(HeaderConstants.CONTENT_TYPE, ContentTypeConstants.JSON);
-          HttpBackend.spies[s] = spyOn(conf.httpBackend, s).and.callFake(
+          HttpBackend.spies[s] = spyOn((conf || globalConf).httpBackend, s).and.callFake(
             () => Promise.resolve(new Response(JSON.stringify(_fakeUser()), {headers: fakeHeaders})));
         });
       })();

@@ -1,8 +1,9 @@
-import { cloneDeep, isFunction, isString } from 'lodash';
-import { Constructor } from '../../utils';
+import { isFunction, isString } from 'lodash';
+import { Constructor, renameFn, validateHttpBackendAdapter } from '../../utils';
 import { SynapseApiReflect } from './synapse-api.reflect';
-import SynapseApiClass = SynapseApiReflect.SynapseApiClass;
 import { SynapseApiConfig } from '../api-config.type';
+import { SynapseApiClass } from '../synapse-api.type';
+import { SynapseConfig } from '../config.type';
 
 /**
  * Use this decorator on your web API class.
@@ -13,12 +14,12 @@ import { SynapseApiConfig } from '../api-config.type';
  * @param confOrCtor
  * @returns
  */
-export function SynapseApi(confOrCtor: string | SynapseApiConfig | Constructor<SynapseApiClass> = ''): ClassDecorator | any {
+export function SynapseApi(confOrCtor: string | SynapseApiConfig | Constructor<any> = ''): ClassDecorator | any {
   // if called SynapseApi(...???...)
   if (!isFunction(confOrCtor)) {
     return (ctor: Constructor<SynapseApiClass>) => {
       if (!ctor) { throw new Error('assertion error'); }
-      confOrCtor = isString(confOrCtor) ? {path: confOrCtor as string} : cloneDeep(confOrCtor) as SynapseApiConfig;
+      confOrCtor = isString(confOrCtor) ? {path: confOrCtor as string} : /* cloneDeep */(confOrCtor) as SynapseApiConfig;
 
       return _makeNewCtor(ctor, confOrCtor);
     };
@@ -29,29 +30,48 @@ export function SynapseApi(confOrCtor: string | SynapseApiConfig | Constructor<S
 
   function _makeNewCtor(ctor: Constructor<SynapseApiClass>, conf: SynapseApiConfig): Constructor<SynapseApiClass> {
 
+    if (conf.httpBackend) {
+      validateHttpBackendAdapter(conf.httpBackend);
+    }
+
     // decorate constructor to add config within reflect metadata
     let newCtor: Constructor<SynapseApiClass> = function(...args: any[]): SynapseApiClass {
 
       // call decoree constructor
-      const res = ctor.apply(this as any, args); // tslint:disable-line
+      ctor.apply(this as any, args);
 
       // store conf within metadata.
       // !!! It is important to call constructor before, to register config of any parent class decorated with @SynapseApi
-      SynapseApiReflect.init(ctor.prototype, conf);
+      // !!! x2 => this should be done lazily (at runtime when ctor is executed)
+      // to let a chance to Synapse.init() to get called before this.
+      asyncInit();
 
-      return res;
+      return this;
     } as any;
 
-    newCtor = renameFn(newCtor, ctor.prototype.constructor.name);
-    newCtor.prototype = ctor.prototype;
+    const proto = ctor.prototype;
+    newCtor = renameFn(newCtor, proto.constructor.name);
+    newCtor.prototype = proto;
+
+    Object.defineProperty(proto, 'synapseConfig', {
+      get: asyncInit
+    });
 
     // copy static values
     Object.keys(ctor).forEach(k => newCtor[k] = ctor[k]);
 
+    function asyncInit(): SynapseApiConfig & SynapseConfig {
+
+      // if already enhanced
+      if (SynapseApiReflect.hasConf(ctor.prototype)) {
+        return SynapseApiReflect.getConf(ctor.prototype);
+      }
+
+      // else, init config
+      return SynapseApiReflect.init(ctor.prototype, conf);
+    }
+
     return newCtor;
   }
 
-  function renameFn<T extends Function>(fn: T, name: string): T {
-    return new Function('fn', `return function ${name}() {\n return fn.apply(this, arguments);\n}`)(fn) as T;
-  }
 }

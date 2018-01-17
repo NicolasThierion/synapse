@@ -9,9 +9,12 @@ import { cloneDeep, merge, noop } from 'lodash';
 import { mergeConfigs } from '../../utils';
 import { SynapseApi } from './synapse-api.decorator';
 import { SynapseConfig } from '../config.type';
+import { SynapseApiClass } from '../synapse-api.type';
+import { GET } from './synapse-endpoint.decorator';
 
 const API_PATH = 'some-api-path/';
-const EXTENDED_API_PATH = '/some-extended-api-path';
+const EXTENDED_API_PATH = 'some-extended-api-path';
+const EXTENDED_API_ENDPOINT = 'extended-endpoint';
 
 @SynapseApi
 class Api {
@@ -52,7 +55,10 @@ class ApiWithPartialConf {
 
 @SynapseApi(customConf)
 class ParentApi {
-
+  @GET('some-parent-url')
+  getInherited() {
+    return Synapse.OBSERVABLE;
+  }
 }
 @SynapseApi()
 class InheritedApi extends ParentApi {
@@ -61,7 +67,10 @@ class InheritedApi extends ParentApi {
 
 @SynapseApi(EXTENDED_API_PATH)
 class ExtendedApi extends ParentApi {
-
+  @GET('extended-endpoint')
+  getInherited() {
+    return Synapse.OBSERVABLE;
+  }
 }
 
 const STATIC_ATTRIBUTE_VALUE = 'someStaticAttrValue';
@@ -108,6 +117,21 @@ describe('@SynapseApi annotation', () => {
   it('should run through original constructor', () => {
     const api = new Api('arg');
     expect(api.arg).toEqual('arg');
+  });
+
+  it('should expose its config through class.synapseConfig', () => {
+    const api = new Api('arg');
+    const conf = (api as SynapseApiClass).synapseConfig;
+    expect(conf).toBeDefined();
+    expect(conf).toEqual(SynapseApiReflect.getConf(api.constructor.prototype) as any);
+  });
+
+  describe('class.synapseConfig', () => {
+    it('should be readonly', () => {
+      const api = new Api('arg');
+      expect(() => (api as SynapseApiClass).synapseConfig.baseUrl = 'another').toThrow();
+      expect(() => (api as SynapseApiClass).synapseConfig.baseUrl).not.toEqual('another');
+    });
   });
 
   describe('with no arg', () => {
@@ -237,6 +261,11 @@ describe('@SynapseApi annotation', () => {
   });
 
   describe('extending another class annotated with @SynapseApi', () => {
+
+    beforeEach(() => {
+      Spies.HttpBackend.setupFakeSpies(Custom.CONF);
+    });
+
     it('should have prototype of child class', () => {
       const api = new InheritedApi();
       expect(api).toEqual(jasmine.any(InheritedApi));
@@ -257,10 +286,23 @@ describe('@SynapseApi annotation', () => {
       expect(conf.path).toEqual(customConf.path);
     });
 
-    it('should replace path of parent class if path specified', () => {
+    it('should replace path of parent class if path specified in child class', () => {
       const api = new ExtendedApi();
       const conf = SynapseApiReflect.getConf(api.constructor.prototype);
       expect(conf.path).toEqual(EXTENDED_API_PATH);
     });
+
+    it('should replace path of parent method if path specified in child method', done => {
+      // replace httpBackend with spies
+      SynapseApiReflect.init(ExtendedApi.prototype, Custom.CONF);
+      const api = new ExtendedApi();
+      api.getInherited().subscribe(() => {
+        const r = spies.get.calls.mostRecent().args[0] as Request;
+        const parts = r.url.split('/');
+        expect(parts[parts.length - 1]).toEqual(EXTENDED_API_ENDPOINT);
+        done();
+      });
+    });
   });
+
 });
