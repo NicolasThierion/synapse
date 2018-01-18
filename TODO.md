@@ -8,6 +8,7 @@
   - how to npm link
   - how to start test-server
 - write e2e test app
+- create plunkr
 - offer introspection utility to get parameters for annotated class.
 - add .gitlab-ci config to npm publish on push->master
 - add mapper property to @SynapseApi

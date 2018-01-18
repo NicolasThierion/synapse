@@ -1,4 +1,4 @@
-# Synapse <sub>- 0.1.0</sub>
+# Synapse <sub>- 0.2.0</sub>
 
 > Designing clean and versatile HTTP api, made easy. With ES6 decorators, promises, and Fetch API included !
 
