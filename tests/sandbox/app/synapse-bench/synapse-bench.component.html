@@ -1,14 +1,19 @@
 <div class="card">
+  configContent.style.display: {{configContent.style.display}}
+  <span (mouseenter)="configContent.style.display = 'block'" (mouseleave)="configContent.style.display = 'none'" ) >
+    <span class="annotation-method">{{ conf.method }}</span>(
+    <span class="annotation-config" #configContent></span>)
+  </span>
   <a data-toggle="collapse" role="button" href="#{{elementId}}">
-    <span class="badge" [ngClass]="method">{{method}}</span>
-    {{name}}({{paramsString()}})
+    <span class="badge" [ngClass]="conf.method">{{ conf.method }}</span>
+    {{ name }}({{ paramsToString() }})
   </a>
   <section class="details collapse container-fluid" [id]="elementId">
     <section class="request bg-light mb-3">
       <span class="badge badge-info">Parameters</span>
       <form class="px-2">
         <ng-container *ngFor="let paramName of paramNames; index as i;">
-        <label>{{paramName}}: {{getParamType(paramName)}}</label>
+        <label>{{ paramName }}: {{ getParamType(paramName) }}</label>
         <input [(ngModel)]="paramValues[i]" type="{{getParamType(paramName) === 'number' ? 'number' : 'text'}}"
                name="userId">
         </ng-container>

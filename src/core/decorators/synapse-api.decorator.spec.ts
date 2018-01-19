@@ -1,3 +1,7 @@
+// tslint:disable max-classes-per-file
+// tslint:disable no-unnecessary-class
+// tslint:disable no-implicit-dependencies
+
 import { inject, TestBed } from '@angular/core/testing';
 import { ContentTypeTextApi, Custom, Global, HandlerApi, NoContentTypeApi, Spies, TestingModule } from '../../../tests/utils';
 import { SynapseApiReflect } from './synapse-api.reflect';
@@ -6,10 +10,11 @@ import { AngularHttpBackendAdapter } from '../../angular';
 import { Synapse } from '../core';
 
 import { cloneDeep, merge, noop } from 'lodash';
+import { Observable } from 'rxjs/Observable';
 import { mergeConfigs } from '../../utils';
-import { SynapseApi } from './synapse-api.decorator';
 import { SynapseConfig } from '../config.type';
 import { SynapseApiClass } from '../synapse-api.type';
+import { SynapseApi } from './synapse-api.decorator';
 import { GET } from './synapse-endpoint.decorator';
 
 const API_PATH = 'some-api-path/';
@@ -56,7 +61,7 @@ class ApiWithPartialConf {
 @SynapseApi(customConf)
 class ParentApi {
   @GET('some-parent-url')
-  getInherited() {
+  getInherited(): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 }
@@ -68,7 +73,7 @@ class InheritedApi extends ParentApi {
 @SynapseApi(EXTENDED_API_PATH)
 class ExtendedApi extends ParentApi {
   @GET('extended-endpoint')
-  getInherited() {
+  getInherited(): Observable<any> {
     return Synapse.OBSERVABLE;
   }
 }

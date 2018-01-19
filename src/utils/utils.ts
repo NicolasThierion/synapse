@@ -1,8 +1,8 @@
 import { cloneDeep, isArray, isFunction, isObject, isUndefined, mergeWith } from 'lodash';
 import { parse, stringify } from 'qs';
-import { EndpointConfig, QueryParametersType, SynapseApiConfig, SynapseConfig } from '../';
-import { assert } from './assert';
+import { EndpointConfig, QueryParametersType, SynapseApiConfig } from '../';
 import { HttpBackendAdapter } from '../core/http-backend';
+import { assert } from './assert';
 
 export type Constructor<T> = Function & {
   new(...args: any[]): T;
@@ -52,9 +52,9 @@ export function validateHttpBackendAdapter(ba: HttpBackendAdapter): void {
   }
 }
 
-export type SynapseMergedConfig = SynapseConfig | SynapseApiConfig | EndpointConfig | {};
+export type SynapseMergedConfig = SynapseApiConfig & EndpointConfig & { method?: 'get'|'post'|'patch'|'put'|'delete'};
 
-export function mergeConfigs<T extends SynapseMergedConfig, U extends SynapseMergedConfig>(conf: T, ...confs: U[]): T & U {
+export function mergeConfigs<T, U>(conf: T, ...confs: U[]): T & U {
 
   return mergeWith(conf, ...confs, (value: any, srcValue: any, key: string, object: any, source: any) => {
     if (key === 'httpBackend') {
@@ -80,5 +80,8 @@ export function mergeConfigs<T extends SynapseMergedConfig, U extends SynapseMer
 }
 
 export function renameFn<T extends Function>(fn: T, name: string): T {
-  return new Function('fn', `return function ${name}_() {\n return fn.apply(this, arguments);\n}`)(fn) as T;
+  const FORBIDDEN_NAMES = ['delete', 'var', 'const', 'let', 'debugger'];
+  name = (FORBIDDEN_NAMES.indexOf(name) >= 0) ? `${name}_` : name;
+
+  return new Function('fn', `return function ${name}() {\n return fn.apply(this, arguments);\n}`)(fn) as T;
 }

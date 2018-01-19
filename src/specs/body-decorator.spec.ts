@@ -1,3 +1,5 @@
+// tslint:disable no-implicit-dependencies
+
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs/Observable';
 import { BadApi, Spies, TestingModule } from '../../tests/utils';
@@ -7,11 +9,11 @@ import { fromQueryString } from '../utils';
 @SynapseApi
 class BodyApi {
 
-  static customBodyMapper = (obj: any): any => {
+  static customBodyMapper = ((obj: any): any => {
     obj.throughMapper = true;
 
     return obj;
-  };
+  });
 
   @POST()
   postWithBody(@Body() body: any): Observable<any> {

@@ -1,13 +1,15 @@
+// tslint:disable no-implicit-dependencies
+
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, inject, TestBed } from '@angular/core/testing';
 import { merge, noop } from 'lodash';
 
-import { SynapseModule, AngularHttpBackendAdapter } from '../angular';
+import { AngularHttpBackendAdapter, SynapseModule } from '../angular';
 
 import { TestingModule } from '../../tests/utils';
-import { HttpBackendAdapter } from '../core/http-backend';
 import { Synapse, SynapseConfig } from '../core';
+import { HttpBackendAdapter } from '../core/http-backend';
 
 class CustomAngularHttpBackendAdapter implements HttpBackendAdapter {
   get(request: Request): Promise<Response> {

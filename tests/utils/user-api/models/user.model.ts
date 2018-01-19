@@ -26,7 +26,7 @@ export class User {
   }
 
   static of(user: {[key in keyof User]?: any} & {
-    'id', 'firstName', 'lastName', 'username'
+    id: string, firstName: string, lastName: string, username: string
   }): User {
     const u = user as User;
     const mandatoryAttributes = ['id', 'firstName', 'lastName', 'username'];

@@ -1,3 +1,4 @@
+// tslint:disable no-implicit-dependencies
 import { inject, TestBed } from '@angular/core/testing';
 
 import { noop } from 'lodash';
@@ -17,9 +18,9 @@ import {
   User,
   UsersApi } from '../../tests/utils';
 import { DELETE, GET, PATCH, POST, PUT, Synapse, TypedResponse } from '../core';
-import { joinPath, mergeConfigs, removeTrailingSlash } from '../utils';
-import { SynapseMethod } from '../core/synapse-method.type';
 import { SynapseApi } from '../core/decorators';
+import { SynapseMethod } from '../core/synapse-method.type';
+import { joinPath, removeTrailingSlash } from '../utils';
 
 @SynapseApi()
 class UniqueApi {
@@ -288,12 +289,23 @@ describe('', () => {
       });
     });
 
-    describe('if property "mapper" was present', () => {
-      it('should call the mapper', done => {
+    describe('if property "mapper" is present', () => {
+      it('should pass response through the mapper', done => {
         new UsersApi().getOne(1).subscribe(user => {
           expect(user).toEqual(jasmine.any(User));
           done();
         }, fail);
+      });
+
+      describe('if the response is an array', () => {
+        it('should each item of the array through the mapper', done => {
+          spies.get.and.callThrough();
+          new UsersApi().getPage().subscribe(users => {
+            expect(users).toEqual(jasmine.any(Array));
+            expect(users[0]).toEqual(jasmine.any(User));
+            done();
+          }, fail);
+        });
       });
     });
 

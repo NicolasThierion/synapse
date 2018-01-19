@@ -1,7 +1,7 @@
 import { SynapseError } from '../../../../utils';
+import { ContentTypeConstants } from '../../../constants';
 import { Headers } from '../../parameters.decorator';
 import { ResponseContentTypeConverter } from './response-converter-store';
-import { ContentTypeConstants } from '../../../constants';
 
 // @dynamic // https://github.com/angular/angular/issues/19698#issuecomment-338340211
 export class JsonConverter implements ResponseContentTypeConverter<Object> {

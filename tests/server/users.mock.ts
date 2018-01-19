@@ -1,3 +1,5 @@
+// tslint:disable no-implicit-dependencies
+
 import * as faker from 'faker';
 
 export const data = (() => {
@@ -17,10 +19,9 @@ export const data = (() => {
       suite: faker.address.streetSuffix(),
       city: faker.address.city(),
       zipcode: faker.address.zipCode(),
-
-
-      phone: faker.phone.phoneNumber('+33# ## ## ## ##'),
+      phone: faker.phone.phoneNumber('+33# ## ## ## ##')
     });
   }
+
   return d;
 })();

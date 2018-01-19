@@ -3,8 +3,6 @@ import { createNewHosts } from '@angularclass/hmr';
 
 /**
  * Bootstrap an angular application module to work with Hot Module Replacement
- * @param module
- * @param {() => Promise<NgModuleRef<any>>} bootstrap
  */
 export const hmrBootstrap = (module: any, bootstrap: () => Promise<NgModuleRef<any>>) => {
   let ngModule: NgModuleRef<any>;

@@ -1,8 +1,8 @@
 import { SynapseError } from '../../../../utils';
+import { ContentTypeConstants } from '../../../constants';
 import { JsonConverter } from './json-tx-converter';
 import { TextConverter } from './text-tx-converter';
 import { UrlencodedTxConverter } from './urlencoded-tx-converter';
-import { ContentTypeConstants } from '../../../constants';
 
 export interface RequestContentTypeConverter {
   convert(body: any, request: Request): Promise<Request>;

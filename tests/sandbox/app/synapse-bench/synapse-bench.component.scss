@@ -34,7 +34,13 @@
     border-top-left-radius: 4px;
   }
 
+  .annotation-method {
+    color: #eab00e;
+    display: inline;
+  }
 
+  .annotation-config {
+  }
   .details {
     flex-flow: row nowrap;
     &.show, &.collapsing {

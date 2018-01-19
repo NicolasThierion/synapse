@@ -1,6 +1,6 @@
 {
   "extends": [
-    "tslint-angular", "rxjs-tslint-rules"
+    "tslint-angular", "angular-tslint-rules", "rxjs-tslint-rules"
   ],
 
   "rulesDirectory": [
@@ -167,7 +167,6 @@
       "ack",
       "kebab-case"
     ],
-    "typeof-compare": true,
     "unified-signatures": true,
     "whitespace": [
       true,
@@ -177,14 +176,11 @@
       "check-separator",
       "check-type"
     ],
-    "no-access-missing-member": true,
     "no-duplicate-imports": true,
-    "templates-use-public": true,
-    "invoke-injectable": true,
     "pipe-naming": [true, "camelCase", "sg"],
-    "template-to-ng-template": true,
     "import-sources-order": true,
-    "grouped-imports": true
+    "ordered-imports": true,
+    "no-implicit-dependencies": true
   }
 }
 

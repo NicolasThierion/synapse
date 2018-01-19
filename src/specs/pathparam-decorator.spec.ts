@@ -1,7 +1,9 @@
+// tslint:disable no-implicit-dependencies
+
 import { TestBed } from '@angular/core/testing';
 import { BadApi, GetApi, Global, Spies, TestingModule } from '../../tests/utils';
-import { Synapse } from '../index';
-import { joinPath } from '../utils/utils';
+import { Synapse } from '../core';
+import { joinPath } from '../utils';
 
 describe('@PathParam decorator', () => {
   const spies = Spies.HttpBackend.spies;

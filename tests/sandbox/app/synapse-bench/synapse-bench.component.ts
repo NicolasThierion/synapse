@@ -1,12 +1,10 @@
-
 import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { HttpMethod } from '../../../../src/core';
 import JSONFormatter from 'json-formatter-js';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/fromPromise';
 
-import { isObject } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { SynapseMethod } from '../../../../src/core/synapse-method.type';
+import { SynapseMergedConfig } from '../../../../src/utils';
 let count = 0;
 
 type paramType = 'object' | 'number' | 'string';
@@ -17,32 +15,32 @@ type paramType = 'object' | 'number' | 'string';
   styleUrls: ['./synapse-bench.component.scss']
 })
 export class SynapseBenchComponent implements OnInit, OnChanges {
-  @ViewChild('resultContent') content: ElementRef;
+  @ViewChild('resultContent') resultContent: ElementRef;
+  @ViewChild('configContent') configContent: ElementRef;
 
   @Input()
   public name: string;
 
   @Input()
-  public method: HttpMethod = HttpMethod.GET;
-
-  @Input()
   public parameters: {[param: string]: paramType} = {};
 
   @Input()
-  public fn: Function = () => {};
+  public fn: Function = () => {}
 
   public elementId: string;
   public paramNames: string[];
   public paramTypes: paramType[];
   public paramValues: paramType[];
+  public conf: SynapseMergedConfig = {};
+
   private isError: boolean;
   private isSubmit: boolean;
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.elementId = `ack-bench-${count++}`;
-
+    this.name = this.name || this.fn.name;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -53,7 +51,25 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
     }
 
     if (changes.fn) {
-      const conf = (this.fn as SynapseMethod).conf;
+      this.conf = (this.fn as SynapseMethod).synapseConfig;
+
+      const conf = cloneDeep(this.conf);
+      delete conf.method;
+      delete conf.httpBackend;
+
+      const formatter = new JSONFormatter(conf);
+      const renderedEl = formatter.render();
+      const ne = this.configContent.nativeElement;
+      if (ne.firstChild) {
+        ne.replaceChild(renderedEl, ne.firstChild);
+      } else {
+        ne.appendChild(renderedEl);
+      }
+
+    }
+
+    if (changes.name && !changes.name.currentValue) {
+      this.name = this.fn.name;
     }
   }
 
@@ -61,27 +77,41 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
     return this.parameters[name];
   }
 
-  paramsString() {
+  paramsToString(): string {
     return this.paramNames
       .reduce((params, param, index) => params.concat(`${param}: ${this.paramTypes[index]}`), [])
       .join(', ');
   }
 
-  submit() {
+  submit(): void {
     this.isSubmit = true;
-    const res = this.fn.apply(null, this.paramValues);
-    ((res.then ? Observable.fromPromise(res) : res) as Observable<any>)
-      .subscribe(this._handleResponse.bind(this), this._handleError.bind(this));
+
+    try {
+      const params = [];
+      for (let i = 0; i < this.paramValues.length; ++i) {
+        if (this.paramValues[i]) {
+          params[i] = this.getParamType(this.paramNames[i]) === 'object' ?
+            JSON.parse(this.paramValues[i]) : this.paramValues[i];
+        }
+      }
+
+      const res = this.fn.apply(null, params);
+      ((res.then ? Observable.fromPromise(res) : res) as Observable<any>)
+        .subscribe(this._handleResponse.bind(this), this._handleError.bind(this));
+    } catch (e) {
+      this._handleError(e);
+    }
+
   }
 
   /* ***
    * Private
    */
-  private _handleResponse(o: any) {
+  private _handleResponse(o: any): void {
     this.isError = false;
     const formatter = new JSONFormatter(o);
     const renderedEl = formatter.render();
-    const ne = this.content.nativeElement;
+    const ne = this.resultContent.nativeElement;
     if (ne.firstChild) {
       ne.replaceChild(renderedEl, ne.firstChild);
     } else {
@@ -89,16 +119,15 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
     }
   }
 
-  private _handleError(o: any) {
+  private _handleError(o: any): void {
     this.isError = true;
 
-    const ne = this.content.nativeElement;
+    const ne = this.resultContent.nativeElement;
     if (o instanceof Error) {
       ne.innerText = o.message;
     } else {
       const formatter = new JSONFormatter(o);
       const renderedEl = formatter.render();
-      const ne = this.content.nativeElement;
       if (ne.firstChild) {
         ne.replaceChild(renderedEl, ne.firstChild);
       } else {

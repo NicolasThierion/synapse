@@ -1,15 +1,18 @@
+// tslint:disable max-classes-per-file
+// tslint:disable no-unnecessary-class
+// tslint:disable no-implicit-dependencies
+
 import { inject } from '@angular/core/testing';
 import { noop } from 'lodash';
 import { TestingModule } from './testing.module';
 
 import Spy = jasmine.Spy;
-import { HttpBackendAdapter } from '../../src/core/http-backend';
 import { ContentTypeConstants, HeaderConstants, SynapseConfig } from '../../src';
+import { HttpBackendAdapter } from '../../src/core/http-backend';
 
 type HttpSpies = {
   [k in keyof HttpBackendAdapter]?: Spy;
   };
-
 export class Spies {
 }
 
@@ -18,7 +21,7 @@ export namespace Spies {
     static spies: HttpSpies = {};
     static setupFakeSpies(conf?: SynapseConfig): void {
       inject([TestingModule], noop)();
-      inject([SynapseConfig], (globalConf) => {
+      inject([SynapseConfig], (globalConf: SynapseConfig) => {
         // setup spies
         [ 'get', 'post', 'put', 'patch', 'delete'].forEach((s: keyof HttpBackendAdapter) => {
 
@@ -32,8 +35,7 @@ export namespace Spies {
   }
 }
 
-
-function _fakeUser() {
+function _fakeUser(): any {
   return {
     name: 'fake firstName fake lastName',
     username: 'fake username',

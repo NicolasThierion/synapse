@@ -1,23 +1,22 @@
-import { cloneDeep, defaultsDeep, isFunction, isString, isUndefined, mergeWith } from 'lodash';
+import { cloneDeep, defaultsDeep, isArray, isFunction, isObject, isString, isUndefined, mergeWith } from 'lodash';
 import { Observable } from 'rxjs/Observable';
-import { assert, SynapseError, joinPath, joinQueryParams, mergeConfigs, renameFn } from '../../utils';
+import { assert, joinPath, joinQueryParams, mergeConfigs, renameFn, SynapseError } from '../../utils';
 import { Headers } from './parameters.decorator';
 import { SynapseApiReflect } from './synapse-api.reflect';
 
 import DecoratedArgs = SynapseApiReflect.DecoratedArgs;
 
-import { ContentTypeConstants, HttpMethod, HttpRequestHandler, HttpResponseHandler, ObserveType } from '../constants';
-import { ResponseContentTypeConverter, ResponseContentTypeConverterStore } from './content-type-converters/rx/response-converter-store';
-import { RequestContentTypeConverter, RequestConverterStore } from './content-type-converters/tx/request-converter-store';
-import { PromiseConverterStore } from './promise-converters/promise-converter-store';
-import { EndpointConfig } from '../endpoint-config.type';
 import { SynapseApiConfig } from '../api-config.type';
+import { ContentTypeConstants, HttpMethod, HttpRequestHandler, HttpResponseHandler, ObserveType } from '../constants';
+import { EndpointConfig } from '../endpoint-config.type';
 import { HttpBackendAdapter } from '../http-backend';
-import { TypedResponse } from '../typed-response.model';
 import { MapperType } from '../mapper.type';
 import { SynapseApiClass } from '../synapse-api.type';
 import { SynapseMethod } from '../synapse-method.type';
-import { SynapseConfig } from '../config.type';
+import { TypedResponse } from '../typed-response.model';
+import { ResponseContentTypeConverter, ResponseContentTypeConverterStore } from './content-type-converters/rx/response-converter-store';
+import { RequestContentTypeConverter, RequestConverterStore } from './content-type-converters/tx/request-converter-store';
+import { PromiseConverterStore } from './promise-converters/promise-converter-store';
 
 /**
  * Parameters decorated with @Headers are considered to be of this type.
@@ -141,8 +140,9 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string
       // we need to gather conf of the child class, rather to get conf of the parent class where this method has been defined.
       // So, let class decorator feed the real overloaded target of child class
       const apiConf = realTarget.synapseConfig;
+      const runtimeConf = mergeConfigs({method}, endpointConf, apiConf);
 
-      let newFn = function (...args: any[]): any {
+      let newFn = function(...args: any[]): any {
         // infer desired return type, and make a converter for it (Promise / Observable)
         const returnTypeConverter = _returnTypeConverter(oldFn, name);
 
@@ -166,7 +166,7 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string
 
       Object.defineProperty(newFn, 'synapseConfig', {
         // TODO this is wrong. Should return apiConf & endpointConf
-        get: () => apiConf
+        get: () => runtimeConf
       });
 
       return newFn;
@@ -243,7 +243,6 @@ function _getRequestContentTypeConverter(contentType: ContentTypeConstants): Req
  *  - a converter to map the body
  *  - a converter to create a copy of the response with the mapped body
  * requestConf
- * @returns
  */
 function _getResponseContentTypeConverter(requestConf: RequestAndConf): ResponseContentTypeConverter<any> {
   return ResponseContentTypeConverterStore.getConverterFor(requestConf.conf.contentType);
@@ -272,9 +271,21 @@ function _doRequest(http: HttpBackendAdapter, requestConf: RequestAndConf): Prom
   const res: Promise<Response> = http[m](req);
   const converter = _getResponseContentTypeConverter(requestConf);
 
+  // handle arrays automatically
+  // TODO unit test this.
+  const mapper = (response: any) => {
+    if (isArray(response)) {
+      response = response.map(requestConf.conf.mapper);
+
+      return response;
+    }
+
+    return requestConf.conf.mapper(response);
+  };
+
   return _assertIsResponsePromise(http, req.method, res)
     .then((response: Response) => _applyResponseHandlers(requestConf, response))
-    .then(async r => new TypedResponse(requestConf.conf.mapper(await converter.convert(r)), r))
+    .then(async r => new TypedResponse(mapper(await converter.convert(r)), r))
     .then(r => _toObservedReturnType(requestConf, r));
 }
 
@@ -351,8 +362,12 @@ function _replacePathParams(path: string, pathParams: (string | number | boolean
       (got ${pathParams.length}, but expected ${i}). Cannot bind value ${p} to any path parameter`);
     }
 
-    if (isUndefined(p)) {
-      throw new TypeError(`${path} : value for path parameter #${i} is undefined`);
+    if (isObject(p)) {
+      throw new TypeError(`${path}: PathParams should be primitives. Got ${typeof p} for param #${i}`);
+    }
+
+    if (isUndefined(p) || p === '') {
+      throw new TypeError(`${path}: missing value for path parameter #${i}`);
     }
     path = path.replace(PATH_PARAMS_REGEX, `${p}`);
     i++;

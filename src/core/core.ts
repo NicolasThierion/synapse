@@ -1,3 +1,5 @@
+// tslint:disable no-unnecessary-class
+
 // DO NOT REMOVE THIS ONE. AT the moment, it is needed for name resolution when generating .d.ts because of --declarations
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
@@ -70,3 +72,4 @@ export class Synapse {
   }
 }
 
+SynapseApiReflect.Synapse = Synapse; // removes circular import between core -> SynapseApiReflect-> core

@@ -9,8 +9,6 @@ export class BadApi {
 
   /**
    * Badly using @GET with a body. Should throw an error.
-   * @param body
-   * @returns
    */
   @GET()
   getWithBody(@Body() body: any): Observable<any> {

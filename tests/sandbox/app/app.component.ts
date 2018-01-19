@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { UsersApi } from '../../utils/user-api';
 
 @Component({
@@ -11,5 +11,3 @@ export class AppComponent {
   public constructor(public users: UsersApi) {
   }
 }
-
-

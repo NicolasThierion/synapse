@@ -1,9 +1,9 @@
-import { SynapseApiConfig } from './api-config.type';
+import { SynapseMergedConfig } from '../utils';
 
 /**
  * Method decorated with @GET, @POST, @PUT, @DELETE & @PATCH
  */
 export type SynapseMethod = {
-  synapseConfig?: SynapseApiConfig;
+  synapseConfig?: SynapseMergedConfig;
   [s: string]: any;
 } & ((...args: any[]) => any);

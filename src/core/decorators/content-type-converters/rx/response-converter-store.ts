@@ -1,8 +1,7 @@
+import { ContentTypeConstants } from '../../../constants';
 import { BlobConverter } from './blob-rx-converter';
 import { JsonConverter } from './json-rx-converter';
 import { TextConverter } from './text-rx-converter';
-import { ContentTypeConstants } from '../../../constants';
-
 
 export interface ResponseContentTypeConverter<T> {
   convert(response: Response): Promise<T>;

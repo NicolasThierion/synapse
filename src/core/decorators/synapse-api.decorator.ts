@@ -1,9 +1,9 @@
 import { isFunction, isString } from 'lodash';
 import { Constructor, renameFn, validateHttpBackendAdapter } from '../../utils';
-import { SynapseApiReflect } from './synapse-api.reflect';
 import { SynapseApiConfig } from '../api-config.type';
-import { SynapseApiClass } from '../synapse-api.type';
 import { SynapseConfig } from '../config.type';
+import { SynapseApiClass } from '../synapse-api.type';
+import { SynapseApiReflect } from './synapse-api.reflect';
 
 /**
  * Use this decorator on your web API class.
@@ -11,8 +11,7 @@ import { SynapseConfig } from '../config.type';
  * You can specify an optional resource path to this API, or a complete {@link SynapseApiConfig},
  * that will applies to this class and all of its sub classes.
  *
- * @param confOrCtor
- * @returns
+ * @param confOrCtor The configuration of the SynapseApi Class
  */
 export function SynapseApi(confOrCtor: string | SynapseApiConfig | Constructor<any> = ''): ClassDecorator | any {
   // if called SynapseApi(...???...)
@@ -29,7 +28,7 @@ export function SynapseApi(confOrCtor: string | SynapseApiConfig | Constructor<a
   }
 
   function _makeNewCtor(ctor: Constructor<SynapseApiClass>, conf: SynapseApiConfig): Constructor<SynapseApiClass> {
-
+    // tslint:disable no-invalid-this
     if (conf.httpBackend) {
       validateHttpBackendAdapter(conf.httpBackend);
     }
@@ -47,6 +46,7 @@ export function SynapseApi(confOrCtor: string | SynapseApiConfig | Constructor<a
       asyncInit();
 
       return this;
+      // tslint:enable no-invalid-this
     } as any;
 
     const proto = ctor.prototype;

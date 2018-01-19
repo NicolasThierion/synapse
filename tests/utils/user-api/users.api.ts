@@ -1,9 +1,11 @@
+// tslint:disable no-implicit-dependencies
+
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { ObserveType, Synapse, TypedResponse } from '../../../src';
+import { Body, GET, Headers, PATCH, PathParam, POST, PUT, QueryParams, SynapseApi } from '../../../src/core/decorators';
 import { User } from './models/user.model';
 import { UserMapper } from './user.mapper';
-import { Body, GET, PATCH, PathParam, POST, PUT, QueryParams, Headers, SynapseApi } from '../../../src/core/decorators';
-import { ObserveType, Synapse, TypedResponse } from '../../../src';
 
 const userMapper = new UserMapper();
 
@@ -37,7 +39,6 @@ export class UsersApi {
   getOneWithObserveResponse(@PathParam() id: number): Observable<TypedResponse<User>> {
     return Synapse.OBSERVABLE;
   }
-
 
   @POST()
   postOne(@Body({

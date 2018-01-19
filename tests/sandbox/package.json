@@ -1,6 +1,6 @@
 {
   "name": "@ack/synapse-demo-app",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "private": true,
   "author": "Nicolas THIERION <nicolas.thierion@outlook.com>",
@@ -9,12 +9,17 @@
     "url": "https://gitlab.com/Pryum/ack-synapse"
   },
   "description": "Demo app for @ack/synapse",
+  "peerDependencies": {
+    "@angular/core": "^5.2.1"
+  },
   "dependencies": {
     "@angularclass/hmr": "^2.1.3",
     "bootstrap": "next",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "json-formatter-js": "^2.2.0",
-    "popper.js": "^1.12.9"
+    "lodash": "^4.17.4",
+    "popper.js": "^1.12.9",
+    "rxjs": "^5.5.6"
   }
 }

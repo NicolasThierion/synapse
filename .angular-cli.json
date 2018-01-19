@@ -39,11 +39,11 @@
   },
   "lint": [
     {
-      "project": "src/tsconfig.app.json",
+      "project": "./tsconfig.json",
       "exclude": "**/node_modules/**"
     },
     {
-      "project": "src/tsconfig.spec.json",
+      "project": "tests/sandbox/tsconfig.spec.json",
       "exclude": "**/node_modules/**"
     },
     {
@@ -56,11 +56,19 @@
       "config": "./karma.conf.js"
     },
     "codeCoverage": {
-      "exclude": ["./src/utils/*", "./src/angular/utils/*", "./src/tests/*"]
+      "exclude": [
+        "./src/utils/*",
+        "./src/angular/utils/*",
+        "./src/tests/*"
+      ]
     }
   },
   "defaults": {
     "styleExt": "css",
-    "component": {}
+    "component": {
+    }
+  },
+  "warnings": {
+    "hmrWarning": false
   }
 }

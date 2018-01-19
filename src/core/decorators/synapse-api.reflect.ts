@@ -1,15 +1,14 @@
 import {
-  cloneDeep, isFunction,
+  isFunction,
   isNumber
 } from 'lodash';
 import 'reflect-metadata';
-import { StateError, SynapseError, mergeConfigs, assert } from '../../utils';
-import { Synapse } from '../core';
-import { BodyParams } from './parameters.decorator';
+import { assert, mergeConfigs, StateError, SynapseError } from '../../utils';
 import { SynapseApiConfig } from '../api-config.type';
 import { SynapseConfig } from '../config.type';
 import { SynapseApiClass } from '../synapse-api.type';
 import { SynapseMethod } from '../synapse-method.type';
+import { BodyParams } from './parameters.decorator';
 
 const DECORATED_PARAMETERS_KEY = 'HttpParamDecorator';
 const CONF_KEY = 'SynapseApiConfig';
@@ -18,6 +17,8 @@ const ORIGINAL_PROTO = 'origProto';
 const CLASS_METADATA_REGISTRY = [];
 
 export namespace SynapseApiReflect {
+
+  export let Synapse;
 
   export class DecoratedArgs {
     readonly path: number[] = [];
@@ -121,7 +122,7 @@ export namespace SynapseApiReflect {
     return args;
   }
 
-  export function teardown() {
+  export function teardown(): void {
     CLASS_METADATA_REGISTRY.forEach(i => {
       Reflect.deleteMetadata(CONF_KEY, i);
     });
@@ -149,11 +150,11 @@ function _assertDecorateParameter(decorator: string, key: string | symbol, param
   }
 }
 
-function _patchProto(classPrototype: SynapseApiClass) {
+function _patchProto(classPrototype: SynapseApiClass): void {
   // patch annotated methods by injecting current target (and its conf)
   const flatProto = _flatProto(classPrototype);   // patch methods from all parents too.
   Object.keys(flatProto)
-    // only want functions
+  // only want functions
     .filter(p => p !== 'constructor')
     .filter(p => isFunction(classPrototype[p]))
     // only want decorated methods that needs patch
@@ -168,14 +169,15 @@ function _flatProto(proto: Object): Object {
   const flat = {};
   while (proto) {
     proto = Reflect.getOwnMetadata(ORIGINAL_PROTO, proto) || proto;
-      Object.getOwnPropertyNames(proto)
-        .filter(p => p !== 'constructor')
-        .forEach(p => {
+    Object.getOwnPropertyNames(proto)
+      .filter(p => p !== 'constructor')
+      .forEach(p => {
         flat[p] = flat[p] === undefined ? proto[p] : flat[p];
       });
 
-      const parentProto = Object.getPrototypeOf(proto);
-      proto = parentProto.constructor !== Object ? parentProto : null;
+    const parentProto = Object.getPrototypeOf(proto);
+    proto = parentProto.constructor !== Object ? parentProto : null;
   }
+
   return flat;
 }

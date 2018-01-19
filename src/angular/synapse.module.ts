@@ -1,9 +1,11 @@
+// tslint:disable no-implicit-dependencies
+
 import { HttpClient } from '@angular/common/http';
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 
+import { Synapse, SynapseConfig } from '../';
 import { AngularHttpBackendAdapter } from './angular-http-backend-adapter';
 import { throwIfAlreadyLoaded } from './utils/module-import-guard';
-import { Synapse, SynapseConfig } from '../';
 
 /**
  * Register this module using {@link SynapseModule#forRoot} to be able to use Synapse decorators within your app.

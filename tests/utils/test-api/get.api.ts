@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import { Observable } from 'rxjs/Observable';
 import { GET, Headers, PathParam, QueryParams, Synapse, SynapseApi } from '../../../src';
 

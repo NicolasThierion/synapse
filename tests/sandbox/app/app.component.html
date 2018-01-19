@@ -5,9 +5,10 @@
 <div class="container-fluid">
   <h2>GET</h2>
   <ack-synapse-bench
-    method="GET"
-    name="getOne"
     [fn]="users.getOne"
-    [parameters]="{id:'number'}"
-  ></ack-synapse-bench>
+    [parameters]="{id:'number'}"></ack-synapse-bench>
+
+  <ack-synapse-bench
+    [fn]="users.getPage"
+    [parameters]="{search:'object'}"></ack-synapse-bench>
 </div>

@@ -1,10 +1,13 @@
+// tslint:disable max-classes-per-file
+// tslint:disable no-implicit-dependencies
+
 import { HttpClientModule } from '@angular/common/http';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { AngularHttpBackendAdapter, SynapseModule } from '../../src/angular';
-import { initAssert } from '../../src/utils';
 import { SynapseConfig } from '../../src';
+import { AngularHttpBackendAdapter, SynapseModule } from '../../src/angular';
 import { HttpBackendAdapter } from '../../src/core/http-backend';
+import { initAssert } from '../../src/utils';
 
 class CustomBackendAdapter extends AngularHttpBackendAdapter {
 }
