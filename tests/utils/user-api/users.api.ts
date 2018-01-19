@@ -42,20 +42,20 @@ export class UsersApi {
 
   @POST()
   postOne(@Body({
-            contentType: Body.ContentType.FORM_DATA,
-            mapper: userMapper.fromJson
+            contentType: Body.ContentType.PLAIN_TEXT,
+            mapper: userMapper.toJson
           }) user: User,
           @Headers() headers?: any): Observable<Response> {
     return Synapse.OBSERVABLE;
   }
 
   @PUT()
-  putOne(@Body({mapper: userMapper.fromJson}) user: User, @Headers() headers?: any): Observable<Response> {
+  putOne(@Body({mapper: userMapper.toJson}) user: User, @Headers() headers?: any): Observable<Response> {
     return Synapse.OBSERVABLE;
   }
 
   @PATCH()
-  patchOne(@Body({mapper: userMapper.fromJson}) user: User, @Headers() headers?: any): Observable<Response> {
+  patchOne(@Body({mapper: userMapper.toJson}) user: User, @Headers() headers?: any): Observable<Response> {
     return Synapse.OBSERVABLE;
   }
 }

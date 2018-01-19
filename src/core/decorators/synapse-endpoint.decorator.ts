@@ -140,8 +140,8 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string
       // we need to gather conf of the child class, rather to get conf of the parent class where this method has been defined.
       // So, let class decorator feed the real overloaded target of child class
       const apiConf = realTarget.synapseConfig;
-      const runtimeConf = mergeConfigs({method}, endpointConf, apiConf);
 
+      const runtimeConf = mergeConfigs({method}, endpointConf, apiConf);
       let newFn = function(...args: any[]): any {
         // infer desired return type, and make a converter for it (Promise / Observable)
         const returnTypeConverter = _returnTypeConverter(oldFn, name);

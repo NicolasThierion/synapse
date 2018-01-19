@@ -29,11 +29,11 @@ export class User {
     id: string, firstName: string, lastName: string, username: string
   }): User {
     const u = user as User;
-    const mandatoryAttributes = ['id', 'firstName', 'lastName', 'username'];
+    const mandatoryAttributes = ['firstName', 'lastName', 'username'];
 
     for (const attr of mandatoryAttributes) {
       if (typeof user[attr] === 'undefined') {
-        throw new TypeError(`should have an attribute ${attr}`);
+        throw new TypeError(`Malformed User: should have an attribute ${attr}`);
       }
     }
 

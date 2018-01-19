@@ -2,13 +2,36 @@
   <h1>This is Synapse demo app</h1>
 </header>
 
-<div class="container-fluid">
+<div class="container-fluid bench-container">
   <h2>GET</h2>
   <ack-synapse-bench
     [fn]="users.getOne"
+    [defaultParameters]="[dummyId]"
     [parameters]="{id:'number'}"></ack-synapse-bench>
 
   <ack-synapse-bench
     [fn]="users.getPage"
+    [defaultParameters]="[dummyPage]"
     [parameters]="{search:'object'}"></ack-synapse-bench>
+
+  <ack-synapse-bench
+    [fn]="users.getOneWithObserveResponse"
+    [defaultParameters]="[dummyId]"
+    [parameters]="{id:'number'}"></ack-synapse-bench>
+
+  <ack-synapse-bench
+    [fn]="users.postOne"
+    [defaultParameters]="[dummyUser]"
+    [parameters]="{user:'object'}"></ack-synapse-bench>
+
+  <ack-synapse-bench
+    [fn]="users.putOne"
+    [defaultParameters]="[dummyUser]"
+    [parameters]="{user:'object'}"></ack-synapse-bench>
+
+  <ack-synapse-bench
+    [fn]="users.patchOne"
+    [defaultParameters]="[dummyUser]"
+    [parameters]="{user:'object'}"></ack-synapse-bench>
 </div>
+

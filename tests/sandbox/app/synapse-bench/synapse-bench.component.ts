@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChi
 import JSONFormatter from 'json-formatter-js';
 import { Observable } from 'rxjs/Observable';
 
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isObject } from 'lodash';
 import { SynapseMethod } from '../../../../src/core/synapse-method.type';
 import { SynapseMergedConfig } from '../../../../src/utils';
 let count = 0;
@@ -25,12 +25,15 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
   public parameters: {[param: string]: paramType} = {};
 
   @Input()
-  public fn: Function = () => {}
+  public defaultParameters: any[] = [];
+
+  @Input()
+  public fn: Function = (() => {});
 
   public elementId: string;
   public paramNames: string[];
   public paramTypes: paramType[];
-  public paramValues: paramType[];
+  public paramValues: paramType[] = [];
   public conf: SynapseMergedConfig = {};
 
   private isError: boolean;
@@ -56,6 +59,10 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
       const conf = cloneDeep(this.conf);
       delete conf.method;
       delete conf.httpBackend;
+      // if (conf.mapper) {
+      //   debugger
+      //   conf.mapper = conf.mapper.name as any;
+      // }
 
       const formatter = new JSONFormatter(conf);
       const renderedEl = formatter.render();
@@ -66,6 +73,17 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
         ne.appendChild(renderedEl);
       }
 
+    }
+
+    if (changes.defaultParameters) {
+      this.paramValues = this.defaultParameters.map(p => {
+        if (isObject(p)) {
+
+          return JSON.stringify(p);
+        }
+
+        return p;
+      });
     }
 
     if (changes.name && !changes.name.currentValue) {
@@ -100,6 +118,7 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
         .subscribe(this._handleResponse.bind(this), this._handleError.bind(this));
     } catch (e) {
       this._handleError(e);
+      throw e;
     }
 
   }

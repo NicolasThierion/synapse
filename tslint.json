@@ -178,7 +178,6 @@
     ],
     "no-duplicate-imports": true,
     "pipe-naming": [true, "camelCase", "sg"],
-    "import-sources-order": true,
     "ordered-imports": true,
     "no-implicit-dependencies": true
   }

@@ -1,9 +1,10 @@
 # Synapse <sub>- 0.2.0</sub>
+![build-status](https://gitlab.com/Pryum/ack-synapse/badges/master/build.svg)
 
-> Designing clean and versatile HTTP api, made easy. With ES6 decorators, promises, and Fetch API included !
+> Leverages ES6 decorators to design clean and versatile HTTP api, the easy way. Promises, observables and Fetch API all included !
 
  ## What is it ?
-We all already did, one day, some http calls by straight forward concatenating url parts :
+We all already did, one day, some straight forward http calls, concatenating url parts, parameters...
 
 ```typescript
 const BASE_URL='https://my-awesome-web-api-PROD'
@@ -27,7 +28,7 @@ class UserApi {
   }
 }
 ```
-Tired of all those fuzzy url concatenations and obscure parameter parsing ?
+Don't let your web api be that fuzzy anymore.
 Synapse is a library that allows you to achieve the same as above with much less boilerplate code: 
 ```typescript
 @SynapseApi({
@@ -50,15 +51,19 @@ class UserApi {
 }
 ```
 
-## Install via npm
-  `npm install --save @ack/Synapse` 
+## Installation
+
+### via npm
+  `npm install --save @ack/Synapse` [TODO TO_FIX]
+### via yarn
+  `yarn add @ack/Synapse` [TODO TO_FIX]
 
 Please note that synapse comes with the following polyfills: 
  - **reflect-metadata** ()for [ES7 Metadata Reflection API](http://www.ecma-international.org/ecma-262/6.0/#sec-reflect-object)
  - **whatwg-fetch** for [ES6 Fetch API](https://fetch.spec.whatwg.org/)
  - [Out of date] - **url-search-params-polyfill** for [ES6 UrlSearchParams](https://url.spec.whatwg.org/#urlsearchparams)
  
-## Setup Synapse with angular.
+### Setup Synapse with angular.
 > ![warning](.README/warning.png) Synapse has only been tested with Angular (>= 5)
 
 
@@ -86,7 +91,7 @@ export class AppModule {}
 ```
 > ![info](.README/info.png) Usage with Angular <4 at your own risk. You will need to implement your own `HttpBackendAdapter` based on angular's `Http`
 
-## Setup Synapse without angular.
+### Setup Synapse without angular.
 
 > ![info](.README/info.png) Although it should work seamlessly, usage with plain javascript has not been tested yet.
 

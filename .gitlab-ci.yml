@@ -15,23 +15,13 @@ unit-tests:
   script:
    - npm run test:ci
 
-
-publish:
-  scripts:
-  # -
-  only:
-  - master
+#publish:
+#  scripts:
+#   -
+#  only:
+#  - master
 
 stages:
   - build
   - test
   - deploy
-
-job1:
-  stage: build
-  script:
-    - execute-script-for-job1
-  only:
-    - master
-  tags:
-    - docker

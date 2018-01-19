@@ -24,7 +24,7 @@ export class Address {
 
     for (const attr of mandatoryAttributes) {
       if (typeof address[attr] === 'undefined') {
-        throw new TypeError(`should have an attribute ${attr}`);
+        throw new TypeError(`Malformed address: should have an attribute ${attr}`);
       }
     }
 

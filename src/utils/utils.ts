@@ -26,11 +26,11 @@ export function joinPath(...path: string[]): string {
 }
 
 export function toQueryString(queryParameters: QueryParametersType | Object): string {
-  return stringify(queryParameters);
+  return stringify(queryParameters, { allowDots: true });
 }
 
 export function fromQueryString(queryString: string): Object {
-  return parse(queryString);
+  return parse(queryString, { allowDots: true });
 }
 
 export function joinQueryParams(url: string, queryParams: QueryParametersType): string {
@@ -66,7 +66,9 @@ export function mergeConfigs<T, U>(conf: T, ...confs: U[]): T & U {
         return value.concat(srcValue);
       } else {
         if (isUndefined(object[key])) {
-          return cloneDeep(source[key]);
+          const v = source[key];
+
+          return isFunction(v) ? v : cloneDeep(v);
         } else {
           if (isObject(object[key]) || isArray(object[key])) {
             return mergeConfigs(object[key], source[key]);

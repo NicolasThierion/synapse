@@ -1,3 +1,7 @@
+let _assertFn: IAssertFn = () => {
+  throw new Error('Asserts needs environment. Cannot use assert until "initAssert" is called');
+};
+
 export function assert(condition: any, message?: string): void {
   _assertFn(condition, message);
 }
@@ -7,10 +11,6 @@ export function initAssert(enable: boolean): void {
 }
 
 type IAssertFn = (condition: any, message?: string) => void;
-
-let _assertFn: IAssertFn = () => {
-  throw new Error('Asserts needs environment. Cannot use assert until "initAssert" is called');
-};
 
 function _makeAssertFn(enableAsserts: boolean): IAssertFn {
   if (enableAsserts) {

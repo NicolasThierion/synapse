@@ -1,9 +1,8 @@
 <div class="card">
-  configContent.style.display: {{configContent.style.display}}
-  <span (mouseenter)="configContent.style.display = 'block'" (mouseleave)="configContent.style.display = 'none'" ) >
-    <span class="annotation-method">{{ conf.method }}</span>(
-    <span class="annotation-config" #configContent></span>)
+  <span>
+    <span class="annotation-method">{{ conf.method }}</span>(<span (mouseenter)="showConfig=true" class="annotation-config-ellipsis"></span>)
   </span>
+  <span [style.display]="showConfig ? 'block': 'none'" class="annotation-config" (mouseleave)="showConfig=false" #configContent></span>
   <a data-toggle="collapse" role="button" href="#{{elementId}}">
     <span class="badge" [ngClass]="conf.method">{{ conf.method }}</span>
     {{ name }}({{ paramsToString() }})
@@ -30,5 +29,4 @@
       </section>
     </div>
   </section>
-
 </div>

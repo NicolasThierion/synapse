@@ -2,7 +2,7 @@
 @import '../../node_modules/bootstrap/scss/variables';
 
 :host {
-
+  display: block;
   .badge {
     color: #FFFFFF;
     border-radius: 4px 0;
@@ -40,6 +40,20 @@
   }
 
   .annotation-config {
+    position: absolute;
+    background-color: #cae7bd;
+    border: 2px solid black;
+    border-radius: 8px;
+    z-index: 3;
+  }
+
+  .annotation-config-ellipsis:before {
+    background-color: #7dd356;
+    color: green;
+    content: '...';
+    margin: 0 5px;
+    line-height: 0.9em;
+    display: inline-block;
   }
   .details {
     flex-flow: row nowrap;
