@@ -1,4 +1,6 @@
 # Synapse <sub>- 0.2.0</sub>
+This project is licensed under the [MIT License](./LICENCE)
+
 ![build-status](https://gitlab.com/Pryum/ack-synapse/badges/master/build.svg)
 
 > Leverages ES6 decorators to design clean and versatile HTTP api, the easy way. Promises, observables and Fetch API all included !
@@ -58,10 +60,10 @@ class UserApi {
 ### via yarn
   `yarn add @ack/Synapse` [TODO TO_FIX]
 
-Please note that synapse comes with the following polyfills: 
+Please note that the project comes with the following polyfills: 
  - **reflect-metadata** ()for [ES7 Metadata Reflection API](http://www.ecma-international.org/ecma-262/6.0/#sec-reflect-object)
  - **whatwg-fetch** for [ES6 Fetch API](https://fetch.spec.whatwg.org/)
- - [Out of date] - **url-search-params-polyfill** for [ES6 UrlSearchParams](https://url.spec.whatwg.org/#urlsearchparams)
+ - **url-search-params-polyfill** for [ES6 UrlSearchParams](https://url.spec.whatwg.org/#urlsearchparams)
  
 ### Setup Synapse with angular.
 > ![warning](.README/warning.png) Synapse has only been tested with Angular (>= 5)
@@ -84,7 +86,6 @@ import { SynapseModule } from '@ack/synapse';
       baseUrl : 'https://your-awesome-api'
     })
   ]
-  
   // ...
 })
 export class AppModule {}
@@ -114,7 +115,7 @@ const yourHttpAdapter = new CustomHttpAdapter();
 
 Synapse.init({ httpBackend : yourHttpAdapter, baseUrl : 'https://your-awesome-api' });
 ```
-## Simple Synapse API example.
+## A simple Synapse API example.
 Synapse is annotation driven (well, decorator driven). All you need to do is to put proper annotations on proper classes, methods and parameters, with proper configuration.
 ```typescript
 /**
@@ -274,4 +275,6 @@ Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app 
 
 [CHANGELOG](./CHANGELOG.md) 
 
-This project is licensed under the [MIT License](./LICENCE)
+## Thank you dherges
+[dherges/ng-packagr](https://github.com/dherges/ng-packagr) was used as a blueprint 
+for the structure of this project.

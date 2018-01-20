@@ -15,6 +15,10 @@ unit-tests:
   script:
    - npm run test:ci
 
+#lint code
+
+#lint commits
+
 #publish:
 #  scripts:
 #   -
