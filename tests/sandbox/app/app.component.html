@@ -19,19 +19,28 @@
     [defaultParameters]="[dummyId]"
     [parameters]="{id:'number'}"></ack-synapse-bench>
 
+  <h2>POST</h2>
   <ack-synapse-bench
     [fn]="users.postOne"
     [defaultParameters]="[dummyUser]"
     [parameters]="{user:'object'}"></ack-synapse-bench>
 
+  <h2>PUT</h2>
   <ack-synapse-bench
     [fn]="users.putOne"
     [defaultParameters]="[dummyUser]"
     [parameters]="{user:'object'}"></ack-synapse-bench>
 
+  <h2>PATCH</h2>
   <ack-synapse-bench
     [fn]="users.patchOne"
     [defaultParameters]="[dummyUser]"
     [parameters]="{user:'object'}"></ack-synapse-bench>
+
+  <h2>DELETE</h2>
+  <ack-synapse-bench
+    [fn]="users.deleteOne"
+    [defaultParameters]="[dummyId]"
+    [parameters]="{id: 'number'}"></ack-synapse-bench>
 </div>
 

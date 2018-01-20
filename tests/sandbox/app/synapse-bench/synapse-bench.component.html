@@ -11,7 +11,7 @@
     <section class="request bg-light mb-3">
       <span class="badge badge-info">Parameters</span>
       <form class="px-2">
-        <ng-container *ngFor="let paramName of paramNames; index as i;">
+        <ng-container *ngFor="let paramName of paramNames; trackBy: trackByIndex; index as i">
         <label>{{ paramName }}: {{ getParamType(paramName) }}</label>
         <input [(ngModel)]="paramValues[i]" type="{{getParamType(paramName) === 'number' ? 'number' : 'text'}}"
                name="userId">

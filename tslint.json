@@ -1,6 +1,6 @@
 {
   "extends": [
-    "tslint-angular", "angular-tslint-rules", "rxjs-tslint-rules"
+    /* "tslint-angular", "angular-tslint-rules", */"rxjs-tslint-rules"
   ],
 
   "rulesDirectory": [
@@ -179,7 +179,7 @@
     "no-duplicate-imports": true,
     "pipe-naming": [true, "camelCase", "sg"],
     "ordered-imports": true,
-    "no-implicit-dependencies": true
+    "no-implicit-dependencies": [true, "optional"]
   }
 }
 

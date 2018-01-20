@@ -35,9 +35,10 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
   public paramTypes: paramType[];
   public paramValues: paramType[] = [];
   public conf: SynapseMergedConfig = {};
+  public trackByIndex = (index: number) => index;
 
-  private isError: boolean;
-  private isSubmit: boolean;
+  public isError: boolean;
+  public isSubmit: boolean;
 
   constructor() { }
 
@@ -47,13 +48,13 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.parameters) {
+    if (changes.parameters && changes.parameters.currentValue) {
       this.paramNames = Object.keys(this.parameters);
       this.paramTypes = this.paramNames.map(p => this.parameters[p]);
       this.paramValues = [];
     }
 
-    if (changes.fn) {
+    if (changes.fn && changes.fn.currentValue) {
       this.conf = (this.fn as SynapseMethod).synapseConfig;
 
       const conf = cloneDeep(this.conf);
@@ -75,7 +76,7 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
 
     }
 
-    if (changes.defaultParameters) {
+    if (changes.defaultParameters && changes.defaultParameters.currentValue) {
       this.paramValues = this.defaultParameters.map(p => {
         if (isObject(p)) {
 
