@@ -18,8 +18,14 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     coverageIstanbulReporter: {
-      reports: [ 'html', 'lcovonly' ],
-      fixWebpackSourcePaths: true
+      reports: [ 'html', 'lcovonly', 'text-summary' ],
+      fixWebpackSourcePaths: true,
+      thresholds: {
+        statements: 80,
+        lines: 80,
+        // branches: 80,
+        // functions: 80
+      }
     },
     angularCli: {
       environment: 'dev'

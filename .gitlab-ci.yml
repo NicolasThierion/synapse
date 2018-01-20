@@ -13,20 +13,15 @@ before_script:
 unit-tests:
   script:
    - npm run test:ci
-  tags:
-      - tests
 # lint code
 code-lint:
   script:
    - npm run lint
-
 # lint commits
 commit-lint:
   script:
     - export LAST_TAG=$(git describe --abbrev=0 --tags) # get last tag
     - ./node_modules/.bin/commitlint --from=$LAST_TAG   # check commit convention from last tag
-  tags:
-    - lint
 #publish:
 #  scripts:
 #   -

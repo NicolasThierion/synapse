@@ -1,8 +1,9 @@
 # Synapse <sub>- 0.2.0</sub>
 This project is licensed under the [MIT License](./LICENCE)
-
-![build-status](https://gitlab.com/Pryum/ack-synapse/badges/master/build.svg)
-
+[![Standard Version](https://img.shields.io/badge/release-standard%20version-brightgreen.svg)](https://github.com/conventional-changelog/standard-version)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![pipeline status](https://gitlab.com/Pryum/ack-synapse/badges/master/pipeline.svg)](https://gitlab.com/Pryum/ack-synapse/commits/master)
+[![coverage report](https://gitlab.com/Pryum/ack-synapse/badges/master/coverage.svg)](https://gitlab.com/Pryum/ack-synapse/commits/master)
 > Leverages ES6 decorators to design clean and versatile HTTP api, the easy way. Promises, observables and Fetch API all included !
 
  ## What is it ?
