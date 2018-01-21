@@ -6,6 +6,9 @@ This project is licensed under the [MIT License](./LICENCE)
 [![coverage report](https://gitlab.com/Pryum/ack-synapse/badges/master/coverage.svg)](https://gitlab.com/Pryum/ack-synapse/commits/master)
 > Leverages ES6 decorators to design clean and versatile HTTP api, the easy way. Promises, observables and Fetch API all included !
 
+
+### Disclaimer
+![warning](./.README/warning.png) This project is still in **beta** ![warning](./.README/warning.png) 
  ## What is it ?
 We all already did, one day, some straight forward http calls, concatenating url parts, parameters...
 
@@ -275,6 +278,8 @@ Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app 
 [TODO](./TODO.md) 
 
 [CHANGELOG](./CHANGELOG.md) 
+
+Want to [contribute](.github/CONTRIBUTING.md)?
 
 ## Thank you dherges
 [dherges/ng-packagr](https://github.com/dherges/ng-packagr) was used as a blueprint 

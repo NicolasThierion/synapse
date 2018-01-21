@@ -1,15 +1,9 @@
 - Update README.md
   - document property observe with example
   - add build / tests / dependencies / why badges
-- add check that no un-decorated parameter is passed  
 - add PR template
 - add Issue template
 - add support for conventional-changelog/standard-version
-- add CONTRIBUTING.md
-  - please rebase before commit
-  - commit convention
-  - how to npm link
-  - how to start test-server
 
 - write better demo app
   - with Immutable.js
