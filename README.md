@@ -9,6 +9,11 @@ This project is licensed under the [MIT License](./LICENCE)
 
 ### Disclaimer
 ![warning](./.README/warning.png) This project is still in **beta** ![warning](./.README/warning.png) 
+- Feedback needed
+- Angular AOT not confirmed to work
+- No "known bugs" list
+
+
  ## What is it ?
 We all already did, one day, some straight forward http calls, concatenating url parts, parameters...
 

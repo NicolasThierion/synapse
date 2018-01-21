@@ -1,6 +1,6 @@
 {
   "name": "@ack/synapse",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -9,6 +9,7 @@
     "lint": "ng lint",
     "build": "./node_modules/.bin/ngc -p tsconfig.dist.json",
     "package": "ng-packagr -p ng-package.json",
+    "release": "standard-version",
     "build:watch": "./node_modules/nodemon/bin/nodemon.js -i dist -w src -e ts,json,html,scss --exec \"npm run build\"",
     "start-test-server": "cd tests/server && nodemon --ext ts --ignore *.spec.ts --exec ts-node main",
     "test": "npm run ::bg-test-server \"ng test --sourcemap=false --watch=false\"",
@@ -93,6 +94,7 @@
     "reflect-metadata": "^0.1.10",
     "rxjs": "^5.5.2",
     "rxjs-tslint-rules": "^3.3.0",
+    "standard-version": "^4.3.0",
     "ts-node": "^4.1.0",
     "tslint": "~5.9.1",
     "tslint-angular": "^1.0.0",
