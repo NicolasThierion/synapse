@@ -1,0 +1,9 @@
+{
+  // This file is referenced nowhere.
+  // it serves no purpose. It should not exists...
+  // But, as ok 2018/01/20, some weird errors occurs when running karma tests with phantomJS,
+  // if this file is ot present, then angular-cli doesn't transpiles well code from node_modules.
+  // ... ... ...
+
+  "extends": "../tsconfig.json"
+}

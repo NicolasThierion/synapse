@@ -1,6 +1,6 @@
+import { environment } from './environments/environment';
 import { initAssert } from './utils';
 
-// TODO turn false
-initAssert(false);
+initAssert(environment.asserts);
 
 export * from './public_api';

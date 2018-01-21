@@ -5,6 +5,19 @@
   },
   "apps": [
     {
+      "root": "src",
+      "outDir": "tmp/dist",
+      "main": "for tests only",
+      "polyfills": "../polyfills.ts",
+      "test": "test.ts",
+      "tsConfig": "tsconfig.spec.json",
+      "testTsconfig": "tsconfig.spec.json",
+      "environmentSource": "environments/environment.ts",
+      "environments": {
+        "dev": "environments/environment.ts"
+      }
+    },
+    {
       "root": "tests/sandbox",
       "outDir": "tmp/dist",
       "assets": [
@@ -13,10 +26,8 @@
       ],
       "index": "index.html",
       "main": "main.ts",
-      "polyfills": "polyfills.ts",
-      "test": "test.ts",
+      "polyfills": "../../polyfills.ts",
       "tsconfig": "tsconfig.app.json",
-      "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
         "styles.css"
@@ -26,9 +37,9 @@
         "node_modules/popper.js/dist/umd/popper.min.js",
         "node_modules/bootstrap/dist/js/bootstrap.js"
       ],
-      "environmentSource": "environments/environment.ts",
+      "environmentSource": "../../src/environments/environment.ts",
       "environments": {
-        "dev": "environments/environment.ts"
+        "dev": "../../src/environments/environment.ts"
       }
     }
   ],
@@ -43,7 +54,11 @@
       "exclude": "**/node_modules/**"
     },
     {
-      "project": "tests/sandbox/tsconfig.spec.json",
+      "project": "tests/sandbox/tsconfig.app.json",
+      "exclude": "**/node_modules/**"
+    },
+    {
+      "project": "src/tsconfig.spec.json",
       "exclude": "**/node_modules/**"
     },
     {

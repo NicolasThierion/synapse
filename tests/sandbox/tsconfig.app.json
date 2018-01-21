@@ -8,12 +8,10 @@
   },
   "exclude": [
     "test.ts",
-    "**/*.spec.ts",
-    "../../node_modules/@ack/synapse/**/*.spec.ts"
-
+    "**/*.spec.ts"
   ],
   "include": [
-    "../../node_modules/@ack/synapse",
-    "."
+    ".",
+    "../../polyfills.ts"
   ]
 }

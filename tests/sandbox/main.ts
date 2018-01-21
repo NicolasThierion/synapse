@@ -3,8 +3,8 @@
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
+import { environment } from '../../src/environments/environment.dev';
 import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
 import { hmrBootstrap } from './hmr';
 import './utils/bootstrap-import/bootstrap-imports';
 import './utils/font-awesome/font-awesome';

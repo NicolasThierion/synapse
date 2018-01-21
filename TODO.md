@@ -1,10 +1,9 @@
 - Update README.md
   - document property observe with example
   - add build / tests / dependencies / why badges
-- add PR template
-- add Issue template
-- add support for conventional-changelog/standard-version
-
+- support for fetch's NO-CORS option
+- add renovate
+- add push to github in gitlab.yml
 - write better demo app
   - with Immutable.js
 - expose qs parser options
