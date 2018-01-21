@@ -148,6 +148,7 @@ function _httpRequestDecorator(method: HttpMethod, conf: EndpointConfig | string
 
         const decoratedArgs = SynapseApiReflect.getDecoratedArgs(target, propertyKey);
         const cargs: CallArgs = _parseArgs(args, decoratedArgs);
+        _assertAllArgsAreDecorated(target, propertyKey, args, decoratedArgs);
         cargs.queryParams = _mergeQueryParams([parsedQueryParams, cargs.queryParams]);
 
         let promise: Promise<any>;
@@ -317,14 +318,15 @@ function _mergeQueryParams(queryParams: QueryParametersType[]): QueryParametersT
 
 function _parseArgs(args: any[], decoratedArgs: DecoratedArgs): CallArgs {
   const res = new CallArgs();
+
   res.queryParams = _mergeQueryParams(
     decoratedArgs.query
-      .map(i => args[i]));
+      .map(i => args[i.index]));
 
   res.headers = decoratedArgs.headers
-    .map(i => args[i])
+    .map(i => args[i.index])
     .reduce((previousValue, currentValue) => defaultsDeep(previousValue, currentValue), {});
-  res.pathParams = decoratedArgs.path.map(i => args[i]);
+  res.pathParams = decoratedArgs.path.map(i => args[i.index]);
 
   // if invoke a body
   if (decoratedArgs.body) {
@@ -464,4 +466,27 @@ Missing fields: ${missing.join(', ')}. Got ${JSON.stringify(r)}`);
 
     return r as Response;
   });
+}
+
+function _assertAllArgsAreDecorated(target: SynapseApiClass,
+                                    propertyKey: string | symbol,
+                                    args: any[], decoratedArgs: SynapseApiReflect.DecoratedArgs): void {
+
+  const decoratedArgsIndexes = Object.keys(decoratedArgs)
+    .map(k => [].concat(decoratedArgs[k]).map(v => v.index))
+    .reduce((acc, current) => acc.concat(current), [])
+    .sort((i: number, j: number) => j - i);
+
+  const missingAgrs: number[] = [];
+  args
+    .forEach((value, index) => {
+      if (decoratedArgsIndexes.indexOf(index) < 0) {
+        missingAgrs.push(index);
+      }
+    });
+
+  if (missingAgrs.length) {
+    throw new SynapseError(
+      `${target.constructor.name}.${propertyKey} : The following parameters are missing decorators : ${missingAgrs.join(', ')}`);
+  }
 }

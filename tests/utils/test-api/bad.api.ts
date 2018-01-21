@@ -45,6 +45,11 @@ export class BadApi {
     return Synapse.OBSERVABLE;
   }
 
+  @GET()
+  getWithMissingParamDecorator(param: number, @QueryParams() param2: Object = {obj: new Date()}): Observable<any> {
+    return Synapse.OBSERVABLE;
+  }
+
   @POST()
   @GET()
   multipleAnnotations(): Observable<any> {

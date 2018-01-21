@@ -187,6 +187,10 @@ describe('', () => {
 
     beforeEach(() => Spies.HttpBackend.setupFakeSpies());
 
+    it('when some args are missing decorator', () => {
+      expect(() => new BadApi().getWithMissingParamDecorator(1)).toThrowError(/missing/);
+    });
+
     it('should call httpBackendAdapter method with proper global configuration', async done => {
 
       await new GetApi().get().toPromise();

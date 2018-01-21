@@ -21,9 +21,9 @@ export namespace SynapseApiReflect {
   export let Synapse;
 
   export class DecoratedArgs {
-    readonly path: number[] = [];
-    readonly query: number[] = [];
-    readonly headers: number[] = [];
+    readonly path: {index: number}[] = [];
+    readonly query: {index: number}[] = [];
+    readonly headers: {index: number}[] = [];
     body: {
       index: number,
       params: BodyParams
@@ -77,24 +77,24 @@ export namespace SynapseApiReflect {
     return (target: Object, key: string | symbol, parameterIndex: number) => {
       _assertDecorateParameter('@PathParams', key, parameterIndex);
       const decoratedArgs = getDecoratedArgs(target, key);
-      decoratedArgs.path.push(parameterIndex as number);
+      decoratedArgs.path.push({index: parameterIndex});
 
       // decorators seems to process argument not always in natural order.
-      decoratedArgs.path.sort();
+      decoratedArgs.path.sort((a, b) => a.index - b.index);
     };
   }
 
   export function addQueryParamsArg(): ParameterDecorator {
     return (target: Object, key: string | symbol, parameterIndex: number) => {
       _assertDecorateParameter('@QueryParams', key, parameterIndex);
-      getDecoratedArgs(target, key).query.push(parameterIndex);
+      getDecoratedArgs(target, key).query.push({index: parameterIndex});
     };
   }
 
   export function addHeadersArg(): ParameterDecorator {
     return (target: Object, key: string | symbol, parameterIndex: number) => {
       _assertDecorateParameter('@Headers', key, parameterIndex);
-      getDecoratedArgs(target, key).headers.push(parameterIndex);
+      getDecoratedArgs(target, key).headers.push({index: parameterIndex});
     };
   }
 
