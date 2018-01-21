@@ -268,7 +268,7 @@ Providing those configurations will not override existing one but rather merge w
 
     Did you properly called `SynapseModule.forRoot(/* ... */)` in your angular's AppModule, or `Synapse.init(/* ... */)` ?
 
-## [danger](.README/danger.png) Known bugs! [Needs updates]
+## ![danger](.README/danger.png) Known bugs! [Needs updates]
 
 - nothing so far
 

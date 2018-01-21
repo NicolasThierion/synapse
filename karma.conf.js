@@ -6,13 +6,14 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['jasmine', '@angular/cli'],
     plugins: [
-      require('karma-jasmine'),
-      require('karma-chrome-launcher'),
-      require('karma-jasmine-html-reporter'),
-      require('karma-phantomjs-launcher'),
-      require('karma-mocha-reporter'),
-      require('karma-coverage-istanbul-reporter'),
-      require('@angular/cli/plugins/karma')
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-jasmine-html-reporter',
+      'karma-phantomjs-launcher',
+      'karma-mocha-reporter',
+      'karma-coverage-istanbul-reporter',
+      '@angular/cli/plugins/karma',
+      'karma-htmlfile-reporter'
     ],
     client:{
       clearContext: false // leave Jasmine Spec Runner output visible in browser
@@ -30,7 +31,15 @@ module.exports = function (config) {
     angularCli: {
       environment: 'dev'
     },
-    reporters: ['mocha', /* 'progress', */ 'kjhtml'],
+    reporters: ['mocha', /* 'progress', */ 'kjhtml', 'html'],
+
+    htmlReporter: {
+      outputFile: 'tests/units.html',
+      // Optional
+      groupSuites: true,
+      useCompactStyle: true
+    },
+
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
