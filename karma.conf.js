@@ -37,7 +37,7 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['Chrome'],
     singleRun: false,
-
+    captureTimeout: 60 * 1000 * 5,   // gitlab runner is extremely slow
     // Allow remote debugging when using PhantomJS
     customLaunchers: {
       'PhantomJS_dbg': {

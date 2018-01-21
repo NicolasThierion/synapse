@@ -14,7 +14,7 @@ This project is licensed under the [MIT License](./LICENCE)
 - No "known bugs" list
 
 
- ## What is it ?
+## What is it ?
 We all already did, one day, some straight forward http calls, concatenating url parts, parameters...
 
 ```typescript
@@ -253,15 +253,7 @@ except it does not allow overriding the `baseUrl`.
 > ![info](.README/info.png) Both `@SynapseApi` and `@GET,` `@POST,` etc can configure properties `requestHandlers`, `responseHandlers`, `headers`. 
 Providing those configurations will not override existing one but rather merge with it.
 
-## How to contribute [Out of date]
- - Install the library in dev mode : `cd src; [sudo] npm link`
- - Crank up a local server running a test app : `npm start`
- 
-## How to test [Out of date]
- - Install the library in dev mode : `cd src; [sudo] npm link`
- - Run tests : `npm test`
- 
-## FAQ ![Question](.README/question.png) [Out of date]
+## ![Question](.README/question.png) FAQ [Needs updates]
 
 - I get **Property 'defineMetadata' does not exist on type 'typeof Reflect'**
     
@@ -275,10 +267,10 @@ Providing those configurations will not override existing one but rather merge w
 - **Error: Synapse not initialized**
 
     Did you properly called `SynapseModule.forRoot(/* ... */)` in your angular's AppModule, or `Synapse.init(/* ... */)` ?
-- **Error : has no exported member 'SynapseModule'**
-## Development server
-Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
+## [danger](.README/danger.png) Known bugs! [Needs updates]
+
+- nothing so far
 
 [TODO](./TODO.md) 
 

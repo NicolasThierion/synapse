@@ -26,3 +26,8 @@ A small and focused changeset is more likely to be merged than a large one!
 
 Of course, please write the tests for your code.
 You can run tests with `npm run test`, `npm run test:watch` or `npm run test:ci`
+
+## Demo app
+Run `npm start` to stat a dev server. Navigate to `http://localhost:4200/` to interact with the demo app.
+
+
