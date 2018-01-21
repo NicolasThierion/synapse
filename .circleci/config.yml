@@ -1,0 +1,75 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Update yarn
+          command: 'sudo npm install -g yarn@latest'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: yarn install
+          command: yarn install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+  test:
+    docker:
+          - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Test
+          command: yarn test:ci
+  lint:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: lint commits
+          command: |
+            export LAST_TAG=$(git describe --abbrev=0 --tags) # get last tag
+            ./node_modules/.bin/commitlint --from=$LAST_TAG   # check commit convention from last tag
+      - run:
+          name: lint code
+          command: yarn lint
+      - store_artifacts:
+          path: tests/units.html
+          prefix: tests
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
+  publish:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: publish
+          command: yarn publish
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+  publish:
+    jobs:
+      - build_and_test
+      - publish:
+        requires:
+         - build
