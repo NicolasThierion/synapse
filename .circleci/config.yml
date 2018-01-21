@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  install:
     docker:
       - image: circleci/node:latest
     steps:
@@ -19,9 +19,11 @@ jobs:
             - node_modules
   test:
     docker:
-          - image: circleci/node:latest
+      - image: circleci/node:latest
     steps:
       - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: Test
           command: yarn test:ci
@@ -30,6 +32,8 @@ jobs:
       - image: circleci/node:latest
     steps:
       - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: lint commits
           command: |
@@ -51,25 +55,25 @@ jobs:
       - checkout
       - run:
           name: publish
-          command: yarn publish
-
+          command: |
+            yarn package
+            yarn publish
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
+      - install
       - lint:
           requires:
-            - build
+            - install
       - test:
           requires:
-            - build
-          filters:
-            branches:
-              only: master
-  publish:
-    jobs:
-      - build_and_test
-      - publish:
-        requires:
-         - build
+            - install
+#      - publish:
+#        requires:
+#         - build
+#         - test
+#         - lint
+#        filters:
+#          branches:
+#            only: master
