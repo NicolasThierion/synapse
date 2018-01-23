@@ -157,14 +157,14 @@
     "directive-selector": [
       true,
       "attribute",
-      "ack",
+      "syn",
       "camelCase"
     ],
 
     "component-selector": [
       true,
       "element",
-      "ack",
+      "syn",
       "kebab-case"
     ],
     "unified-signatures": true,

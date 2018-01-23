@@ -6,7 +6,7 @@
   "author": "Nicolas THIERION <nicolas.thierion@outlook.com>",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/Pryum/ack-synapse"
+    "url": "https://gitlab.com/Pryum/synapse"
   },
   "description": "Demo app for @ack/synapse",
   "peerDependencies": {

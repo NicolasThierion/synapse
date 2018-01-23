@@ -1,37 +1,20 @@
 {
   "name": "@ack/synapse",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "license": "MIT",
-  "scripts": {
-    "ng": "ng",
-    "start": "npm run ::bg-test-server \"ng serve --preserve-symlinks --hmr --app=1\"",
-    "coverage": "npm run ::concurently \"npm run start-test-server\" \"ng test --watch=false --code-coverage\"",
-    "lint": "ng lint",
-    "build": "./node_modules/.bin/ngc -p tsconfig.dist.json",
-    "package": "ng-packagr -p ng-package.json",
-    "release": "standard-version",
-    "build:watch": "./node_modules/nodemon/bin/nodemon.js -i dist -w src -e ts,json,html,scss --exec \"npm run build\"",
-    "start-test-server": "cd tests/server && nodemon --ext ts --ignore *.spec.ts --exec ts-node main",
-    "test": "npm run ::bg-test-server \"ng test --sourcemap=false --watch=false\"",
-    "test:ci": "npm run ::bg-test-server \"ng test  --browsers PhantomJS --watch=false --code-coverage\"",
-    "test:watch": "npm run ::bg-test-server \"ng test --sourcemap=false\"",
-    "e2e": "ng e2e",
-    "::concurently": "./node_modules/.bin/concurrently --kill-others --success=first -- ",
-    "::bg-test-server": "npm run ::concurently -- \"npm run start-test-server\""
-  },
-  "private": true,
+  "private": false,
   "author": "Nicolas THIERION <nicolas.thierion@outlook.com>",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/Pryum/ack-synapse"
+    "url": "https://github.com/NicolasThierion/synapse"
   },
-  "description": "Easy to use http client based on es6 annotations, inspired by the library 'Retrofit'",
+  "description": "An http client that leverages ES6 decorators to design clean and versatile HTTP api",
   "keywords": [
     "http",
     "rest",
     "annotations",
     "es6",
-    "retrofit",
+    "typescript",
     "angular"
   ],
   "dependencies": {
@@ -101,5 +84,22 @@
     "tslint-angular": "^1.0.0",
     "typescript": "2.6.2",
     "zone.js": "^0.8.20"
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "npm run ::bg-test-server \"ng serve --preserve-symlinks --hmr --app=1\"",
+    "coverage": "npm run ::concurently \"npm run start-test-server\" \"ng test --watch=false --code-coverage\"",
+    "lint": "ng lint",
+    "build": "./node_modules/.bin/ngc -p tsconfig.dist.json",
+    "package": "ng-packagr -p ng-package.json",
+    "release": "standard-version",
+    "build:watch": "./node_modules/nodemon/bin/nodemon.js -i dist -w src -e ts,json,html,scss --exec \"npm run build\"",
+    "start-test-server": "cd tests/server && nodemon --ext ts --ignore *.spec.ts --exec ts-node main",
+    "test": "npm run ::bg-test-server \"ng test --sourcemap=false --watch=false\"",
+    "test:ci": "npm run ::bg-test-server \"ng test  --browsers PhantomJS --watch=false --code-coverage\"",
+    "test:watch": "npm run ::bg-test-server \"ng test --sourcemap=false\"",
+    "e2e": "ng e2e",
+    "::concurently": "./node_modules/.bin/concurrently --kill-others --success=first -- ",
+    "::bg-test-server": "npm run ::concurently -- \"npm run start-test-server\""
   }
 }

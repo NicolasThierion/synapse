@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UsersApi } from '../../utils/user-api';
 
 @Component({
-  selector: 'ack-root',
+  selector: 'syn-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.scss']
 })

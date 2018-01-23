@@ -10,7 +10,7 @@ let count = 0;
 type paramType = 'object' | 'number' | 'string';
 
 @Component({
-  selector: 'ack-synapse-bench',
+  selector: 'syn-bench',
   templateUrl: './synapse-bench.component.html',
   styleUrls: ['./synapse-bench.component.scss']
 })

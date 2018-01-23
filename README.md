@@ -1,9 +1,12 @@
-# Synapse <sub>- 0.2.0</sub>
+# Synapse <sub>- 1.0.0.beta</sub>
 [![Standard Version](https://img.shields.io/badge/release-standard%20version-brightgreen.svg)](https://github.com/conventional-changelog/standard-version)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![license](https://img.shields.io/github/license/NicolasThierion/synapse.svg)]()
-[![pipeline status](https://gitlab.com/Pryum/ack-synapse/badges/master/pipeline.svg)](https://gitlab.com/Pryum/ack-synapse/commits/master)
-[![coverage report](https://gitlab.com/Pryum/ack-synapse/badges/master/coverage.svg)](https://gitlab.com/Pryum/ack-synapse/commits/master)
+[![pipeline status](https://gitlab.com/Pryum/synapse/badges/master/pipeline.svg)](https://gitlab.com/Pryum/synapse/commits/master)
+[![coverage report](https://gitlab.com/Pryum/synapse/badges/master/coverage.svg)](https://gitlab.com/Pryum/synapse/commits/master)
+
+[![badge-daviddm](https://img.shields.io/david/NicolasThierion/synapse.svg)](https://david-dm.org/NicolasThierion/synapse)
+[![badge-daviddmdev](https://img.shields.io/david/dev/bevry/badges.svg)](https://david-dm.org/NicolasThierion/synapse#info=devDependencies)
 
 > Leverages ES6 decorators to design clean and versatile HTTP api, the easy way. Promises, observables and Fetch API all included !
 
