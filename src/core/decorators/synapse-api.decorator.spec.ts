@@ -78,6 +78,19 @@ class ExtendedApi extends ParentApi {
   }
 }
 
+
+@SynapseApi({
+  path: EXTENDED_API_PATH,
+  mapper: ApiWithMapper.MAPPER
+})
+class ApiWithMapper {
+  static MAPPER = r => Object.assign(r, {mapperCalled: true});
+  @GET('mapper-endpoint')
+  get(): Observable<any> {
+    return Synapse.OBSERVABLE;
+  }
+}
+
 const STATIC_ATTRIBUTE_VALUE = 'someStaticAttrValue';
 const ATTRIBUTE_VALUE = 'someAttrValue';
 @SynapseApi('ApiWithAttributes')
@@ -305,6 +318,16 @@ describe('@SynapseApi annotation', () => {
         const r = spies.get.calls.mostRecent().args[0] as Request;
         const parts = r.url.split('/');
         expect(parts[parts.length - 1]).toEqual(EXTENDED_API_ENDPOINT);
+        done();
+      });
+    });
+  });
+
+  describe('with property "mapper"', () => {
+    it('should call through the mapper for each methods of API', done => {
+      const api = new ApiWithMapper() as SynapseApiClass;
+      api.get().subscribe((r: any) => {
+        expect(r.mapperCalled).toBeTruthy();
         done();
       });
     });

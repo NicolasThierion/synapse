@@ -208,9 +208,9 @@ function _makeRequestAndConf(method: HttpMethod,
     request,
     conf: defaultsDeep({
       requestHandlers, responseHandlers,
-      mapper: endpointConf.mapper ? endpointConf.mapper : (a: any) => a
     }, endpointConf, apiConf)
   };
+  requestAndConf.conf.mapper = requestAndConf.conf.mapper ? requestAndConf.conf.mapper : (a: any) => a;
 
   if (cargs.body) {
     converter = _getRequestContentTypeConverter(cargs.body.contentType);

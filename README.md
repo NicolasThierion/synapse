@@ -231,7 +231,7 @@ that acts as a Response but with a body that holds a complete (non asynchronous)
 This configuration is passed down to each of your classes decorated with `@SynapseApi`,
  and to their respective methods decorated with `@GET`, `@POST`, `@PUT`, `@PATCH` or `@DELETE`, which in turn can override it.
 **SynapseApiConfig**:
-This is the configuration provided to a class decorated with `@SynapseApi`. It is pretty much the same as `SynapseConfig`, 
+This is the configuration provided to a class decorated with `@SynapseApi`. It mostly inherits from `SynapseConfig`, 
 except it can configure a `path` that comes in addition to the `baseUrl`.
 
 - **`path`**
@@ -239,20 +239,20 @@ except it can configure a `path` that comes in addition to the `baseUrl`.
   - *default value* : `''`
   - *description* : The `path` is concatenated with the `baseUrl` (either global or overridden), to produce a full URLof form `http://base-url/path`
   
+- **`mapper`**: MapperType<any, any>;
+  - *type* : `MapperType`
+  - *default value* : `null`
+  - *description* : A function that is called when method respond, to map the result to another type.
+   This function receive the response's body in argument, and return the mapped object.
+
 **SynapseApiConfig**:
-This is the configuration provided to methods decorated with `@GET`, `@POST`, `@PUT`, `@PATCH` or `@DELETE`. It is pretty much the same as `SynapseApiConfig` 
+This is the configuration provided to methods decorated with `@GET`, `@POST`, `@PUT`, `@PATCH` or `@DELETE`. It is mostly inherits from `SynapseApiConfig` 
 except it does not allow overriding the `baseUrl`.
 
 - **`path`**
   - *type* : `string`
   - *default value* : `''`
   - *description* : The `path` is concatenated with the `baseUrl` and the `path` defined by a parent, to produce a full URLof form `http://base-url/api-path/endpoint-path`
-
-- **`mapper`**: MapperType<any, any>;
-  - *type* : `MapperType`
-  - *default value* : `null`
-  - *description* : A function that is called when method respond, to map the result to another type.
-   This function receive the response's body in argument, and return the mapped object.
 
 > ![info](.README/info.png) Both `@SynapseApi` and `@GET,` `@POST,` etc can configure properties `requestHandlers`, `responseHandlers`, `headers`. 
 Providing those configurations will not override existing one but rather merge with it.

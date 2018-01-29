@@ -1,6 +1,5 @@
 - Update README.md
   - document property observe with example
-  - add build / tests / dependencies / why badges
 - support for fetch's NO-CORS option
 - add renovate
 - add push to github in gitlab.yml
