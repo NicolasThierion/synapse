@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 
-import { SynapseModule } from '../../../src/angular';
-import { UsersApi } from '../../utils/user-api';
+import { SynapseModule } from '../../../../src/angular';
+import { UsersApi } from '../../../utils/user-api';
 import { AppComponent } from './app.component';
 import { SynapseBenchComponent } from './synapse-bench/synapse-bench.component';
 
@@ -23,6 +23,9 @@ import { SynapseBenchComponent } from './synapse-bench/synapse-bench.component';
     SynapseModule.forRoot({
       baseUrl : 'http://localhost:3000'
     })
+  ],
+  exports: [
+    SynapseBenchComponent, AppComponent
   ],
   providers: [UsersApi],
   bootstrap: [AppComponent]

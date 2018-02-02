@@ -3,8 +3,8 @@ import JSONFormatter from 'json-formatter-js';
 import { Observable } from 'rxjs/Observable';
 
 import { cloneDeep, isObject } from 'lodash';
-import { SynapseMethod } from '../../../../src/core/synapse-method.type';
-import { SynapseMergedConfig } from '../../../../src/utils';
+import { SynapseMethod } from '../../../../../src/core/synapse-method.type';
+import { SynapseMergedConfig } from '../../../../../src/utils';
 let count = 0;
 
 type paramType = 'object' | 'number' | 'string';

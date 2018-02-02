@@ -6,7 +6,7 @@
   "apps": [
     {
       "root": "src",
-      "outDir": "tmp/dist",
+      "outDir": "dist",
       "main": "for tests only",
       "polyfills": "../polyfills.ts",
       "test": "test.ts",
@@ -19,7 +19,7 @@
     },
     {
       "root": "tests/sandbox",
-      "outDir": "tmp/dist",
+      "outDir": "dist",
       "assets": [
         "assets",
         "favicon.ico"
@@ -37,9 +37,10 @@
         "node_modules/popper.js/dist/umd/popper.min.js",
         "node_modules/bootstrap/dist/js/bootstrap.js"
       ],
-      "environmentSource": "../../src/environments/environment.ts",
+      "environmentSource": "./src/environments/environment.ts",
       "environments": {
-        "dev": "../../src/environments/environment.ts"
+        "dev": "./src/environments/environment.ts",
+        "prod": "./src/environments/environment.prod.ts"
       }
     }
   ],

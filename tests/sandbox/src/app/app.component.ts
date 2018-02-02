@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UsersApi } from '../../utils/user-api';
+import { UsersApi } from '../../../utils/user-api';
 
 @Component({
   selector: 'syn-root',
