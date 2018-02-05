@@ -13,4 +13,4 @@
 - support for fetching images
 - test the default httpAdapter implementation based on fetch;
 - Wait for ng-packagr to merge [PR feat/intra-package-deps](https://github.com/dherges/ng-packagr/pull/419),
- then create  `@ack/synapse/angular` sub-package
+ then create  `@pryum/synapse/angular` sub-package

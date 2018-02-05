@@ -33,7 +33,7 @@ _for features: do you have a first draft or an idea how to implement?_
 #### Version Information
 
 ```
-@ack/synapse: x.y.z
+@pryum/synapse: x.y.z
 @angular/*: x.y.z
 typescript: x.y.z
 npm/yarn: x.y.z

@@ -19,7 +19,7 @@
     ],
     "rootDir": "./"
 //    "paths": {
-//      "@ack/synapse": ["./src"]
+//      "@pryum/synapse": ["./src"]
 //    },
 //    "baseUrl": "."
   },

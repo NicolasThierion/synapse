@@ -43,7 +43,7 @@ export class SynapseBenchComponent implements OnInit, OnChanges {
   constructor() { }
 
   ngOnInit(): void {
-    this.elementId = `ack-bench-${count++}`;
+    this.elementId = `syn-bench-${count++}`;
     this.name = this.name || this.fn.name;
   }
 

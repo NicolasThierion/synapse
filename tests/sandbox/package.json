@@ -1,5 +1,5 @@
 {
-  "name": "@ack/synapse-demo-app",
+  "name": "@pryum/synapse-demo-app",
   "version": "0.2.0",
   "license": "MIT",
   "private": true,
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://gitlab.com/Pryum/synapse"
   },
-  "description": "Demo app for @ack/synapse",
+  "description": "Demo app for @pryum/synapse",
   "peerDependencies": {
     "@angular/core": "^5.2.1"
   },

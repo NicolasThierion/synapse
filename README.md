@@ -69,9 +69,9 @@ class UserApi {
 ## Installation
 
 ### via npm
-  `npm install --save @ack/Synapse` [TODO TO_FIX]
+  `npm install --save @pryum/Synapse` [TODO TO_FIX]
 ### via yarn
-  `yarn add @ack/Synapse` [TODO TO_FIX]
+  `yarn add @pryum/Synapse` [TODO TO_FIX]
 
 Please note that the project comes with the following polyfills: 
  - **reflect-metadata** ()for [ES7 Metadata Reflection API](http://www.ecma-international.org/ecma-262/6.0/#sec-reflect-object)
@@ -88,7 +88,7 @@ As a result, be sure to import `BrowserModule` and `HttpClientModule` before imp
 To be able to use Synapse, your main module (usually `AppModule`) should look like the following: 
 
 ```typescript
-import { SynapseModule } from '@ack/synapse';
+import { SynapseModule } from '@pryum/synapse';
 
 @NgModule({
   // ...
@@ -114,7 +114,7 @@ Working with any other framework should be fairly easy, and all you probably nee
 `HttpBackendAdapter` itself relies on the standard [Fetch API](https://fetch.spec.whatwg.org/) :
 
 ```typescript
-import { HttpBackendAdapter } from '@ack/synapse';
+import { HttpBackendAdapter } from '@pryum/synapse';
 
 class CustomHttpAdapter implements HttpBackendAdapter {
   get(request: Request): Promise<Response>;

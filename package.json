@@ -1,6 +1,6 @@
 {
-  "name": "@ack/synapse",
-  "version": "1.0.0-beta",
+  "name": "@pryum/synapse",
+  "version": "1.1.0-beta",
   "license": "MIT",
   "private": false,
   "author": "Nicolas THIERION <nicolas.thierion@outlook.com>",
