@@ -69,12 +69,12 @@ class UserApi {
 ## Installation
 
 ### via npm
-  `npm install --save @pryum/Synapse` [TODO TO_FIX]
+  `npm install --save @pryum/Synapse`
 ### via yarn
-  `yarn add @pryum/Synapse` [TODO TO_FIX]
+  `yarn add @pryum/Synapse`
 
 Please note that the project comes with the following polyfills: 
- - **reflect-metadata** ()for [ES7 Metadata Reflection API](http://www.ecma-international.org/ecma-262/6.0/#sec-reflect-object)
+ - **reflect-metadata** for [ES7 Metadata Reflection API](http://www.ecma-international.org/ecma-262/6.0/#sec-reflect-object)
  - **whatwg-fetch** for [ES6 Fetch API](https://fetch.spec.whatwg.org/)
  - **url-search-params-polyfill** for [ES6 UrlSearchParams](https://url.spec.whatwg.org/#urlsearchparams)
  

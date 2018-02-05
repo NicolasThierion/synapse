@@ -178,8 +178,8 @@
     ],
     "no-duplicate-imports": true,
     "pipe-naming": [true, "camelCase", "sg"],
-    "ordered-imports": true,
-    "no-implicit-dependencies": [true, "optional"]
+    "ordered-imports": true
+//    "no-implicit-dependencies": [true, "peer"]
   }
 }
 

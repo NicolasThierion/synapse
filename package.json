@@ -1,6 +1,6 @@
 {
   "name": "@pryum/synapse",
-  "version": "1.1.0-beta",
+  "version": "1.1.1-beta",
   "license": "MIT",
   "private": false,
   "author": "Nicolas THIERION <nicolas.thierion@outlook.com>",
@@ -28,10 +28,6 @@
     "core-js": "^2.4.1",
     "rxjs": "^5.5.2",
     "zone.js": "^0.8.14"
-  },
-  "optionalDependencies": {
-    "@angular/common": "^5.2.1",
-    "@angular/core": "^5.2.1"
   },
   "devDependencies": {
     "@angular/cli": "next",

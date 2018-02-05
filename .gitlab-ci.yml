@@ -11,23 +11,45 @@ before_script:
   - npm install -g yarn
   - yarn install -g
 
-unit-tests:
+
+# package
+package:
+  stage: build
   script:
-   - yarn test:ci
+   - yarn package
+  artifacts:
+    paths:
+     - dist/
+    expire_in: 1 day
+
 # lint code
 code-lint:
+  stage: build
   script:
    - yarn lint
+
 # lint commits
 commit-lint:
+  stage: build
   script:
     - export LAST_TAG=$(git describe --abbrev=0 --tags) # get last tag
     - ./node_modules/.bin/commitlint --from=$LAST_TAG   # check commit convention from last tag
-#publish:
-#  scripts:
-#   -
-#  only:
-#  - master
+
+# unit tests
+unit-tests:
+  stage: test
+  script:
+   - yarn test:ci
+
+publish:
+  stage: deploy
+  script:
+   - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > ~/.npmrc
+   - cd dist; npm publish --access public
+  only:
+   - master
+  only:
+   - tags
 
 stages:
   - build
