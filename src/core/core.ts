@@ -5,7 +5,6 @@
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable'; // tslint:disable-line
 
 // TODO remove those ?
-import 'core-js/es7/reflect';   // reflect api polyfill
 import 'whatwg-fetch';          // Fetch API
 
 // TODO whatwg-url uses es6 that needs to be transpiled to es5. But  as of 2018/01/11, ngc refuses to process js when "allowJs" is set,
