@@ -1,6 +1,6 @@
 {
   "name": "@pryum/synapse",
-  "version": "1.1.1-beta3",
+  "version": "1.1.1-beta4",
   "license": "MIT",
   "private": false,
   "author": "Nicolas THIERION <nicolas.thierion@outlook.com>",
@@ -18,9 +18,12 @@
     "angular"
   ],
   "dependencies": {
+    "from": "^0.1.7",
+    "import": "^0.0.6",
     "lodash": "^4.17.4",
     "qs": "^6.5.1",
     "reflect-metadata": "^0.1.10",
+    "root": "^3.1.0",
     "url-search-params-polyfill": "^2.0.2",
     "whatwg-fetch": "^2.0.3"
   },

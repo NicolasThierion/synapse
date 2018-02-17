@@ -4,6 +4,10 @@ import { EndpointConfig, QueryParametersType, SynapseApiConfig } from '../';
 import { HttpBackendAdapter } from '../core/http-backend';
 import { assert } from './assert';
 
+export const root = (typeof self === 'object' && self.self === self && self) ||
+  (typeof global === 'object' && global.global === global && global) ||
+  this;
+
 export type Constructor<T> = Function & {
   new(...args: any[]): T;
 };
