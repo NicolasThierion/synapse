@@ -7,12 +7,12 @@ import { ContentTypeTextApi, Custom, Global, HandlerApi, NoContentTypeApi, Spies
 import { SynapseApiReflect } from './synapse-api.reflect';
 
 import { AngularHttpBackendAdapter } from '../../angular';
-import { Synapse } from '../core';
 
 import { cloneDeep, merge, noop } from 'lodash';
 import { Observable } from 'rxjs/Observable';
 import { mergeConfigs } from '../../utils';
 import { SynapseConfig } from '../config.type';
+import { Synapse } from '../core';
 import { SynapseApiClass } from '../synapse-api.type';
 import { SynapseApi } from './synapse-api.decorator';
 import { GET } from './synapse-endpoint.decorator';
@@ -110,10 +110,10 @@ describe('@SynapseApi annotation', () => {
     TestBed.configureTestingModule({
       imports: [TestingModule.forRoot(TestingModule.Global.CONF)]
     });
-    // force eager construction of SynapseModule
-    inject([TestingModule], noop)();
-    Spies.HttpBackend.setupFakeSpies();
   });
+  // force eager construction of SynapseModule
+  beforeEach(inject([TestingModule], noop));
+  beforeEach(() => Spies.HttpBackend.setupFakeSpies());
 
   afterEach(() => {
     Synapse.teardown();
@@ -332,5 +332,4 @@ describe('@SynapseApi annotation', () => {
       });
     });
   });
-
 });

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { Body, PUT, Synapse, SynapseApi } from '../../../src';
+import { Body, PUT, Synapse, SynapseApi } from '../../../src/core';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @PUT annotation. For test purpose.

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { Body, POST, Synapse, SynapseApi } from '../../../src';
+import { Body, POST, Synapse, SynapseApi } from '../../../src/core';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @POST annotation. For test purpose.

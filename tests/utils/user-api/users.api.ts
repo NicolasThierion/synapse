@@ -2,7 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { ObserveType, Synapse, TypedResponse } from '../../../src';
+import { ObserveType, Synapse, TypedResponse } from '../../../src/core';
 import { Body, DELETE, GET, Headers, PATCH, PathParam, POST, PUT, QueryParams, SynapseApi } from '../../../src/core/decorators';
 import { User } from './models/user.model';
 import { UserMapper } from './user.mapper';

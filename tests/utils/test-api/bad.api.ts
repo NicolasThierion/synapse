@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { Body, GET, Headers, PathParam, POST, QueryParams, Synapse, SynapseApi } from '../../../src';
+import { Body, GET, Headers, PathParam, POST, QueryParams, Synapse, SynapseApi } from '../../../src/core';
 
 /**
  * An example of badly used SynapseApi. For testing purpose only.

@@ -4,8 +4,8 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { SynapseConfig } from '../../src';
 import { AngularHttpBackendAdapter, SynapseModule } from '../../src/angular';
+import { SynapseConfig } from '../../src/core';
 import { HttpBackendAdapter } from '../../src/core/http-backend';
 import { initAssert } from '../../src/utils';
 

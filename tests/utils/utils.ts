@@ -7,7 +7,7 @@ import { noop } from 'lodash';
 import { TestingModule } from './testing.module';
 
 import Spy = jasmine.Spy;
-import { ContentTypeConstants, HeaderConstants, SynapseConfig } from '../../src';
+import { ContentTypeConstants, HeaderConstants, SynapseConfig } from '../../src/core';
 import { HttpBackendAdapter } from '../../src/core/http-backend';
 
 type HttpSpies = {

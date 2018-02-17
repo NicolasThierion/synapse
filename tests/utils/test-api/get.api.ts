@@ -1,6 +1,6 @@
 // tslint:disable max-classes-per-file
 import { Observable } from 'rxjs/Observable';
-import { GET, Headers, PathParam, QueryParams, Synapse, SynapseApi } from '../../../src';
+import { GET, Headers, PathParam, QueryParams, Synapse, SynapseApi } from '../../../src/core';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @Get annotation. For test purpose.

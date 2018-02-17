@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { GET, ObserveType, Synapse, SynapseApi } from '../../../src';
+import { GET, ObserveType, Synapse, SynapseApi } from '../../../src/core';
 
 /**
  * A fake dummy example of @SynapseApi showing test-cases of @Get annotation. For test purpose.
