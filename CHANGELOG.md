@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.1-beta3"></a>
+## [1.1.1-beta3](https://github.com/NicolasThierion/synapse/compare/v1.1.1-beta2...v1.1.1-beta3) (2018-02-17)
+
+
+### Bug Fixes
+
+* **angular:** fixed angular's SynapseModule not being included ([91ab0ea](https://github.com/NicolasThierion/synapse/commit/91ab0ea))
+
+
+
 <a name="1.1.1-beta2"></a>
 ## [1.1.1-beta2](https://github.com/NicolasThierion/synapse/compare/v1.1.1...v1.1.1-beta2) (2018-02-17)
 
