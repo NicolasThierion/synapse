@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/NicolasThierion/synapse/compare/v1.1.1-beta3...v1.1.1) (2018-02-17)
+
+
+### Bug Fixes
+
+* fixed 'global is not defined' ([7bfdbeb](https://github.com/NicolasThierion/synapse/commit/7bfdbeb))
+
+
+
 <a name="1.1.1-beta3"></a>
 ## [1.1.1-beta3](https://github.com/NicolasThierion/synapse/compare/v1.1.1-beta2...v1.1.1-beta3) (2018-02-17)
 
