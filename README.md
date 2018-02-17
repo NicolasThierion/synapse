@@ -1,4 +1,4 @@
-# Synapse <sub>- 1.0.0.beta</sub>
+# Synapse
 [![Standard Version](https://img.shields.io/badge/release-standard%20version-brightgreen.svg)](https://github.com/conventional-changelog/standard-version)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![license](https://img.shields.io/github/license/NicolasThierion/synapse.svg)]()
