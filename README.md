@@ -14,11 +14,10 @@
 ### Disclaimer
 ![warning](./.README/warning.png) This project is still in **beta** ![warning](./.README/warning.png) 
 - Feedback needed
-- Angular AOT not confirmed to work
 - No "known bugs" list
 
-
 ## What is it ?
+See the [Demo Plunker](https://plnkr.co/edit/hS3KUdgcdecSWdYwEtna?p=preview)
 We all already did, one day, some straight forward http calls, concatenating url parts, parameters...
 
 ```typescript
